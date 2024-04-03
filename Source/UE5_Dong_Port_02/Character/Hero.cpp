@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Helper.h"
 #include "InputDataAsset.h"
+#include "../Component/InventoryComponent.h"
 
 DEFINE_LOG_CATEGORY(HeroLog);
 
@@ -15,17 +16,19 @@ AHero::AHero()
 	bUseControllerRotationYaw = false;
 	CreateCamera();
 	CreateCharacter();
+	InventoryComponent = Helper::CreateActorComponent<UInventoryComponent>(this, "Inventory Component");
 }
 
 void AHero::Tick(float DeltaSecond)
 {
 	Super::Tick(DeltaSecond);
-	UE_LOG(HeroLog, Log, TEXT("On"));
 }
 
 void AHero::CreateCharacter()
 {
 	Super::CreateCharacter();
+
+	GetMesh()->SetAnimInstanceClass(Helper::GetClass<UAnimInstance>(L"/Game/Characters/Hero/ABP_Hero"));
 }
 
 void AHero::Move(const FInputActionValue& Value)
@@ -78,6 +81,7 @@ void AHero::EndSubAction()
 
 void AHero::DoAvoid()
 {
+	Jump();
 }
 
 void AHero::EndAvoid()
@@ -145,10 +149,10 @@ void AHero::MappingInputAsset(UEnhancedInputComponent* Comp)
 	MAPPING_TRIGGERED(Comp, InputAsset->LookInput, AHero::Look);
 	MAPPING_TRIGGERED(Comp, InputAsset->MoveInput, AHero::Move);
 
-	//// Actions
+	// Actions
 	//MAPPING_CLICK(Comp, InputAsset->MainAction, AHero::DoMainAction, AHero::EndMainAction);
 	//MAPPING_CLICK(Comp, InputAsset->SubAction, AHero::DoSubAction, AHero::EndSubAction);
-	//MAPPING_CLICK(Comp, InputAsset->AvoidAction, AHero::DoAvoid, AHero::EndAvoid);
+	MAPPING_CLICK(Comp, InputAsset->AvoidAction, AHero::DoAvoid, AHero::EndAvoid);
 
 	//// Weapon
 	//MAPPING_TRIGGERED(Comp, InputAsset->WeaponStartUp, AHero::WeaponStartUp);

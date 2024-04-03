@@ -19,4 +19,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAcces = "true"))
 	UInputAction* LookInput;
+
+	/* ==================== Action ==================== */
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAcces = "true"))
+	UInputAction* AvoidAction;
 };

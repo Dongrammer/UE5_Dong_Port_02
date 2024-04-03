@@ -14,6 +14,8 @@ class UInputMappingContext;
 //class UInputAction;
 class UInputDataAsset;
 struct FInputActionValue;
+// Inventory
+class UInventoryComponent;
 
 UCLASS()
 class UE5_DONG_PORT_02_API AHero : public ABaseCharacter
@@ -54,6 +56,10 @@ public:
 
 	void InventoryOn();
 	void QuickSlotWheel();
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	UInventoryComponent* InventoryComponent;
 
 protected:
 	void BeginPlay() override;

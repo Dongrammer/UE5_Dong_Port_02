@@ -10,6 +10,7 @@ ABaseCharacter::ABaseCharacter()
 
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 	SetCharacterMovement();
+
 }
 
 void ABaseCharacter::BeginPlay()
@@ -46,7 +47,6 @@ void ABaseCharacter::SetCharacterMovement()
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AddActorWorldOffset(FVector(0, 1, 0));
 }
 
 // Called to bind functionality to input
