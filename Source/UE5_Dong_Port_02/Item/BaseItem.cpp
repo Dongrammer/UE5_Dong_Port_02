@@ -1,24 +1,34 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Item/BaseItem.h"
 
-// Sets default values
+#include "Components/SphereComponent.h"
+#include "ItemEnum.h"
+#include "Helper.h"
+
+/* 
+	[Static Mesh], [ItemID], [Collision] 사이즈 직접 지정,  
+*/
+
 ABaseItem::ABaseItem()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+ 	PrimaryActorTick.bCanEverTick = true;
 
+	ItemType = EItemType::E_None;
+	Rarity = ERarity::E_None;
+
+	Scene = Helper::CreateSceneComponent<USceneComponent>(this, "Scene");
+	SphereComponent = Helper::CreateSceneComponent<USphereComponent>(this, "Sphere Component", Scene);
+	StaticMesh = Helper::CreateSceneComponent<UStaticMeshComponent>(this, "Static Mesh", Scene);
 }
 
-// Called when the game starts or when spawned
 void ABaseItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
+void ABaseItem::DataTableSetting()
+{
+}
+
 void ABaseItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

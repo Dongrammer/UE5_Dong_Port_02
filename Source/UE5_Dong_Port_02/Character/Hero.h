@@ -16,7 +16,11 @@ class UInputDataAsset;
 struct FInputActionValue;
 // Inventory
 class UInventoryComponent;
+class ABaseItem;
 
+/*
+	[Key Mapping Context], [InputAsset] 직접 지정 필요.
+*/
 UCLASS()
 class UE5_DONG_PORT_02_API AHero : public ABaseCharacter
 {
@@ -57,9 +61,13 @@ public:
 	void InventoryOn();
 	void QuickSlotWheel();
 
+	UFUNCTION()
+	void GetItems(ABaseItem* item, int count);
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	UInventoryComponent* InventoryComponent;
+	TArray<ABaseItem*> Items;
 
 protected:
 	void BeginPlay() override;
@@ -68,4 +76,8 @@ protected:
 protected:
 	void CreateCamera();
 	void MappingInputAsset(UEnhancedInputComponent* Comp);
+
+private:
+	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

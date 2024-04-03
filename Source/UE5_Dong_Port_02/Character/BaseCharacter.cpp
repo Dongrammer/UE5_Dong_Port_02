@@ -8,7 +8,8 @@ ABaseCharacter::ABaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
+	BodyCollision = GetCapsuleComponent();
+	BodyCollision->InitCapsuleSize(42.0f, 96.0f);
 	SetCharacterMovement();
 
 }

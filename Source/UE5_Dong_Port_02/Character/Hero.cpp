@@ -7,6 +7,8 @@
 #include "Helper.h"
 #include "InputDataAsset.h"
 #include "../Component/InventoryComponent.h"
+#include "Item/BaseItem.h"
+#include "Components/CapsuleComponent.h"
 
 DEFINE_LOG_CATEGORY(HeroLog);
 
@@ -22,6 +24,7 @@ AHero::AHero()
 void AHero::Tick(float DeltaSecond)
 {
 	Super::Tick(DeltaSecond);
+
 }
 
 void AHero::CreateCharacter()
@@ -96,6 +99,10 @@ void AHero::QuickSlotWheel()
 {
 }
 
+void AHero::GetItems(ABaseItem* item, int count)
+{
+}
+
 void AHero::BeginPlay()
 {
 	Super::BeginPlay();
@@ -111,6 +118,8 @@ void AHero::BeginPlay()
 			SubSystem->AddMappingContext(KeyMappingContext, 0);
 		}
 	}
+
+	BodyCollision->OnComponentBeginOverlap.AddDynamic(this, &AHero::OnOverlap);
 }
 
 void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -160,4 +169,17 @@ void AHero::MappingInputAsset(UEnhancedInputComponent* Comp)
 	//// Inventory
 	//MAPPING_TRIGGERED(Comp, InputAsset->InventoryOn, AHero::InventoryOn);
 	//MAPPING_TRIGGERED(Comp, InputAsset->QuickSlotWheel, AHero::QuickSlotWheel);
+}
+
+void AHero::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Check Item
+	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
+
+	UE_LOG(HeroLog, Log, TEXT("!!"));
+	UE_LOG(HeroLog, Log, TEXT("%s"), *OtherActor->GetName());
+	if (Item)
+	{
+		UE_LOG(HeroLog, Log, TEXT("Overlap Item : %s"), Item->Name);
+	}
 }
