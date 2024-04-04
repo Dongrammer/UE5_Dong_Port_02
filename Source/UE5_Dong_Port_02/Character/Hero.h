@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Character/BaseCharacter.h"
+#include "Character/BaseHuman.h"
 #include "Logging/LogMacros.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(HeroLog, Log, All);
@@ -15,14 +15,15 @@ class UInputMappingContext;
 class UInputDataAsset;
 struct FInputActionValue;
 // Inventory
-class UInventoryComponent;
 class ABaseItem;
+// Widget
+class UInventoryHUD;
 
 /*
 	[Key Mapping Context], [InputAsset] 직접 지정 필요.
 */
 UCLASS()
-class UE5_DONG_PORT_02_API AHero : public ABaseCharacter
+class UE5_DONG_PORT_02_API AHero : public ABaseHuman
 {
 	GENERATED_BODY()
 
@@ -48,6 +49,9 @@ public:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
+	void DoInteraction();
+	void EndInteraction();
+
 	void WeaponStartUp();
 
 	void DoMainAction();
@@ -61,14 +65,15 @@ public:
 	void InventoryOn();
 	void QuickSlotWheel();
 
-	UFUNCTION()
-	void GetItems(ABaseItem* item, int count);
 
 private:
-	UPROPERTY(VisibleAnywhere)
-	UInventoryComponent* InventoryComponent;
-	TArray<ABaseItem*> Items;
 
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD")
+	TObjectPtr<UInventoryHUD> InvenHUD;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UInventoryHUD> InvenHUDClass;
+	
 protected:
 	void BeginPlay() override;
 	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -79,5 +84,7 @@ protected:
 
 private:
 	UFUNCTION()
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };

@@ -9,6 +9,9 @@
 #include "../Component/InventoryComponent.h"
 #include "Item/BaseItem.h"
 #include "Components/CapsuleComponent.h"
+#include "Widget/Inventory/InventoryHUD.h"
+#include "Blueprint/UserWidget.h"
+#include "Item/BaseItem.h"
 
 DEFINE_LOG_CATEGORY(HeroLog);
 
@@ -18,13 +21,12 @@ AHero::AHero()
 	bUseControllerRotationYaw = false;
 	CreateCamera();
 	CreateCharacter();
-	InventoryComponent = Helper::CreateActorComponent<UInventoryComponent>(this, "Inventory Component");
+	InvenHUDClass = Helper::GetClass<UInventoryHUD>(L"/Game/Widget/Inventory/WB_Inventory");
 }
 
 void AHero::Tick(float DeltaSecond)
 {
 	Super::Tick(DeltaSecond);
-
 }
 
 void AHero::CreateCharacter()
@@ -60,6 +62,16 @@ void AHero::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 		AddControllerYawInput(LookAxisVector.X);
 	}
+}
+
+void AHero::DoInteraction()
+{
+	Interaction = true;
+}
+
+void AHero::EndInteraction()
+{
+	Interaction = false;
 }
 
 void AHero::WeaponStartUp()
@@ -99,10 +111,6 @@ void AHero::QuickSlotWheel()
 {
 }
 
-void AHero::GetItems(ABaseItem* item, int count)
-{
-}
-
 void AHero::BeginPlay()
 {
 	Super::BeginPlay();
@@ -119,7 +127,22 @@ void AHero::BeginPlay()
 		}
 	}
 
-	BodyCollision->OnComponentBeginOverlap.AddDynamic(this, &AHero::OnOverlap);
+	BodyCollision->OnComponentBeginOverlap.AddDynamic(this, &AHero::OnBeginOverlap);
+	BodyCollision->OnComponentEndOverlap.AddDynamic(this, &AHero::OnEndOverlap);
+
+	/* ========== Widget ========== */
+
+	// Inventory HUD
+	if (InvenHUDClass == nullptr)
+	{
+		UE_LOG(HeroLog, Warning, TEXT("InvenHUDClass Is NULL!!"));
+		return;
+	}
+
+	InvenHUD = CreateWidget<UInventoryHUD>(Cast<APlayerController>(GetController()), InvenHUDClass, "Inventory HUD");
+
+	// юс╫ц
+	//InvenHUD->AddToViewport();
 }
 
 void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -159,9 +182,10 @@ void AHero::MappingInputAsset(UEnhancedInputComponent* Comp)
 	MAPPING_TRIGGERED(Comp, InputAsset->MoveInput, AHero::Move);
 
 	// Actions
+	MAPPING_CLICK(Comp, InputAsset->Interaction, AHero::DoInteraction, AHero::EndInteraction);
+	MAPPING_CLICK(Comp, InputAsset->AvoidAction, AHero::DoAvoid, AHero::EndAvoid);
 	//MAPPING_CLICK(Comp, InputAsset->MainAction, AHero::DoMainAction, AHero::EndMainAction);
 	//MAPPING_CLICK(Comp, InputAsset->SubAction, AHero::DoSubAction, AHero::EndSubAction);
-	MAPPING_CLICK(Comp, InputAsset->AvoidAction, AHero::DoAvoid, AHero::EndAvoid);
 
 	//// Weapon
 	//MAPPING_TRIGGERED(Comp, InputAsset->WeaponStartUp, AHero::WeaponStartUp);
@@ -171,15 +195,27 @@ void AHero::MappingInputAsset(UEnhancedInputComponent* Comp)
 	//MAPPING_TRIGGERED(Comp, InputAsset->QuickSlotWheel, AHero::QuickSlotWheel);
 }
 
-void AHero::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AHero::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Check Item
 	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
 
-	UE_LOG(HeroLog, Log, TEXT("!!"));
-	UE_LOG(HeroLog, Log, TEXT("%s"), *OtherActor->GetName());
+	if (Item)
+	{
+		Item->TextOnOff();
+		Item->AccessPlayer = this;
+	}
+}
+
+void AHero::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// Check Item
+	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
+
 	if (Item)
 	{
 		UE_LOG(HeroLog, Log, TEXT("Overlap Item : %s"), Item->Name);
+		Item->TextOnOff();
+		Item->AccessPlayer = nullptr;
 	}
 }

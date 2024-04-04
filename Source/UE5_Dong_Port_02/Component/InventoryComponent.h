@@ -5,10 +5,7 @@
 #include "InventoryComponent.generated.h"
 
 class ABaseCharacter;
-class UInventoryHUD;
-/*
-	아이템 리스트를 받아서 화면에 출력하는 컴포넌트
-*/
+class ABaseItem;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE5_DONG_PORT_02_API UInventoryComponent : public UActorComponent
@@ -24,17 +21,16 @@ protected:
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	UFUNCTION()
+	bool CheckWeight(float itemweight);
+	void GetItems(ABaseItem* item, int count);
 
 protected:
+	TArray<ABaseItem*> Items;
+	float MaxInvenWeight = 100.0;
+	float CurrentWeight = 0;
 
 private:
 	ABaseCharacter* Owner;
-	APlayerController* OwnerController;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UInventoryHUD> InvenHUDClass;
-
-	UPROPERTY(VisibleDefaultsOnly)
-	class UInventoryHUD* InvenHUD;
 		
 };

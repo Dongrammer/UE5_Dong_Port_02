@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "InventoryHUD.generated.h"
-
 /**
  * 
  */
@@ -15,4 +14,5 @@ class UE5_DONG_PORT_02_API UInventoryHUD : public UUserWidget
 	GENERATED_BODY()
 	
 private:
+
 };

@@ -4,6 +4,8 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class ABaseItem;
+
 UCLASS()
 class UE5_DONG_PORT_02_API ABaseCharacter : public ACharacter
 {

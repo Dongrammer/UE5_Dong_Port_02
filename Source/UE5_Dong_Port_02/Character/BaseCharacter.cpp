@@ -2,6 +2,7 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Item/BaseItem.h"
 #include "Helper.h"
 
 ABaseCharacter::ABaseCharacter()
@@ -22,10 +23,6 @@ void ABaseCharacter::BeginPlay()
 
 void ABaseCharacter::CreateCharacter()
 {
-	// Mesh Setting
-	GetMesh()->SetSkeletalMesh(Helper::GetAsset<USkeletalMesh>(L"/Game/Characters/Base/Mannequins/Meshes/SKM_Manny"));
-	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
-	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 }
 
 void ABaseCharacter::SetCharacterMovement()
@@ -56,4 +53,3 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
-

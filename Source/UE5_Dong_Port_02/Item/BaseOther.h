@@ -33,6 +33,8 @@ public:
 	UParticleSystem* EffectParticle;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
 	FString Description;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
+	float Weight = 0;
 };
 
 UCLASS()
