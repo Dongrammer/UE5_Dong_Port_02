@@ -20,7 +20,7 @@ class ABaseItem;
 class UInventoryHUD;
 
 /*
-	[Key Mapping Context], [InputAsset] Á÷Á¢ ÁöÁ¤ ÇÊ¿ä.
+	[Key Mapping Context], [InputAsset] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½.
 */
 UCLASS()
 class UE5_DONG_PORT_02_API AHero : public ABaseHuman

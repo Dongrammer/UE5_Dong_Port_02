@@ -4,13 +4,12 @@
 #include "Components/TextRenderComponent.h"
 #include "Character/BaseHuman.h"
 #include "Character/Hero.h"
-#include "ItemEnum.h"
 #include "Helper.h"
 
 DEFINE_LOG_CATEGORY(ItemLog);
 
 /* 
-	[Static Mesh], [ItemID], [Collision »çÀÌÁî], [Text À§Ä¡] Á÷Á¢ ÁöÁ¤,  
+	[Static Mesh], [ItemID], [Collision ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½], [Text ï¿½ï¿½Ä¡] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½,  
 */
 
 ABaseItem::ABaseItem()
@@ -35,6 +34,10 @@ void ABaseItem::BeginPlay()
 
 void ABaseItem::DataTableSetting()
 {
+	if (itemdata.ItemID == "")
+	{
+		UE_LOG(ItemLog, Warning, TEXT("%s : ItemID is NULL"), *this->GetName());
+	}
 }
 
 void ABaseItem::TextSetting()
@@ -59,12 +62,12 @@ void ABaseItem::Tick(float DeltaTime)
 			Text->SetRelativeRotation(Rotator);
 		}
 
-		if (AccessPlayer->Interaction)
+		if (AccessPlayer->bInteraction)
 		{
 			UE_LOG(ItemLog, Log, TEXT("!!!"));
 			if (AccessPlayer->CheckItemWeight(Weight))
 			{
-				AccessPlayer->GetItems(this, 1);
+				AccessPlayer->GetItems(this->itemdata, 1);
 				Destroy();
 			}
 

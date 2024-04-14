@@ -2,13 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "Character/BaseCharacter.h"
+#include "../Item/ItemData.h"
 #include "BaseHuman.generated.h"
 
 class UInventoryComponent;
-class ABaseItem;
-/**
- * 
- */
+
 UCLASS()
 class UE5_DONG_PORT_02_API ABaseHuman : public ABaseCharacter
 {
@@ -17,9 +15,9 @@ class UE5_DONG_PORT_02_API ABaseHuman : public ABaseCharacter
 public:
 	ABaseHuman();
 
-	bool Interaction = false;
+	bool bInteraction = false;
 	UFUNCTION()
-	virtual void GetItems(ABaseItem* item, int count);
+	virtual void GetItems(FItemData item, int count);
 	virtual bool CheckItemWeight(float itemweight);
 
 protected:

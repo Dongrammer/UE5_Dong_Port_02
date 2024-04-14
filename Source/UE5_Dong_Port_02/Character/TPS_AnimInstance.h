@@ -4,7 +4,7 @@
 #include "Animation/AnimInstance.h"
 #include "TPS_AnimInstance.generated.h"
 
-// Àü¹æ¼±¾ð
+// ï¿½ï¿½ï¿½æ¼±ï¿½ï¿½
 class ABaseCharacter;
 class UCharacterMovementComponent;
 
@@ -30,7 +30,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
 	bool bIsFalling;
 
-	// Áö±Ý ¿òÁ÷ÀÌ°í ÀÖ´ÂÁö ÆÇ´ÜÇÏ´Â º¯¼ö
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
 	bool bShouldMove;
 

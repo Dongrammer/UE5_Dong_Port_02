@@ -2,28 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ItemData.h"
 DECLARE_LOG_CATEGORY_EXTERN(ItemLog, Log, All);
 #include "BaseItem.generated.h"
 
-enum class EItemType : uint8;
-enum class ERarity : uint8;
 class ABaseHuman;
 class USphereComponent;
 class UTextRenderComponent;
-
-// Inventory에 들어갈 데이터
-USTRUCT(BlueprintType)
-struct FItemData
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"))
-	EItemType ItemType;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"))
-	FName ItemID = "";
-};
 
 UCLASS()
 class UE5_DONG_PORT_02_API ABaseItem : public AActor
@@ -65,6 +50,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ItemData")
 	FItemData itemdata;
 
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DataTable")
 	FName Name = "None";
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DataTable")

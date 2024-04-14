@@ -1,7 +1,6 @@
 #include "Character/BaseHuman.h"
 
 #include "Component/InventoryComponent.h"
-#include "Item/BaseItem.h"
 #include "Helper.h"
 
 ABaseHuman::ABaseHuman()
@@ -29,7 +28,7 @@ void ABaseHuman::SetCharacterMovement()
 	Super::SetCharacterMovement();
 }
 
-void ABaseHuman::GetItems(ABaseItem* item, int count)
+void ABaseHuman::GetItems(FItemData item, int count)
 {
 	InventoryComponent->GetItems(item, count);
 }
@@ -40,7 +39,7 @@ bool ABaseHuman::CheckItemWeight(float itemweight)
 		return true;
 	else
 	{
-		// ¹«°Ô¸¦ ÃÊ°úÇß½À´Ï´Ù Ãâ·Â
+		// ï¿½ï¿½ï¿½Ô¸ï¿½ ï¿½Ê°ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½
 		return false;
 	}
 }

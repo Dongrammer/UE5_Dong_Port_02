@@ -2,10 +2,27 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "../Item/ItemData.h"
 #include "InventoryComponent.generated.h"
 
-class ABaseCharacter;
+class ABaseHuman;
 class ABaseItem;
+class UInventoryHUD;
+
+USTRUCT(BlueprintType)
+struct FItem
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"))
+	FItemData ItemData;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0"))
+	int count = 0;
+
+};
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE5_DONG_PORT_02_API UInventoryComponent : public UActorComponent
@@ -23,14 +40,15 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	UFUNCTION()
 	bool CheckWeight(float itemweight);
-	void GetItems(ABaseItem* item, int count);
+	void GetItems(const FItemData itemdata, const int count);
 
 protected:
-	TArray<ABaseItem*> Items;
+	TArray<FItem> Items;
 	float MaxInvenWeight = 100.0;
 	float CurrentWeight = 0;
 
-private:
-	ABaseCharacter* Owner;
-		
+public:
+	ABaseHuman* Owner;
+	TObjectPtr<UInventoryHUD> InvenHUD;
+	
 };

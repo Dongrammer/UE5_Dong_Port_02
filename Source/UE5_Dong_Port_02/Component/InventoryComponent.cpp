@@ -3,7 +3,7 @@
 #include "Character/BaseCharacter.h"
 #include "../Public/Blueprint/UserWidget.h"
 #include "../Widget/Inventory/InventoryHUD.h"
-#include "Item/BaseItem.h"
+#include "Character/Hero.h"
 
 UInventoryComponent::UInventoryComponent()
 {
@@ -16,7 +16,7 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Owner = Cast<ABaseCharacter>(GetOwner());
+	Owner = Cast<ABaseHuman>(GetOwner());
 }
 
 void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -31,7 +31,7 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 }
 
-// true = È¹µæÇÒ ¼ö ÀÖ´Â »óÅÂ
+// true = È¹ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½
 bool UInventoryComponent::CheckWeight(float itemweight)
 {
 	if (MaxInvenWeight < CurrentWeight + (itemweight))
@@ -40,11 +40,34 @@ bool UInventoryComponent::CheckWeight(float itemweight)
 		return true;
 }
 
-void UInventoryComponent::GetItems(ABaseItem* item, int count)
+void UInventoryComponent::GetItems(const FItemData itemdata, const int count)
 {
-	for (int i = 0; i < count; i++)
+	bool bfound = false;
+
+	for (int i = 0; i < Items.Num(); i++)
 	{
-		Items.Add(item);
+		if (Items[i].ItemData.ItemType == itemdata.ItemType && Items[i].ItemData.ItemID == itemdata.ItemID)
+		{
+			// ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+
+
+			// ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+			Items[i].count += count;
+			bfound = true;
+
+			if (InvenHUD) InvenHUD->CountUpItem(i, count);
+			break;
+		}
+	}
+
+	if (!bfound)
+	{
+		FItem newitem;
+		newitem.ItemData = itemdata;
+		newitem.count = count;
+		Items.Add(newitem);
+
+		if (InvenHUD) InvenHUD->AddItem(itemdata, count);
 	}
 }
 

@@ -36,9 +36,9 @@ void ABaseCharacter::SetCharacterMovement()
 	Comp->AirControl = 0.35f;
 	Comp->MaxWalkSpeed = 600.0f;
 
-	// °È´Ù°¡ ¸ØÃèÀ» ¶§ °¨¼Ó
+	// ï¿½È´Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	Comp->BrakingDecelerationWalking = 2000.0f;
-	// ¶³¾îÁú ¶§ °¨¼Ó
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	Comp->BrakingDecelerationFalling = 1500.0f;
 }
 

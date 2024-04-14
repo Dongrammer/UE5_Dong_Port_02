@@ -42,8 +42,8 @@ void AHero::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
-		const FRotator Rotation = Controller->GetControlRotation();	// Ä«¸Þ¶ó ¿òÁ÷ÀÓ ¿ë ¸ðµç Ãà È¸Àü°ª
-		const FRotator YawRotation = FRotator(0, Rotation.Yaw, 0);	// Ä³¸¯ÅÍ ¿òÁ÷ÀÓ ¿ë YÃà È¸Àü°ª
+		const FRotator Rotation = Controller->GetControlRotation();	// Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½
+		const FRotator YawRotation = FRotator(0, Rotation.Yaw, 0);	// Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Yï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½
 
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
@@ -66,12 +66,12 @@ void AHero::Look(const FInputActionValue& Value)
 
 void AHero::DoInteraction()
 {
-	Interaction = true;
+	bInteraction = true;
 }
 
 void AHero::EndInteraction()
 {
-	Interaction = false;
+	bInteraction = false;
 }
 
 void AHero::WeaponStartUp()
@@ -140,9 +140,10 @@ void AHero::BeginPlay()
 	}
 
 	InvenHUD = CreateWidget<UInventoryHUD>(Cast<APlayerController>(GetController()), InvenHUDClass, "Inventory HUD");
+	InventoryComponent->InvenHUD = InvenHUD;
 
-	// ÀÓ½Ã
-	//InvenHUD->AddToViewport();
+	// ï¿½Ó½ï¿½
+	InvenHUD->AddToViewport();
 }
 
 void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -214,7 +215,7 @@ void AHero::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other
 
 	if (Item)
 	{
-		UE_LOG(HeroLog, Log, TEXT("Overlap Item : %s"), Item->Name);
+		UE_LOG(HeroLog, Log, TEXT("EndOverlap Item : %s"), Item->Name);
 		Item->TextOnOff();
 		Item->AccessPlayer = nullptr;
 	}

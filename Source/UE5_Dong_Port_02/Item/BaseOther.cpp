@@ -1,23 +1,23 @@
 #include "Item/BaseOther.h"
 
-#include "ItemEnum.h"
 #include "Helper.h"
 
 ABaseOther::ABaseOther()
 {
 	itemdata.ItemType = EItemType::E_Other;
-	DataTable = Helper::GetAsset<UDataTable>(L"/Game/Items/Others/DT_Item_Other");
+	DataTable = Helper::GetAsset<UDataTable>(L"/Game/Items/DT_Item_Others");
 }
 
 void ABaseOther::BeginPlay()
 {
 	Super::BeginPlay();
 	DataTableSetting();
-	
 }
 
 void ABaseOther::DataTableSetting()
 {
+	Super::DataTableSetting();
+
 	if (itemdata.ItemID == "")
 	{
 		UE_LOG(ItemLog, Warning, TEXT("ItemID Is NULL"));
