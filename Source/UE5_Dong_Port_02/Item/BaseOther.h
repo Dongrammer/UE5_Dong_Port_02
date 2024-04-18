@@ -14,9 +14,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void DataTableSetting() override;
 
-private:
+public:
 	bool bCanUse = false;
-	int MaxCount = 1;
 
 	UPROPERTY(VisibleAnywhere)
 	TMap<EOtherEffect, float> Effect;

@@ -34,6 +34,9 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
 	bool bShouldMove;
 
+	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
+	bool bWeaponHolding;
+
 private:
 	ABaseCharacter* Owner;
 

@@ -4,79 +4,98 @@
 #include "InventorySlot.h"
 #include "InventorySlotObject.h"
 #include "Helper.h"
+#include "Components/TextBlock.h"
+#include "Components/Button.h"
+#include "Components/SizeBox.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 
 
 void UInventoryHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	OtherDataTable = Helper::GetAssetDynamic<UDataTable>(L"/Game/Items/DT_Item_Others");
-	EquipmentDataTable = Helper::GetAssetDynamic<UDataTable>(L"/Game/Items/DT_Item_Others");
-	WeaponDataTable = Helper::GetAssetDynamic<UDataTable>(L"/Game/Items/DT_Item_Others");
+	PlayerController = GetOwningPlayer();
 
+	// Button Bind Function
+	FScriptDelegate Pressed, Released;
+	Pressed.BindUFunction(this, "HeadPressed");
+	Released.BindUFunction(this, "HeadReleased");
+	Button_Head->OnPressed.Add(Pressed);
+	Button_Head->OnReleased.Add(Released);
+
+	FScriptDelegate ExitPressed;
+	ExitPressed.BindUFunction(this, "ExitPressed");
+	Button_Exit->OnPressed.Add(ExitPressed);
 }
 
-void UInventoryHUD::AddItem(const FItemData additem, const int count)
+void UInventoryHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	if (additem.ItemID == "")
-	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryHUD : ItemID is NULL"));
-		return;
-	}
+	Super::NativeTick(MyGeometry, InDeltaTime);
 
+	if (ShouldMove)
+	{
+		float MouseX, MouseY;
+		MouseX = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).X;
+		MouseY = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).Y;
+		MovePosition();
+	}
+}
+
+void UInventoryHUD::HeadPressed()
+{
+	ShouldMove = true;
+
+	//temp = FVector2D(0, 0);
+	FVector2D MouseXY = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
+	temp = MouseXY - SB_Body->GetRenderTransform().Translation;
+}
+
+void UInventoryHUD::HeadReleased()
+{
+	ShouldMove = false;
+}
+
+void UInventoryHUD::MovePosition()
+{
+	FVector2D MouseXY = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
+
+	FWidgetTransform transform;
+	transform.Translation = MouseXY - temp;
+	SB_Body->SetRenderTransform(transform);
+}
+
+void UInventoryHUD::ExitPressed()
+{
+	if (DExit.IsBound()) DExit.Execute();
+}
+
+void UInventoryHUD::AddItem(const FItemDataTableBase additem, const int count)
+{
+	// Create Data Object
 	int32 C = ItemList->GetNumItems();
 	FString SlotNameFString = FString::Printf(TEXT("Slot_%d"), C);
 	FName SlotNameFName(*SlotNameFString);
 	TObjectPtr<UInventorySlotObject> ItemObject = NewObject<UInventorySlotObject>(this, UInventorySlotObject::StaticClass(), SlotNameFName);
-
-	// 데이터 테이블에서 데이터를 읽어서 초기화.
-	UDataTable* tempTable = nullptr;
-	FName RowName = additem.ItemID;
-	switch (additem.ItemType)
-	{
-	case EItemType::E_Equipment:
-	{
-		tempTable = EquipmentDataTable;
-		break;
-	}
-	case EItemType::E_Weapon:
-	{
-		tempTable = WeaponDataTable;
-		break;
-	}
-	case EItemType::E_Other:
-	{
-		tempTable = OtherDataTable;
-		break;
-	}
-	default:
-	{
-		UE_LOG(LogTemp, Log, TEXT("InventoryHUD : Can't read ItemType"));
-		break;
-	}
-	}
-
-	if (!tempTable)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable : tempTable is NULL"));
-		return;
-	}
-
-	UE_LOG(LogTemp, Log, TEXT("%s"), *RowName.ToString());
-	//UE_LOG(LogTemp, Log, TEXT("%s"), *tempTable->GetFName().ToString());
-	FItemDataTableBase* RowInfo = tempTable->FindRow<FItemDataTableBase>(RowName, "Row Name Error");
-	if (!RowInfo)
-	{
-		UE_LOG(LogTemp, Log, TEXT("RowInfo is NULL"));
-		return;
-	}
-	ItemObject->ItemData.Name = RowInfo->Name;
-	ItemObject->ItemData.Rarity = RowInfo->Rarity;
-	ItemObject->ItemData.Texture = RowInfo->Texture;
+	
+	ItemObject->ItemData.Name = additem.Name;
+	ItemObject->ItemData.Rarity = additem.Rarity;
+	ItemObject->ItemData.Texture = additem.Texture;
+	ItemObject->ItemData.Weight = additem.Weight;
+	ItemObject->ItemCount = count;
 
 	ItemList->AddItem(ItemObject);
 }
 
 void UInventoryHUD::CountUpItem(const int index, const int count)
 {
+	UInventorySlotObject* IndexObject = Cast<UInventorySlotObject>(ItemList->GetItemAt(index));
+	if (IndexObject)
+	{
+		IndexObject->CountUp(count);
+	}
+}
+
+void UInventoryHUD::SetTextWeight(float max, float current)
+{
+	Text_Weight->SetText(FText::FromString(FString::Printf(TEXT("( %0.2f / %0.2f )"), current, max)));
 }

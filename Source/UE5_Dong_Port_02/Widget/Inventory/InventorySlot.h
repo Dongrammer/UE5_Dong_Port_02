@@ -23,18 +23,17 @@ public:
 	TObjectPtr<UImage> ItemImage;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ItemName;
+	TObjectPtr<UTextBlock> Text_ItemName;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ItemWeight;
+	TObjectPtr<UTextBlock> Text_ItemWeight;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ItemMaxCount;
-
-protected:
-	UPROPERTY()
-	int MaxCount = 1;
+	TObjectPtr<UTextBlock> Text_ItemCount;
 
 public:
 	void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	
+	UFUNCTION()
+	void SetCountText(int count);
 };

@@ -62,7 +62,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
 	UStaticMesh* StaticMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
-	int MaxCount = 1;
+	float Weight = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
+	FString Description;
 };
 
 USTRUCT(BlueprintType)
@@ -73,10 +75,6 @@ struct FEquipmentItem : public FItemDataTableBase
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
 	UParticleSystem* Particle;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
-	FString Description;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
-	float Weight = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -93,8 +91,4 @@ public:
 	float Duration;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
 	UParticleSystem* EffectParticle;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
-	FString Description;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
-	float Weight = 0;
 };

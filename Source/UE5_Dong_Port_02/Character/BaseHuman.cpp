@@ -1,11 +1,14 @@
 #include "Character/BaseHuman.h"
 
 #include "Component/InventoryComponent.h"
+#include "Component/WeaponComponent.h"
+#include "Hero.h"
 #include "Helper.h"
 
 ABaseHuman::ABaseHuman()
 {
 	InventoryComponent = Helper::CreateActorComponent<UInventoryComponent>(this, "Inventory Component");
+	WeaponComponent = Helper::CreateActorComponent<UWeaponComponent>(this, "Weapon Component");
 }
 
 void ABaseHuman::BeginPlay()

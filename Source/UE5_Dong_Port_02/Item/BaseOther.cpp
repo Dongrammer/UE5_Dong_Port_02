@@ -1,11 +1,12 @@
 #include "Item/BaseOther.h"
-
+#include "ItemData.h"
 #include "Helper.h"
 
 ABaseOther::ABaseOther()
 {
 	itemdata.ItemType = EItemType::E_Other;
-	DataTable = Helper::GetAsset<UDataTable>(L"/Game/Items/DT_Item_Others");
+	DataTable = Helper::GetAsset<UDataTable>(L"/Game/Items/DT_Item_Other");
+
 }
 
 void ABaseOther::BeginPlay()
@@ -29,9 +30,9 @@ void ABaseOther::DataTableSetting()
 	Texture = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->Texture;
 	ItemSM = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->StaticMesh;
 	bCanUse = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->bCanUse;
-	MaxCount = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->MaxCount;
 	Effect = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->Effect;
 	Duration = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->Duration;
 	EffectParticle = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->EffectParticle;
 	Description = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->Description;
+	Weight = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->Weight;
 }

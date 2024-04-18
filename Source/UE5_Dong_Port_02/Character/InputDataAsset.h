@@ -27,4 +27,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
 	UInputAction* AvoidAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
+	UInputAction* MainAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
+	UInputAction* EquipWeapon;
+
+	/* ==================== HUD ==================== */
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
+	UInputAction* InventoryOn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
+	UInputAction* TechniqueOn;
 };

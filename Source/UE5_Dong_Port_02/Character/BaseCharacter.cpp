@@ -36,9 +36,9 @@ void ABaseCharacter::SetCharacterMovement()
 	Comp->AirControl = 0.35f;
 	Comp->MaxWalkSpeed = 600.0f;
 
-	// �ȴٰ� ������ �� ����
+	// 멈췄을 때 감속
 	Comp->BrakingDecelerationWalking = 2000.0f;
-	// ������ �� ����
+	// 떨어질 때 감속
 	Comp->BrakingDecelerationFalling = 1500.0f;
 }
 

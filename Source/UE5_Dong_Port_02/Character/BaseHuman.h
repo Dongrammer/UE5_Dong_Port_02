@@ -6,6 +6,8 @@
 #include "BaseHuman.generated.h"
 
 class UInventoryComponent;
+class UWeaponComponent;
+class AHero;
 
 UCLASS()
 class UE5_DONG_PORT_02_API ABaseHuman : public ABaseCharacter
@@ -28,4 +30,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UInventoryComponent> InventoryComponent;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWeaponComponent> WeaponComponent;
+
+protected:
+	AHero* hero;
+
+public:
+	FORCEINLINE AHero* GetHero() { return hero; }
 };

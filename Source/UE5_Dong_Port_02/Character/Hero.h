@@ -15,9 +15,13 @@ class UInputMappingContext;
 class UInputDataAsset;
 struct FInputActionValue;
 // Inventory
-class ABaseItem;
 // Widget
 class UInventoryHUD;
+class UWidget;
+// Technique
+class UTechniqueComponent;
+// Action
+class UActionComponent;
 
 /*
 	[Key Mapping Context], [InputAsset] ���� ���� �ʿ�.
@@ -26,6 +30,12 @@ UCLASS()
 class UE5_DONG_PORT_02_API AHero : public ABaseHuman
 {
 	GENERATED_BODY()
+
+private:
+	TObjectPtr<APlayerController> PlayerController;
+
+public:
+	FORCEINLINE APlayerController* GetPlayerController() { return PlayerController; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAcces = "true"))
@@ -65,6 +75,9 @@ public:
 	void InventoryOn();
 	void QuickSlotWheel();
 
+	void TechniqueOn();
+
+	void EquipWeapon();
 
 private:
 
@@ -82,9 +95,36 @@ protected:
 	void CreateCamera();
 	void MappingInputAsset(UEnhancedInputComponent* Comp);
 
+public:
+	// Setting Mouse Visibility, InputMode
+	void SetMouseState(bool visibility, EInputModeType inputmode, UWidget* widget = nullptr);
+
 private:
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	/* ==================== Technique ==================== */
+private:
+	UPROPERTY(VisibleAnywhere)
+	UTechniqueComponent* TechniqueComponent;
+
+	/* ==================== Action ==================== */
+private:
+	UPROPERTY(VisibleAnywhere)
+	UActionComponent* ActionComponent;
+
+	bool bCanAttack = true;
+
+public:
+	FORCEINLINE UActionComponent* GetActionComponent() { return ActionComponent; }
+};
+
+UENUM()
+enum class EInputModeType : uint8
+{
+	E_GameOnly,
+	E_GameAndUIOnly,
+	E_UIOnly
 };

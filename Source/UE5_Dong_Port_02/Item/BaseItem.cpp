@@ -64,7 +64,6 @@ void ABaseItem::Tick(float DeltaTime)
 
 		if (AccessPlayer->bInteraction)
 		{
-			UE_LOG(ItemLog, Log, TEXT("!!!"));
 			if (AccessPlayer->CheckItemWeight(Weight))
 			{
 				AccessPlayer->GetItems(this->itemdata, 1);

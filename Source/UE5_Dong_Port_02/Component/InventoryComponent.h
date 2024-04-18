@@ -8,6 +8,7 @@
 class ABaseHuman;
 class ABaseItem;
 class UInventoryHUD;
+struct FItemDataTableBase;
 
 USTRUCT(BlueprintType)
 struct FItem
@@ -20,7 +21,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0"))
 	int count = 0;
-
 };
 
 
@@ -41,14 +41,35 @@ public:
 	UFUNCTION()
 	bool CheckWeight(float itemweight);
 	void GetItems(const FItemData itemdata, const int count);
+	UFUNCTION()
+	void ToggleInventory();
 
 protected:
+	UPROPERTY(VisibleAnywhere)
 	TArray<FItem> Items;
+	UPROPERTY(VisibleAnywhere, Category = "Weight")
 	float MaxInvenWeight = 100.0;
+	UPROPERTY(VisibleAnywhere, Category = "Weight")
 	float CurrentWeight = 0;
 
 public:
 	ABaseHuman* Owner;
 	TObjectPtr<UInventoryHUD> InvenHUD;
-	
+	void InvenHUDSetting();
+
+public:
+	UPROPERTY(VisibleAnywhere, Category = "DataTable")
+	UDataTable* OtherDataTable;
+	UPROPERTY(VisibleAnywhere, Category = "DataTable")
+	UDataTable* EquipmentDataTable;
+	UPROPERTY(VisibleAnywhere, Category = "DataTable")
+	UDataTable* WeaponDataTable;
+
+
+	FItemDataTableBase RowData;
+
+	UFUNCTION()
+	void ItemDataTableSetting(FItemData itemdata);
+	UFUNCTION()
+	void RowDataInit();
 };

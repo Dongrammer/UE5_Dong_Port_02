@@ -27,6 +27,7 @@ void UTPS_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Rotation = FRotator(0, Owner->GetControlRotation().Yaw, 0);
 	Direction = CalculateDirection(Velocity, Rotation);
 
+	bWeaponHolding = Owner->bWeaponHolding;
 	// �����̰� �ִ��� �Ǵ�
 	bShouldMove = /*!FVector(0,0,0).Equals(Movement->GetCurrentAcceleration(), 0.5f) &&*/ Speed > 3.0f;
 }
