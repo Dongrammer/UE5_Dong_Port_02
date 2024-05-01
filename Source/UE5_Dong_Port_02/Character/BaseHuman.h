@@ -21,6 +21,8 @@ public:
 	UFUNCTION()
 	virtual void GetItems(FItemData item, int count);
 	virtual bool CheckItemWeight(float itemweight);
+	virtual TObjectPtr<UWeaponComponent> GetWeaponComponent() { return WeaponComponent; }
+	virtual bool GetWeaponHolding();
 
 protected:
 	virtual void BeginPlay() override;
@@ -28,9 +30,9 @@ protected:
 	virtual void CreateCharacter() override;
 	virtual void SetCharacterMovement() override;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UInventoryComponent> InventoryComponent;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWeaponComponent> WeaponComponent;
 
 protected:

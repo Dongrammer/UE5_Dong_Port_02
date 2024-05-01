@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+
+#include "../Weapon/WeaponData.h"
+
 #include "WeaponComponent.generated.h"
 
 /*
@@ -22,6 +25,12 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY(BlueprintReadOnly)
 	bool bHolding = false;
-		
+	
+	FORCEINLINE EWeaponType GetCurrentWeaponType() { return CurrentWeaponType; }
+	FORCEINLINE bool GetWeaponHolding() { return bHolding; }
+
+private:
+	EWeaponType CurrentWeaponType = EWeaponType::E_Gauntlet;
 };

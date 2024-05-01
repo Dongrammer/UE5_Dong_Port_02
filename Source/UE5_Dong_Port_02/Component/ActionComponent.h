@@ -4,9 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Action/ActionData.h"
+#include "../Weapon/WeaponData.h"
+
 #include "ActionComponent.generated.h"
 
-class UBaseAction;
+class AHero;
+class ABaseAction;
+class UActionDataAsset;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE5_DONG_PORT_02_API UActionComponent : public UActorComponent
@@ -14,19 +19,20 @@ class UE5_DONG_PORT_02_API UActionComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UActionComponent();
-
+	void SetOwner(AHero* hero);
 	
+private:
+	AHero* Owner;
+
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void SettingActions(TArray<TObjectPtr<UBaseAction>> actions);
+	void SettingActions(TArray<TSubclassOf<ABaseAction>> actions);
+	void CreateActions();
 
 	UFUNCTION()
 	void DoAction();
@@ -34,5 +40,13 @@ public:
 	void EndAction();
 
 private:
-	TArray<TObjectPtr<UBaseAction>> SelectActions;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
+	TArray<TObjectPtr<ABaseAction>> SelectActions;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
+	TObjectPtr<UActionDataAsset> ActionDataAsset;
+
+	UPROPERTY()
+	TMap<EGauntletAction, TObjectPtr<ABaseAction>> GauntletActionPtr;
+	UPROPERTY()
+	TMap<ESwordAction, TObjectPtr<ABaseAction>> SwordActionPtr;
 };

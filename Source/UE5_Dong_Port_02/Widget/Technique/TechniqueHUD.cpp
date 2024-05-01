@@ -7,26 +7,14 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 
+#include "Widget/Technique/TechniqueNode.h"
+
 void UTechniqueHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	FScriptDelegate NextHUDPressed, PrevHUDPressed;
-	NextHUDPressed.BindUFunction(this, "MoveToNextHUD");
-	PrevHUDPressed.BindUFunction(this, "MoveToPrevHUD");
-	Bt_NextHUD->OnPressed.Add(NextHUDPressed);
-	Bt_PrevHUD->OnPressed.Add(PrevHUDPressed);
 }
 
-void UTechniqueHUD::MoveToNextHUD()
+void UTechniqueHUD::SettingTP(uint8 currentTP, uint8 MaxTP)
 {
-	UE_LOG(LogTemp, Log, TEXT("MoveToNextHUD Call"));
-	this->SetVisibility(ESlateVisibility::Hidden);
-	NextHUD->SetVisibility(ESlateVisibility::Visible);
-}
-
-void UTechniqueHUD::MoveToPrevHUD()
-{
-	this->SetVisibility(ESlateVisibility::Hidden);
-	PrevHUD->SetVisibility(ESlateVisibility::Visible);
+	TB_TP->SetText(FText::FromString(FString::Printf(TEXT("[ %d / %d ]"), currentTP, MaxTP)));
 }

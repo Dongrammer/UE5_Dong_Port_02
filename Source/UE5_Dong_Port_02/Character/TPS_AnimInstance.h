@@ -2,11 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+
+#include "../Weapon/WeaponData.h"
+
 #include "TPS_AnimInstance.generated.h"
 
 // ���漱��
-class ABaseCharacter;
+class ABaseHuman;
 class UCharacterMovementComponent;
+
 
 UCLASS()
 class UE5_DONG_PORT_02_API UTPS_AnimInstance : public UAnimInstance
@@ -30,15 +34,18 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
 	bool bIsFalling;
 
-	// ���� �����̰� �ִ��� �Ǵ��ϴ� ����
+	// 움직이고 있는지 판단하는 변수
 	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
 	bool bShouldMove;
 
 	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
 	bool bWeaponHolding;
 
+	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
+	EWeaponType WeaponType;
+
 private:
-	ABaseCharacter* Owner;
+	ABaseHuman* Owner;
 
 	UCharacterMovementComponent* Movement;
 	FRotator Rotation;

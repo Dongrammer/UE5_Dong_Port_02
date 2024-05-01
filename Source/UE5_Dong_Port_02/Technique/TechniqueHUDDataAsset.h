@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+
+#include "../Weapon/WeaponData.h"
+
 #include "TechniqueHUDDataAsset.generated.h"
 
 class UTechniqueHUD;
@@ -13,8 +16,5 @@ class UE5_DONG_PORT_02_API UTechniqueHUDDataAsset : public UDataAsset
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD")
-	TSubclassOf<UTechniqueHUD> GauntletHUD;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD")
-	TSubclassOf<UTechniqueHUD> SwordHUD;
+	TMap<EWeaponType, TSubclassOf<UTechniqueHUD>> HUDs;
 };

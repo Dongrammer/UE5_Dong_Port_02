@@ -46,3 +46,8 @@ bool ABaseHuman::CheckItemWeight(float itemweight)
 		return false;
 	}
 }
+
+bool ABaseHuman::GetWeaponHolding()
+{
+	return WeaponComponent->GetWeaponHolding();
+}

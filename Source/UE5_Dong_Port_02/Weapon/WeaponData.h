@@ -16,5 +16,6 @@ enum class EWeaponType : uint8
 {
 	E_None UMETA(Hidden),
 	E_Gauntlet UMETA(DisplayName = "Gauntlet"),
-	E_Sword UMETA(DisplayName = "Sword")
+	E_Sword UMETA(DisplayName = "Sword"),
+	E_Max UMETA(Hidden)
 };

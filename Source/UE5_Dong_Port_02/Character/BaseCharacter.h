@@ -14,7 +14,6 @@ class UE5_DONG_PORT_02_API ABaseCharacter : public ACharacter
 public:
 	ABaseCharacter();
 
-	bool bWeaponHolding = false;
 protected:
 	virtual void BeginPlay() override;
 

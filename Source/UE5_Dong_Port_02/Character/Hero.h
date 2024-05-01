@@ -24,7 +24,7 @@ class UTechniqueComponent;
 class UActionComponent;
 
 /*
-	[Key Mapping Context], [InputAsset] ���� ���� �ʿ�.
+	[Key Mapping Context], [InputAsset] Direct Specification required.
 */
 UCLASS()
 class UE5_DONG_PORT_02_API AHero : public ABaseHuman

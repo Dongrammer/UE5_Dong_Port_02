@@ -31,6 +31,7 @@ AHero::AHero()
 	hero = this;
 	TechniqueComponent = Helper::CreateActorComponent<UTechniqueComponent>(this, "Technique Component");
 	ActionComponent = Helper::CreateActorComponent<UActionComponent>(this, "Action Component");
+	ActionComponent->SetOwner(this);
 }
 
 void AHero::Tick(float DeltaSecond)
@@ -89,7 +90,7 @@ void AHero::WeaponStartUp()
 
 void AHero::DoMainAction()
 {
-	if (WeaponComponent->bHolding && bCanAttack)
+	if (WeaponComponent->GetWeaponHolding() && bCanAttack)
 	{
 		ActionComponent->DoAction();
 	}
@@ -132,7 +133,11 @@ void AHero::TechniqueOn()
 
 void AHero::EquipWeapon()
 {
-	bWeaponHolding = true;
+	UE_LOG(LogTemp, Log, TEXT("EquipWeapon Call"));
+	if (!WeaponComponent) return;
+
+	if (WeaponComponent->bHolding) WeaponComponent->bHolding = false;
+	else if (!WeaponComponent->bHolding) WeaponComponent->bHolding = true;
 }
 
 void AHero::BeginPlay()
