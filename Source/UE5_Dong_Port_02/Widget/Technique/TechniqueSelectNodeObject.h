@@ -2,12 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+
+#include "../../Action/ActionData.h"
+
 #include "TechniqueSelectNodeObject.generated.h"
 
-class ABaseAction;
+struct FActionData;
 class UImage;
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FSelectNode, TSubclassOf<ABaseAction>, UImage*);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FSelectNode, FActionData, UImage*);
 
 UCLASS(Blueprintable)
 class UE5_DONG_PORT_02_API UTechniqueSelectNodeObject : public UObject
@@ -16,7 +19,7 @@ class UE5_DONG_PORT_02_API UTechniqueSelectNodeObject : public UObject
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<ABaseAction> action;
+	FActionData action;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UImage> image;

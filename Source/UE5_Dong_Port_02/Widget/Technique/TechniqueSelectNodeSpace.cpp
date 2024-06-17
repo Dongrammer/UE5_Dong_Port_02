@@ -8,7 +8,6 @@
 
 #include "Widget/Technique/TechniqueSelectNodeObject.h"
 #include "Widget/Technique/TechniqueNode.h"
-#include "Action/BaseAction.h"
 
 void UTechniqueSelectNodeSpace::NativeConstruct()
 {
@@ -32,13 +31,33 @@ void UTechniqueSelectNodeSpace::AddNode(UTechniqueNode* node)
 		return;
 	}
 
-	if (!node->GetAction())
+	if (node->GetAction().ActionType == EActionType::E_None)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TechniqueNodeSpace : Add Node Action Is NULL !!"));
+		UE_LOG(LogTemp, Warning, TEXT("TechniqueNodeSpace : Added Node Action Is NULL !!"));
 		return;
 	}
 
-	FName NodeFName = node->GetAction()->GetFName();
+	// Set FName
+	FName NodeFName;
+	switch (node->GetAction().ActionType)
+	{
+	case EActionType::E_Gauntlet:
+	{
+		NodeFName = FName(*FString::Printf(TEXT("Gauntlet Action - %d"), node->GetAction().ActionNumber));
+		break;
+	}
+	case EActionType::E_Sword:
+	{
+		NodeFName = FName(*FString::Printf(TEXT("Sword Action - %d"), node->GetAction().ActionNumber));
+		break;
+	}
+	default:
+	{
+		NodeFName = "NULL";
+		break;
+	}
+	}
+
 	TObjectPtr<UTechniqueSelectNodeObject> NodeObject = NewObject<UTechniqueSelectNodeObject>(this, UTechniqueSelectNodeObject::StaticClass(), NodeFName);
 	
 	NodeObject->action = node->GetAction();
@@ -53,7 +72,7 @@ void UTechniqueSelectNodeSpace::MainButtonClicked()
 	ActionList->SetVisibility(ESlateVisibility::Visible);
 }
 
-void UTechniqueSelectNodeSpace::SelectNodeDelegate(TSubclassOf<ABaseAction> action, UImage* image)
+void UTechniqueSelectNodeSpace::SelectNodeDelegate(FActionData action, UImage* image)
 {
 	FSlateBrush brush = image->GetBrush();
 	IM_Main->SetBrush(brush);

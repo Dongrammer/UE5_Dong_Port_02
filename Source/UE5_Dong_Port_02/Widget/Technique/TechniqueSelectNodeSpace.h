@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+
+#include "../../Action/ActionData.h"
+
 #include "TechniqueSelectNodeSpace.generated.h"
 
 class USizeBox;
@@ -12,7 +15,7 @@ class UButton;
 
 class UTechniqueNode;
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FSelectAction, TSubclassOf<ABaseAction>, uint8);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FSelectAction, FActionData, uint8);
 
 UCLASS()
 class UE5_DONG_PORT_02_API UTechniqueSelectNodeSpace : public UUserWidget
@@ -46,7 +49,7 @@ public:
 	void MainButtonClicked();
 
 	UFUNCTION()
-	void SelectNodeDelegate(TSubclassOf<ABaseAction> action, UImage* image);
+	void SelectNodeDelegate(FActionData action, UImage* image);
 
 	TObjectPtr<UListView> GetActionList() { return ActionList; }
 

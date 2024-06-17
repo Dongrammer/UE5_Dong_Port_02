@@ -10,12 +10,16 @@
 #include "../Component/TechniqueComponent.h"
 #include "../Component/ActionComponent.h"
 #include "../Component/WeaponComponent.h"
+#include "../Component/SoulComponent.h"
+#include "../Component/EquipComponent.h"
 #include "Item/BaseItem.h"
 #include "Components/CapsuleComponent.h"
+#include "Widget/MainHUD.h"
+// MainHUD만 포함하고 다른 HUD는 MainHUD의 헤더에 포함시킬지 고민.
 #include "Widget/Inventory/InventoryHUD.h"
+#include "Widget/Equipment/EquipmentHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Item/BaseItem.h"
-#include "Blueprint/UserWidget.h"
 
 DEFINE_LOG_CATEGORY(HeroLog);
 
@@ -29,9 +33,10 @@ AHero::AHero()
 	CreateCharacter();
 	InvenHUDClass = Helper::GetClass<UInventoryHUD>(L"/Game/Widget/Inventory/WB_Inventory");
 	hero = this;
-	TechniqueComponent = Helper::CreateActorComponent<UTechniqueComponent>(this, "Technique Component");
 	ActionComponent = Helper::CreateActorComponent<UActionComponent>(this, "Action Component");
-	ActionComponent->SetOwner(this);
+	TechniqueComponent = Helper::CreateActorComponent<UTechniqueComponent>(this, "Technique Component");
+	// ActionComponent가 TechniqueComponent보다 위에 있어야함. ActionComponent에 CreateAction이 먼저 실행되어야 하기 때문.
+	SoulComponent = Helper::CreateActorComponent<USoulComponent>(this, "Soul Component");
 }
 
 void AHero::Tick(float DeltaSecond)
@@ -49,18 +54,28 @@ void AHero::CreateCharacter()
 void AHero::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
+	
+	// Set InputDirection
+	if (MovementVector.Y > 0) inputDirection = EInputDirection::E_Forward;
+	else if (MovementVector.Y < 0) inputDirection = EInputDirection::E_Back;
+	else if (MovementVector.X > 0) inputDirection = EInputDirection::E_Right;
+	else if (MovementVector.X < 0) inputDirection = EInputDirection::E_Left;
+	else inputDirection = EInputDirection::E_Forward;
 
-	if (Controller != nullptr)
-	{
-		const FRotator Rotation = Controller->GetControlRotation();	// ī�޶� ������ �� ��� �� ȸ����
-		const FRotator YawRotation = FRotator(0, Rotation.Yaw, 0);	// ĳ���� ������ �� Y�� ȸ����
+	// Check CanMove
+	if (bCanMove == false) return;
+	if (!Controller) return;
 
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	// Movement
 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
-	}
+	const FRotator Rotation = Controller->GetControlRotation();	// ī�޶� ������ �� ��� �� ȸ����
+	const FRotator YawRotation = FRotator(0, Rotation.Yaw, 0);	// ĳ���� ������ �� Y�� ȸ����
+
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	AddMovementInput(RightDirection, MovementVector.X);
 }
 
 void AHero::Look(const FInputActionValue& Value)
@@ -90,6 +105,8 @@ void AHero::WeaponStartUp()
 
 void AHero::DoMainAction()
 {
+	bLeftClicked = true;
+
 	if (WeaponComponent->GetWeaponHolding() && bCanAttack)
 	{
 		ActionComponent->DoAction();
@@ -98,6 +115,12 @@ void AHero::DoMainAction()
 
 void AHero::EndMainAction()
 {
+	bLeftClicked = false;
+
+	if (WeaponComponent->GetWeaponHolding())
+	{
+		ActionComponent->EndAction();
+	}
 }
 
 void AHero::DoSubAction()
@@ -108,18 +131,42 @@ void AHero::EndSubAction()
 {
 }
 
-void AHero::DoAvoid()
+void AHero::PressedAvoid()
 {
-	Jump();
+	TArray<EStateType> state;
+	state.Add(EStateType::E_Idle);
+	state.Add(EStateType::E_Attack);
+
+	if (GetWeaponHolding() && CurrentStateAre(state))
+	{
+		ActionComponent->PressedAvoid();
+	}
+	else if (!GetWeaponHolding() && CurrentStateIs(EStateType::E_Idle))
+		Jump();
 }
 
-void AHero::EndAvoid()
+void AHero::ReleasedAvoid()
 {
+	ActionComponent->ReleasedAvoid();
 }
 
 void AHero::InventoryOn()
 {
-	InventoryComponent->ToggleInventory();
+	if (!MainHUD->CheckHUDsVisibility())
+		SetMouseCenter();
+
+	MainHUD->ToggleInvenHUD();
+
+	if (MainHUD->CheckHUDsVisibility())
+	{
+		MainHUD->SetVisibility(ESlateVisibility::Visible);
+		SetMouseState(true, EInputModeType::E_GameAndUIOnly, MainHUD);
+	}
+	else
+	{
+		MainHUD->SetVisibility(ESlateVisibility::Hidden);
+		SetMouseState(false, EInputModeType::E_GameOnly);
+	}
 }
 
 void AHero::QuickSlotWheel()
@@ -133,11 +180,42 @@ void AHero::TechniqueOn()
 
 void AHero::EquipWeapon()
 {
-	UE_LOG(LogTemp, Log, TEXT("EquipWeapon Call"));
 	if (!WeaponComponent) return;
 
-	if (WeaponComponent->bHolding) WeaponComponent->bHolding = false;
-	else if (!WeaponComponent->bHolding) WeaponComponent->bHolding = true;
+	if (WeaponComponent->bHolding)
+	{
+		WeaponComponent->bHolding = false;
+		bUseControllerRotationYaw = false;
+	}
+	else if (!WeaponComponent->bHolding)
+	{
+		WeaponComponent->bHolding = true;
+		bUseControllerRotationYaw = true;
+	}
+}
+
+void AHero::SoulBurn()
+{
+	SoulComponent->SoulBurn();
+}
+
+void AHero::EquipmentOn()
+{
+	if (!MainHUD->CheckHUDsVisibility())
+		SetMouseCenter();
+
+	MainHUD->ToggleEquipHUD();
+
+	if (MainHUD->CheckHUDsVisibility())
+	{
+		MainHUD->SetVisibility(ESlateVisibility::Visible);
+		SetMouseState(true, EInputModeType::E_GameAndUIOnly, MainHUD);
+	}
+	else
+	{
+		MainHUD->SetVisibility(ESlateVisibility::Hidden);
+		SetMouseState(false, EInputModeType::E_GameOnly);
+	}
 }
 
 void AHero::BeginPlay()
@@ -168,12 +246,27 @@ void AHero::BeginPlay()
 		return;
 	}
 
-	InvenHUD = CreateWidget<UInventoryHUD>(PlayerController, InvenHUDClass, "Inventory HUD");
-	InvenHUD->AddToViewport();
-	InvenHUD->SetVisibility(ESlateVisibility::Hidden);
-	InventoryComponent->InvenHUD = InvenHUD;
-	InventoryComponent->InvenHUDSetting();
+	if (!MainHUDClass)
+	{
+		UE_LOG(HeroLog, Warning, TEXT("MainHUDClass Is NULL!!"));
+		return;
+	}
 
+	MainHUD = CreateWidget<UMainHUD>(PlayerController, MainHUDClass, "Main HUD");
+	MainHUD->AddToViewport();
+	InventoryComponent->InitInvenHUD(MainHUD->GetInvenHUD());
+	MainHUD->GetInvenHUD()->DToggle.BindUFunction(this, "InventoryOn");
+	EquipComponent->InitEquipmentHUD(MainHUD->GetEquipHUD());
+	MainHUD->GetEquipHUD()->DToggle.BindUFunction(this, "EquipmentOn");
+
+	MainHUD->SetVisibility(ESlateVisibility::Hidden);
+
+	UE_LOG(HeroLog, Log, TEXT("Hero InvenHUD Address: %p"), InvenHUD);
+	UE_LOG(HeroLog, Log, TEXT("MainHUD InvenHUD: %p"), MainHUD->GetInvenHUD());
+
+	FVector Start = GetActorLocation();
+	FVector End = GetActorLocation() + FVector(100, 100, 0);
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, true, -1, 0, 10);
 }
 
 void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -214,7 +307,7 @@ void AHero::MappingInputAsset(UEnhancedInputComponent* Comp)
 
 	// Actions
 	MAPPING_CLICK(Comp, InputAsset->Interaction, AHero::DoInteraction, AHero::EndInteraction);
-	MAPPING_CLICK(Comp, InputAsset->AvoidAction, AHero::DoAvoid, AHero::EndAvoid);
+	MAPPING_CLICK(Comp, InputAsset->AvoidAction, AHero::PressedAvoid, AHero::ReleasedAvoid);
 	MAPPING_CLICK(Comp, InputAsset->MainAction, AHero::DoMainAction, AHero::EndMainAction);
 	//MAPPING_CLICK(Comp, InputAsset->SubAction, AHero::DoSubAction, AHero::EndSubAction);
 
@@ -228,12 +321,18 @@ void AHero::MappingInputAsset(UEnhancedInputComponent* Comp)
 
 	// Technique
 	Comp->BindAction(InputAsset->TechniqueOn, ETriggerEvent::Started, this, &AHero::TechniqueOn);
+
+	// Soul
+	Comp->BindAction(InputAsset->SoulBurn, ETriggerEvent::Started, this, &AHero::SoulBurn);
+
+	// Equipment
+	Comp->BindAction(InputAsset->EquipmentOn, ETriggerEvent::Started, this, &AHero::EquipmentOn);
 }
 
 void AHero::SetMouseState(bool visibility, EInputModeType inputmode, UWidget* widget)
 {
 	APlayerController* cont = Cast<APlayerController>(GetController());
-
+	
 	switch (inputmode)
 	{
 	case EInputModeType::E_GameOnly:
@@ -251,10 +350,14 @@ void AHero::SetMouseState(bool visibility, EInputModeType inputmode, UWidget* wi
 		}
 
 		FInputModeGameAndUI InputMode;
-		InputMode.SetWidgetToFocus(widget->TakeWidget());
+		if (widget)
+		{
+			InputMode.SetWidgetToFocus(widget->TakeWidget());
+		}
 		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); // 마우스를 눌렀을 때 위치가 고정되지 않도록
 		InputMode.SetHideCursorDuringCapture(false);
 		cont->SetInputMode(InputMode);
+
 		break;
 	}
 	case EInputModeType::E_UIOnly:
@@ -266,7 +369,10 @@ void AHero::SetMouseState(bool visibility, EInputModeType inputmode, UWidget* wi
 		}
 
 		FInputModeUIOnly InputMode;
-		InputMode.SetWidgetToFocus(widget->TakeWidget());
+		if (widget)
+		{
+			InputMode.SetWidgetToFocus(widget->TakeWidget());
+		}
 		cont->SetInputMode(InputMode);
 		break;
 	}
@@ -278,6 +384,14 @@ void AHero::SetMouseState(bool visibility, EInputModeType inputmode, UWidget* wi
 	}
 
 	cont->SetShowMouseCursor(visibility);
+}
+
+void AHero::SetMouseCenter()
+{
+	// Set Mouse Position
+	int32 x, y;
+	PlayerController->GetViewportSize(x, y);
+	PlayerController->SetMouseLocation(x / 2, y / 2);
 }
 
 void AHero::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -302,4 +416,35 @@ void AHero::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other
 		Item->TextOnOff();
 		Item->AccessPlayer = nullptr;
 	}
+}
+
+void AHero::DoDashMovement()
+{
+	ActionComponent->DoDashMovement();
+}
+
+bool AHero::CurrentStateAre(TArray<EStateType> states)
+{
+	for (EStateType st : states)
+	{
+		if (CurrentState == st)
+			return true;
+	}
+
+	return false;
+}
+
+bool AHero::CurrentStateIs(EStateType state)
+{
+	if (CurrentState == state)
+		return true;
+	else
+		return false;
+}
+
+void AHero::InitState()
+{
+	SetCanMove(true);
+	SetCanAttack(true);
+	SetCurrentState(EStateType::E_Idle);
 }

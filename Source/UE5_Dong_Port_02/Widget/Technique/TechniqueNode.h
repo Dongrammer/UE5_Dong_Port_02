@@ -2,21 +2,23 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+
+#include "../../Action/ActionData.h"
+
 #include "TechniqueNode.generated.h"
 
 class USizeBox;
 class UOverlay;
 class UImage;
 class UButton;
-class ABaseAction;
 class UTextBlock;
-class UTechniqueHUD;
+class ABaseAction;
 
 /*
 	노드 추가-> 레벨 지정
 */
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FNodeSelect, TObjectPtr<UTechniqueNode>);
+DECLARE_MULTICAST_DELEGATE_OneParam(FNodeSelect, UTechniqueNode*);
 
 UCLASS()
 class UE5_DONG_PORT_02_API UTechniqueNode : public UUserWidget
@@ -34,18 +36,47 @@ private:
 	TObjectPtr<UTextBlock> Tx_Level; // Ol_Base Sub
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UButton> Bt_Main; // Ol_Base Sub
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UImage> IM_Selected; // Ol_Base Sub
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UImage> IM_Lock; // Ol_Base Sub
 
 
 public:
 	FNodeSelect DNodeSelect;
+	bool bNodeSelected = false;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TSubclassOf<ABaseAction> Action;
+	FActionData ActionData;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	uint8 ActionLevel = 0;
+	bool bActive;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	uint8 MaxActionLevel = 1;
+	EActionPassiveType PassiveType;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint8 NodeLevel = 0;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint8 MaxNodeLevel = 1;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	uint8 RequiredTP = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FText NodeName;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FText NodeDescription;
+
+	// Check Require
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<UTechniqueNode> RequireNode;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint8 RequireNodeLevel = 0;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bUnlock = false;
+
+public:
+	void ConnectRequireNode();
+	UFUNCTION()
+	void CheckRequireNode();
+	void Unlock();
 
 public:
 	virtual void NativeConstruct() override;
@@ -53,15 +84,15 @@ public:
 	UFUNCTION()
 	void Bt_Main_Clicked();
 
-	UFUNCTION()
 	void ActiveNode();
-	
-	UFUNCTION()
-	void AddActionLevel();
-	void ActionLevelSetting();
+	void AddNodeLevel();
+	void NodeLevelSetting();
+	void SelectedIMVisible(bool visible);
 
-	TSubclassOf<ABaseAction> GetAction() { return Action; }
-	uint8 GetActionLevel() { return ActionLevel; }
-	uint8 GetMaxActionLevel() { return MaxActionLevel; }
-	TObjectPtr<UImage> GetImage() { return Im_Base; }
+	FORCEINLINE FActionData GetAction() { return ActionData; }
+	FORCEINLINE EActionPassiveType GetPassiveType() { return PassiveType; }
+	FORCEINLINE bool GetActive() { return bActive; }
+	FORCEINLINE uint8 GetNodeLevel() { return NodeLevel; }
+	FORCEINLINE uint8 GetMaxNodeLevel() { return MaxNodeLevel; }
+	FORCEINLINE TObjectPtr<UImage> GetImage() { return Im_Base; }
 };

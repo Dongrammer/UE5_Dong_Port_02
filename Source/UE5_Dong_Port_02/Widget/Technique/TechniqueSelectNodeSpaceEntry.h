@@ -3,12 +3,14 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/IUserObjectListEntry.h"
+
+#include "../../Action/ActionData.h"
+
 #include "TechniqueSelectNodeSpaceEntry.generated.h"
 
 class USizeBox;
 class UImage;
 class UButton;
-class ABaseAction;
 class UTechniqueSelectNodeObject;
 
 UCLASS()
@@ -27,9 +29,11 @@ private:
 	TObjectPtr<UButton> BT_Main;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<ABaseAction> action;
+	FActionData action;
 
+	// Save NodeObject For Delegate
 	TObjectPtr<UTechniqueSelectNodeObject> node;
+
 public:
 	virtual void NativeConstruct() override;
 	void NativeOnListItemObjectSet(UObject* ListItemObject) override;

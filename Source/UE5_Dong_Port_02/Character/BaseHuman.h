@@ -7,6 +7,7 @@
 
 class UInventoryComponent;
 class UWeaponComponent;
+class UEquipComponent;
 class AHero;
 
 UCLASS()
@@ -34,10 +35,22 @@ protected:
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWeaponComponent> WeaponComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UEquipComponent> EquipComponent;
 
 protected:
 	AHero* hero;
 
 public:
 	FORCEINLINE AHero* GetHero() { return hero; }
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float PlayRate = 1.0f;
+	/* PlayRate : BaseAction과 Movement에 영향 */
+
+public:
+	void SetPlayRate(float playrate);
+	FORCEINLINE float GetPlayRate() { return PlayRate; }
+
 };

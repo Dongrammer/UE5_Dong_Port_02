@@ -6,6 +6,7 @@
 #include "Components/SizeBox.h"
 #include "Components/Overlay.h"
 
+#include "Action/ActionData.h"
 #include "Widget/Technique/TechniqueNode.h"
 #include "Action/ActionDataAsset.h"
 #include "Helper.h"
@@ -28,12 +29,12 @@ FReply UTechniqueNodeHUD::NativeOnMouseWheel(const FGeometry& InGeometry, const 
 
 	float WheelDelta = InMouseEvent.GetWheelDelta();
 
-	if (WheelDelta > 0 && Scale.ComponentwiseAllLessThan(FVector2D(1, 1)))
+	if (WheelDelta > 0 && Scale.ComponentwiseAllLessThan(FVector2D(2, 2)))
 	{
 		CP_01->SetRenderScale(Scale + Value);
 		return FReply::Handled();
 	}
-	else if (WheelDelta < 0 && Scale.ComponentwiseAllGreaterThan(FVector2D(0.1, 0.1)))
+	else if (WheelDelta < 0 && Scale.ComponentwiseAllGreaterThan(FVector2D(0.5, 0.5)))
 	{
 		CP_01->SetRenderScale(Scale - Value);
 		return FReply::Handled();

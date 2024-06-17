@@ -14,8 +14,6 @@ void UInventoryHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	PlayerController = GetOwningPlayer();
-
 	// Button Bind Function
 	FScriptDelegate Pressed, Released;
 	Pressed.BindUFunction(this, "HeadPressed");
@@ -55,6 +53,11 @@ void UInventoryHUD::HeadReleased()
 	ShouldMove = false;
 }
 
+void UInventoryHUD::ExitPressed()
+{
+	if (DToggle.IsBound()) DToggle.Execute();
+}
+
 void UInventoryHUD::MovePosition()
 {
 	FVector2D MouseXY = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
@@ -64,9 +67,25 @@ void UInventoryHUD::MovePosition()
 	SB_Body->SetRenderTransform(transform);
 }
 
-void UInventoryHUD::ExitPressed()
+void UInventoryHUD::ToggleHUD()
 {
-	if (DExit.IsBound()) DExit.Execute();
+	if (this->GetVisibility() == ESlateVisibility::Hidden)
+	{
+		this->SetVisibility(ESlateVisibility::Visible);
+
+		/*FInputModeGameAndUI InputMode;
+		InputMode.SetWidgetToFocus(this->TakeWidget());
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+		HeroController->SetInputMode(InputMode);*/
+	}
+	else
+	{
+		this->SetVisibility(ESlateVisibility::Hidden);
+
+		//FInputModeGameOnly InputMode;
+		//HeroController->SetInputMode(InputMode);
+	}
 }
 
 void UInventoryHUD::AddItem(const FItemDataTableBase additem, const int count)

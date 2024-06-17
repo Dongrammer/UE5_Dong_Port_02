@@ -4,6 +4,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "TPS_GameMode.generated.h"
 
+
 UCLASS()
 class UE5_DONG_PORT_02_API ATPS_GameMode : public AGameModeBase
 {
@@ -11,4 +12,6 @@ class UE5_DONG_PORT_02_API ATPS_GameMode : public AGameModeBase
 
 public:
 	ATPS_GameMode();
+
+	virtual void StartPlay() override;
 };

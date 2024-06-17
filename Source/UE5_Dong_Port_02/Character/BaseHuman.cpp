@@ -2,6 +2,7 @@
 
 #include "Component/InventoryComponent.h"
 #include "Component/WeaponComponent.h"
+#include "Component/EquipComponent.h"
 #include "Hero.h"
 #include "Helper.h"
 
@@ -9,6 +10,8 @@ ABaseHuman::ABaseHuman()
 {
 	InventoryComponent = Helper::CreateActorComponent<UInventoryComponent>(this, "Inventory Component");
 	WeaponComponent = Helper::CreateActorComponent<UWeaponComponent>(this, "Weapon Component");
+	EquipComponent = Helper::CreateActorComponent<UEquipComponent>(this, "Equip Component");
+
 }
 
 void ABaseHuman::BeginPlay()
@@ -29,6 +32,12 @@ void ABaseHuman::CreateCharacter()
 void ABaseHuman::SetCharacterMovement()
 {
 	Super::SetCharacterMovement();
+}
+
+void ABaseHuman::SetPlayRate(float playrate)
+{
+	PlayRate = playrate;
+	SetWalkSpeed(GetStandardWalkSpeed() * playrate);
 }
 
 void ABaseHuman::GetItems(FItemData item, int count)

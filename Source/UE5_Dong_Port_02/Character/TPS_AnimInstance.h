@@ -44,9 +44,14 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
 	EWeaponType WeaponType;
 
+	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
+	bool bCanMove;
+
 private:
 	ABaseHuman* Owner;
 
 	UCharacterMovementComponent* Movement;
 	FRotator Rotation;
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float AnimSpeed = 1.0f;
 };

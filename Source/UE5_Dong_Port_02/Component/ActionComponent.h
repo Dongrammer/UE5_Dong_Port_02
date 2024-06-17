@@ -7,11 +7,14 @@
 #include "Action/ActionData.h"
 #include "../Weapon/WeaponData.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(ActionCompLog, Log, All);
+
 #include "ActionComponent.generated.h"
 
 class AHero;
 class ABaseAction;
 class UActionDataAsset;
+class ABaseDash;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE5_DONG_PORT_02_API UActionComponent : public UActorComponent
@@ -20,33 +23,68 @@ class UE5_DONG_PORT_02_API UActionComponent : public UActorComponent
 
 public:	
 	UActionComponent();
-	void SetOwner(AHero* hero);
 	
 private:
 	AHero* Owner;
 
 protected:
 	virtual void BeginPlay() override;
-
-public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void SettingActions(TArray<TSubclassOf<ABaseAction>> actions);
+	/* ==================== Action ==================== */
+public:
+	void SettingActions(TArray<FActionData> actions);
 	void CreateActions();
+	void PassiveLevelUp(FActionData InAction, EActionPassiveType Ptype);
 
 	UFUNCTION()
 	void DoAction();
 	UFUNCTION()
 	void EndAction();
+	uint8 MontageIndex = 0;
+	bool bNextAction = false; // Set true when action is playing
 
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
 	TArray<TObjectPtr<ABaseAction>> SelectActions;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
 	TObjectPtr<UActionDataAsset> ActionDataAsset;
+	UPROPERTY(BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
+	TObjectPtr<ABaseAction> NowAction;
 
+	UPROPERTY()
+	TMap<EDashAction, TObjectPtr<ABaseDash>> DashActionPtr;
 	UPROPERTY()
 	TMap<EGauntletAction, TObjectPtr<ABaseAction>> GauntletActionPtr;
 	UPROPERTY()
 	TMap<ESwordAction, TObjectPtr<ABaseAction>> SwordActionPtr;
+
+	// Get
+public:
+	FORCEINLINE TObjectPtr<ABaseAction> GetNowAction() { return NowAction; }
+
+	// Notify
+public:
+	UFUNCTION()
+	void OnEndActionNotify();
+
+	/* ==================== Avoid ==================== */
+public:
+	UFUNCTION()
+	void PressedAvoid();
+	UFUNCTION()
+	void ReleasedAvoid();
+	UFUNCTION()
+	void DoDashMovement();
+	UFUNCTION()
+	void OnEndDashNotify();
+	UFUNCTION()
+	void SettingDashAction(EDashAction dash);
+
+	FORCEINLINE TObjectPtr<ABaseDash> GetDashAction() { return SelectDashAction; }
+
+private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ABaseDash> SelectDashAction;
+
 };

@@ -41,4 +41,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
 	UInputAction* TechniqueOn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
+	UInputAction* EquipmentOn;
+
+	/* ==================== Soul ==================== */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
+	UInputAction* SoulBurn;
 };

@@ -47,7 +47,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "DataTable")
 	UDataTable* DataTable;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ItemData")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Essential")
 	FItemData itemdata;
 
 public:

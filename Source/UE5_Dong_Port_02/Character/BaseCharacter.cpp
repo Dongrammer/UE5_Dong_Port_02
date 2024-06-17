@@ -2,6 +2,7 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Component/ItemComponent.h"
 #include "Item/BaseItem.h"
 #include "Helper.h"
 
@@ -13,12 +14,12 @@ ABaseCharacter::ABaseCharacter()
 	BodyCollision->InitCapsuleSize(42.0f, 96.0f);
 	SetCharacterMovement();
 
+	ItemComponent = Helper::CreateActorComponent<UItemComponent>(this, "Item Component");
 }
 
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ABaseCharacter::CreateCharacter()
@@ -35,6 +36,7 @@ void ABaseCharacter::SetCharacterMovement()
 	Comp->JumpZVelocity = 700.0f;
 	Comp->AirControl = 0.35f;
 	Comp->MaxWalkSpeed = 600.0f;
+	StandardWalkSpeed = Comp->MaxWalkSpeed;
 
 	// 멈췄을 때 감속
 	Comp->BrakingDecelerationWalking = 2000.0f;
@@ -52,4 +54,19 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+float ABaseCharacter::GetCapsuleRadius()
+{
+	return BodyCollision->GetScaledCapsuleRadius();
+}
+
+void ABaseCharacter::SetWalkSpeed(float speed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = speed;
+}
+
+void ABaseCharacter::InitWalkSpeed()
+{
+	GetCharacterMovement()->MaxWalkSpeed = StandardWalkSpeed;
 }

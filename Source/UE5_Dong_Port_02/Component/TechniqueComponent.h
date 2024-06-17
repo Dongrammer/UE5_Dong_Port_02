@@ -2,8 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "../Weapon/WeaponData.h"
 #include "../Action/ActionData.h"
+#include "../Weapon/WeaponData.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(TechniqueComponentLog, Log, All);
 
@@ -12,7 +12,6 @@ DECLARE_LOG_CATEGORY_EXTERN(TechniqueComponentLog, Log, All);
 class AHero;
 class UTechniqueHUDDataAsset;
 class UTechniqueHUD;
-class ABaseAction;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE5_DONG_PORT_02_API UTechniqueComponent : public UActorComponent
@@ -26,11 +25,11 @@ public:
 
 	// Select Node in TechniqueNodeHUD
 	UFUNCTION()
-	void SelectNode(UTechniqueNode* node);	// UFUNCTION은 TObjectPtr 스마트 포인터 사용 불가
+	void NodeHUDNodeClick(UTechniqueNode* node);	// UFUNCTION은 TObjectPtr 스마트 포인터 사용 불가
 
 	// Select Node in TechniqueSelectHUD
 	UFUNCTION()
-	void SelectActionNode(TSubclassOf<ABaseAction> action, uint8 spaceNum);
+	void SelectHUDNodeClick(FActionData action, uint8 spaceNum);
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,6 +50,9 @@ public:
 	void MoveToNextHUD();
 	UFUNCTION()
 	void MoveToPrevHUD();
+	UFUNCTION()
+	void SetInfoDashNode();
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTechniqueHUDDataAsset> TechniqueHUDDataAsset;
@@ -59,9 +61,16 @@ private:
 	TObjectPtr<UTechniqueHUD> CurrentHUD;
 
 private:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
-	TArray<TSubclassOf<ABaseAction>> AvailableAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
-	TArray<TSubclassOf<ABaseAction>> SelectedAction;
+	TObjectPtr<UTechniqueNode> SelectedNode;
+	void NodeSelected(UTechniqueNode* node);
 
+private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
+	TArray<FActionData> AvailableAction;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
+	TArray<FActionData> SelectedAction;
+
+public:
+	UFUNCTION()
+	void SelectDashAction(EDashAction dash);
 };

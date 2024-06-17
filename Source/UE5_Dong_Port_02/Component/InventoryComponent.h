@@ -3,8 +3,12 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "../Item/ItemData.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(InventoryCompLog, Log, All);
+
 #include "InventoryComponent.generated.h"
 
+class UItemComponent;
 class ABaseHuman;
 class ABaseItem;
 class UInventoryHUD;
@@ -31,6 +35,7 @@ class UE5_DONG_PORT_02_API UInventoryComponent : public UActorComponent
 
 public:	
 	UInventoryComponent();
+	void SetItemComponent(TObjectPtr<UItemComponent> comp) { ItemComponent = comp; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,8 +46,6 @@ public:
 	UFUNCTION()
 	bool CheckWeight(float itemweight);
 	void GetItems(const FItemData itemdata, const int count);
-	UFUNCTION()
-	void ToggleInventory();
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -55,21 +58,16 @@ protected:
 public:
 	ABaseHuman* Owner;
 	TObjectPtr<UInventoryHUD> InvenHUD;
-	void InvenHUDSetting();
+	void InitInvenHUD(TObjectPtr<UInventoryHUD> hud); // Used Only for Hero
 
-public:
-	UPROPERTY(VisibleAnywhere, Category = "DataTable")
-	UDataTable* OtherDataTable;
-	UPROPERTY(VisibleAnywhere, Category = "DataTable")
-	UDataTable* EquipmentDataTable;
-	UPROPERTY(VisibleAnywhere, Category = "DataTable")
-	UDataTable* WeaponDataTable;
+//public:
+//	FItemDataTableBase RowData;
+//
+//	UFUNCTION()
+//	void ItemDataTableSetting(FItemData itemdata);
+//	UFUNCTION()
+//	void RowDataInit();
 
-
-	FItemDataTableBase RowData;
-
-	UFUNCTION()
-	void ItemDataTableSetting(FItemData itemdata);
-	UFUNCTION()
-	void RowDataInit();
+private:
+	UItemComponent* ItemComponent;
 };

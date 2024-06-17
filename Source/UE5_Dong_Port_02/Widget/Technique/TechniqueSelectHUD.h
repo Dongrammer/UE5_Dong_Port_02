@@ -18,7 +18,7 @@ class UE5_DONG_PORT_02_API UTechniqueSelectHUD : public UUserWidget
 	
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USizeBox> SB_01; // CP_01 Sub
+	TObjectPtr<USizeBox> SB_01; // Top
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UOverlay> OL_01; // SB_01 Sub

@@ -4,11 +4,58 @@
 #include "ActionData.generated.h"
 
 UENUM(BlueprintType)
+enum class EActionType : uint8
+{
+	E_None UMETA(Hidden),
+	E_Gauntlet UMETA(DisplayName = "Gauntlet Action"),
+	E_Sword UMETA(DisplayName = "Sword Action"),
+	E_Max UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EActionPassiveType : uint8
+{
+	E_None UMETA(Hidden),
+	E_SpeedUp UMETA(DisplayName = "Speed Up"),
+	E_Max UMETA(Hidden)
+};
+
+USTRUCT(BlueprintType)
+struct FActionData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EActionType ActionType = EActionType::E_None;
+
+	UPROPERTY(EditAnywhere, BlueprintreadOnly)
+	uint8 ActionNumber = 0;
+};
+
+
+UENUM(BlueprintType)
+enum class EDashAction : uint8
+{
+	E_None UMETA(Hidden),
+	E_GA_Dash_Start UMETA(Hidden),
+	E_GA_Dash_01 UMETA(DisplayName = "GA Dash 01"),
+	E_GA_Dash_02 UMETA(DisplayName = "GA Dash 02"),
+	E_GA_Dash_03 UMETA(DisplayName = "GA Dash 03"),
+	E_GA_Dash_End UMETA(Hidden),
+	E_SW_Dash_Start UMETA(Hidden),
+	E_SW_Dash_01 UMETA(DisplayName = "SW Dash 01"),
+	E_SW_Dash_End UMETA(Hidden),
+	E_Max UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
 enum class EGauntletAction : uint8
 {
 	E_None UMETA(Hidden),
-	E_LeftJap_01 UMETA(DisplayName = "Left Jap 01"),
-	E_RightJap_01 UMETA(DisplayName = "Right Jap 01"),
+	E_Left_01 UMETA(DisplayName = "Left 01"),
+	E_Right_01 UMETA(DisplayName = "Right 01"),
+	E_Kick_01 UMETA(DisplayName = "Kick 01"),
 	E_Max
 };
 
@@ -19,4 +66,18 @@ enum class ESwordAction : uint8
 	E_Cutting_01 UMETA(DisplayName = "Cutting 01"),
 	E_Cutting_02 UMETA(DisplayName = "Cutting 02"),
 	E_Max
+};
+
+USTRUCT(BlueprintType)
+struct FNodeInfoData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText NodeName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText NodeDescription;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint8 RequireTP = 0;
 };

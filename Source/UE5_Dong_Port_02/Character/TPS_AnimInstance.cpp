@@ -24,6 +24,7 @@ void UTPS_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	Velocity = Owner->GetVelocity();
 	Speed = Velocity.Size2D();
+	AnimSpeed = Owner->GetPlayRate();
 
 	Rotation = FRotator(0, Owner->GetControlRotation().Yaw, 0);
 	Direction = CalculateDirection(Velocity, Rotation);
@@ -34,5 +35,6 @@ void UTPS_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 	// �����̰� �ִ��� �Ǵ�
 	bShouldMove = /*!FVector(0,0,0).Equals(Movement->GetCurrentAcceleration(), 0.5f) &&*/ Speed > 3.0f;
+	bCanMove = Owner->GetCanMove();
 
 }

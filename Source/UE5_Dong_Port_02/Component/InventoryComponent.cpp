@@ -4,18 +4,15 @@
 #include "../Public/Blueprint/UserWidget.h"
 #include "../Widget/Inventory/InventoryHUD.h"
 #include "Character/Hero.h"
-#include "Item/ItemData.h"
 #include "Helper.h"
 #include "Kismet/GameplayStatics.h"
+#include "Component/ItemComponent.h"
+
+DEFINE_LOG_CATEGORY(InventoryCompLog);
 
 UInventoryComponent::UInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	OtherDataTable = Helper::GetAssetDynamic<UDataTable>(L"/Game/Items/DT_Item_Other");
-	EquipmentDataTable = Helper::GetAssetDynamic<UDataTable>(L"/Game/Items/DT_Item_Other");
-	WeaponDataTable = Helper::GetAssetDynamic<UDataTable>(L"/Game/Items/DT_Item_Other");
-
 }
 
 
@@ -24,6 +21,7 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	Owner = Cast<ABaseHuman>(GetOwner());
+	ItemComponent = UItemComponent::GetInstance();
 }
 
 void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -48,10 +46,10 @@ bool UInventoryComponent::CheckWeight(float itemweight)
 
 void UInventoryComponent::GetItems(const FItemData itemdata, const int count)
 {
-	RowDataInit();
-	ItemDataTableSetting(itemdata);
+	/*RowDataInit();
+	ItemDataTableSetting(itemdata);*/
 
-	bool bfound = false;
+	bool bfound = false;	// 인벤토리에 같은 아이템이 있는지
 
 	for (int i = 0; i < Items.Num(); i++)
 	{
@@ -66,108 +64,86 @@ void UInventoryComponent::GetItems(const FItemData itemdata, const int count)
 
 	if (!bfound)
 	{
-
 		FItem newitem;
 		newitem.ItemData = itemdata;
 		newitem.count = count;
 		Items.Add(newitem);
 
-		if (InvenHUD) InvenHUD->AddItem(RowData, count);
+		if (InvenHUD) InvenHUD->AddItem(ItemComponent->GetDataTableBase(itemdata), count);
 	}
 
 	// Set Weight
-	CurrentWeight += RowData.Weight;
+	for (int i = 0; i < count; i++)
+		CurrentWeight += ItemComponent->GetItemWeight(itemdata);// RowData.Weight;
 	if (InvenHUD) InvenHUD->SetTextWeight(MaxInvenWeight, CurrentWeight);
 }
 
-void UInventoryComponent::ToggleInventory()
+void UInventoryComponent::InitInvenHUD(TObjectPtr<UInventoryHUD> hud)
 {
-	if (InvenHUD)
+	// HUD Setting
+	InvenHUD = hud;
+	if (!InvenHUD)
 	{
-		AHero* hero = Owner->GetHero();
-
-		if (hero)
-		{
-			if (InvenHUD->GetVisibility() == ESlateVisibility::Visible)
-			{
-				InvenHUD->SetVisibility(ESlateVisibility::Hidden);
-				hero->SetMouseState(false, EInputModeType::E_GameOnly);
-			}
-			else
-			{
-				InvenHUD->SetVisibility(ESlateVisibility::Visible);
-				hero->SetMouseState(true, EInputModeType::E_GameAndUIOnly, InvenHUD);
-			}
-		}
-		else
-		{
-			UE_LOG(LogTemp, Log, TEXT("InventoryComponent : Hero Cast Failed"));
-		}
-	}
-}
-
-void UInventoryComponent::InvenHUDSetting()
-{
-	if (InvenHUD)
-	{
-		InvenHUD->SetTextWeight(MaxInvenWeight, CurrentWeight);
-		InvenHUD->DExit.BindUFunction(this, "ToggleInventory");
-	}
-}
-
-void UInventoryComponent::ItemDataTableSetting(FItemData itemdata)
-{
-	//UE_LOG(LogTemp, Log, TEXT("RowData : %0.2f"), RowData.Weight);
-
-	if (itemdata.ItemID == "")
-	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryHUD : ItemID is NULL"));
+		UE_LOG(InventoryCompLog, Warning, TEXT("InvenHUD Is NULL !!"));
 		return;
 	}
-
-	// Initialize by reading data from the DataTable.
-	UDataTable* tempTable = nullptr;
-	FName RowName = itemdata.ItemID;
-	switch (itemdata.ItemType)
-	{
-	case EItemType::E_Equipment:
-	{
-		tempTable = EquipmentDataTable;
-		break;
-	}
-	case EItemType::E_Weapon:
-	{
-		tempTable = WeaponDataTable;
-		break;
-	}
-	case EItemType::E_Other:
-	{
-		tempTable = OtherDataTable;
-		break;
-	}
-	default:
-	{
-		UE_LOG(LogTemp, Log, TEXT("InventoryHUD : Can't read ItemType"));
-		break;
-	}
-	}
-
-	FItemDataTableBase* tempData = tempTable->FindRow<FItemDataTableBase>(RowName, "Row Name Error");
-	RowData.Name = tempData->Name;
-	RowData.Rarity = tempData->Rarity;
-	RowData.Description = tempData->Description;
-	RowData.Weight = tempData->Weight;
-	RowData.Texture = tempData->Texture;
-	RowData.StaticMesh = tempData->StaticMesh;
+	InvenHUD->SetTextWeight(MaxInvenWeight, CurrentWeight);
+	InvenHUD->SetVisibility(ESlateVisibility::Hidden);
 }
-
-void UInventoryComponent::RowDataInit()
-{
-	RowData.Name = "";
-	RowData.Rarity = ERarity::E_None;
-	RowData.Texture = nullptr;
-	RowData.StaticMesh = nullptr;
-	RowData.Weight = 0;
-	RowData.Description = "";
-}
+//
+//void UInventoryComponent::ItemDataTableSetting(FItemData itemdata)
+//{
+//	//UE_LOG(LogTemp, Log, TEXT("RowData : %0.2f"), RowData.Weight);
+//
+//	if (itemdata.ItemID == "")
+//	{
+//		UE_LOG(InventoryCompLog, Warning, TEXT("ItemID Is NULL !!"));
+//		return;
+//	}
+//
+//	// Initialize by reading data from the DataTable.
+//	UDataTable* tempTable = nullptr;
+//	FName RowName = itemdata.ItemID;
+//	switch (itemdata.ItemType)
+//	{
+//	case EItemType::E_Equipment:
+//	{
+//		tempTable = EquipmentDataTable;
+//		break;
+//	}
+//	case EItemType::E_Weapon:
+//	{
+//		tempTable = WeaponDataTable;
+//		break;
+//	}
+//	case EItemType::E_Other:
+//	{
+//		tempTable = OtherDataTable;
+//		break;
+//	}
+//	default:
+//	{
+//		UE_LOG(LogTemp, Log, TEXT("InventoryHUD : Can't read ItemType"));
+//		break;
+//	}
+//	}
+//	
+//	FItemDataTableBase* tempData = tempTable->FindRow<FItemDataTableBase>(RowName, "Row Name Error");
+//	RowData.Name = tempData->Name;
+//	RowData.Rarity = tempData->Rarity;
+//	RowData.Description = tempData->Description;
+//	RowData.Weight = tempData->Weight;
+//	RowData.Texture = tempData->Texture;
+//	RowData.StaticMesh = tempData->StaticMesh;
+//}
+//
+//void UInventoryComponent::RowDataInit()
+//{
+//	RowData.Name = "";
+//	RowData.Rarity = ERarity::E_None;
+//	RowData.Texture = nullptr;
+//	RowData.StaticMesh = nullptr;
+//	RowData.Weight = 0;
+//	RowData.Description = "";
+//}
 
