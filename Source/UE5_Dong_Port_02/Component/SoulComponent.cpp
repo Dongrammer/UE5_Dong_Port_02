@@ -107,7 +107,7 @@ void USoulComponent::NiagaraSetting()
 		return;
 	}
 
-	float scale;
+	float scale = 1.0f;
 	switch (SoulLevel)
 	{
 	case 1:

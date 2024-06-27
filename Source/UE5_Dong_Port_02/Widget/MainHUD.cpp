@@ -3,6 +3,21 @@
 #include "Components/CanvasPanel.h"
 #include "Widget/Equipment/EquipmentHUD.h"
 #include "Widget/Inventory/InventoryHUD.h"
+#include "Widget/Inventory/InventoryContextMenu.h"
+
+void UMainHUD::NativeConstruct()
+{
+}
+
+FReply UMainHUD::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	if (ContextMenu->GetVisibility() == ESlateVisibility::Visible)
+		ContextMenu->SetVisibility(ESlateVisibility::Hidden);
+
+	return FReply::Handled();
+}
 
 void UMainHUD::InitHUD(TObjectPtr<UEquipmentHUD> equipHUD, TObjectPtr<UInventoryHUD> invenHUD)
 {

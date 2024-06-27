@@ -17,6 +17,7 @@
 #include "Widget/MainHUD.h"
 // MainHUD만 포함하고 다른 HUD는 MainHUD의 헤더에 포함시킬지 고민.
 #include "Widget/Inventory/InventoryHUD.h"
+#include "Widget/Inventory/InventoryContextMenu.h"
 #include "Widget/Equipment/EquipmentHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Item/BaseItem.h"
@@ -255,9 +256,12 @@ void AHero::BeginPlay()
 	MainHUD = CreateWidget<UMainHUD>(PlayerController, MainHUDClass, "Main HUD");
 	MainHUD->AddToViewport();
 	InventoryComponent->InitInvenHUD(MainHUD->GetInvenHUD());
+	InventoryComponent->InitContextMenu(MainHUD->GetContextMenu());
 	MainHUD->GetInvenHUD()->DToggle.BindUFunction(this, "InventoryOn");
 	EquipComponent->InitEquipmentHUD(MainHUD->GetEquipHUD());
 	MainHUD->GetEquipHUD()->DToggle.BindUFunction(this, "EquipmentOn");
+	MainHUD->GetContextMenu()->SetInvenComp(InventoryComponent);
+	MainHUD->GetContextMenu()->SetEquipComp(EquipComponent);
 
 	MainHUD->SetVisibility(ESlateVisibility::Hidden);
 
@@ -343,12 +347,6 @@ void AHero::SetMouseState(bool visibility, EInputModeType inputmode, UWidget* wi
 	}
 	case EInputModeType::E_GameAndUIOnly:
 	{
-		if (!widget)
-		{
-			UE_LOG(HeroLog, Warning, TEXT("SetMouseState : Widget Is NULL !!"));
-			break;
-		}
-
 		FInputModeGameAndUI InputMode;
 		if (widget)
 		{
@@ -362,12 +360,6 @@ void AHero::SetMouseState(bool visibility, EInputModeType inputmode, UWidget* wi
 	}
 	case EInputModeType::E_UIOnly:
 	{
-		if (!widget)
-		{
-			UE_LOG(HeroLog, Warning, TEXT("SetMouseState : Widget Is NULL !!"));
-			break;
-		}
-
 		FInputModeUIOnly InputMode;
 		if (widget)
 		{

@@ -24,4 +24,11 @@ private:
 	TObjectPtr<UImage> IM_Item;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UImage> IM_Rarity;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTexture2D> EmptyImage;
+
+public:
+	void NativePreConstruct() override;
+	void SetSlotImage(UTexture2D* image, const FLinearColor* color);
 };

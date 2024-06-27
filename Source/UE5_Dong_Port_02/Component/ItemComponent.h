@@ -17,10 +17,10 @@ class UE5_DONG_PORT_02_API UItemComponent : public UActorComponent
 public:	
 	UItemComponent();
 
-	static UItemComponent* GetInstance();
+	//static UItemComponent* GetInstance();
 
 private:
-	static UItemComponent* Instance;
+	//static UItemComponent* Instance;
 
 protected:
 	virtual void BeginPlay() override;
@@ -47,8 +47,15 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "CachedItems", meta = (AllowPrivateAccess = "true"))
 	TMap<FName, FWeaponItem> CachedWeaponItems;
 
+	UPROPERTY(VisibleAnywhere, Category = "Rarity", meta = (AllowPrivateAccess = "true"))
+	TMap<ERarity, FLinearColor> RarityColor;
+
+	FLinearColor s;
 public:
+	void SetRarityColor();
+	const FLinearColor* GetRarityColor(ERarity rarity);
 	float GetItemWeight(FItemData item);
 	FItemDataTableBase GetDataTableBase(FItemData item);
+	FEquipmentItem GetEquipmentDataTable(FItemData item);
 
 };

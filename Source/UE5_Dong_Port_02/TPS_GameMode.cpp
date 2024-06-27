@@ -15,5 +15,5 @@ void ATPS_GameMode::StartPlay()
 {
 	Super::StartPlay();
 
-	UItemComponent* ItemComponent = UItemComponent::GetInstance();
+	// UItemComponent* ItemComponent = UItemComponent::GetInstance();
 }

@@ -12,6 +12,7 @@ class UItemComponent;
 class ABaseHuman;
 class ABaseItem;
 class UInventoryHUD;
+class UInventoryContextMenu;
 struct FItemDataTableBase;
 
 USTRUCT(BlueprintType)
@@ -59,14 +60,13 @@ public:
 	ABaseHuman* Owner;
 	TObjectPtr<UInventoryHUD> InvenHUD;
 	void InitInvenHUD(TObjectPtr<UInventoryHUD> hud); // Used Only for Hero
+	TObjectPtr<UInventoryContextMenu> ContextMenu;
+	void InitContextMenu(TObjectPtr<UInventoryContextMenu> menu);
 
-//public:
-//	FItemDataTableBase RowData;
-//
-//	UFUNCTION()
-//	void ItemDataTableSetting(FItemData itemdata);
-//	UFUNCTION()
-//	void RowDataInit();
+	void ItemUse(FItemData item);
+	void ItemClick(FItemData item);
+	/*void SetFocusHUD();
+	void SetFocusInit();*/
 
 private:
 	UItemComponent* ItemComponent;

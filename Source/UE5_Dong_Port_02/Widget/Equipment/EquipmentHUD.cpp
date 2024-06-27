@@ -20,6 +20,14 @@ void UEquipmentHUD::NativeConstruct()
 	FScriptDelegate ExitPressed;
 	ExitPressed.BindUFunction(this, "ExitPressed");
 	BT_Exit->OnPressed.Add(ExitPressed);
+
+	// 
+	Slots.Add(EEquipType::E_Head, Slot_Head);
+	Slots.Add(EEquipType::E_Chest, Slot_Chest);
+	Slots.Add(EEquipType::E_Legs, Slot_Legs);
+	Slots.Add(EEquipType::E_Feet, Slot_Feet);
+	Slots.Add(EEquipType::E_Hands, Slot_Hands);
+	Slots.Add(EEquipType::E_Weapon, Slot_Weapon);
 }
 
 void UEquipmentHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -41,7 +49,7 @@ void UEquipmentHUD::HeadPressed()
 
 	//temp = FVector2D(0, 0);
 	FVector2D MouseXY = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
-	temp = MouseXY - SB_Body->GetRenderTransform().Translation;
+	temp = MouseXY - this->GetRenderTransform().Translation;
 }
 
 void UEquipmentHUD::HeadReleased()
@@ -60,7 +68,7 @@ void UEquipmentHUD::MovePosition()
 
 	FWidgetTransform transform;
 	transform.Translation = MouseXY - temp;
-	SB_Body->SetRenderTransform(transform);
+	this->SetRenderTransform(transform);
 }
 
 void UEquipmentHUD::ToggleHUD()
@@ -72,5 +80,42 @@ void UEquipmentHUD::ToggleHUD()
 	else
 	{
 		this->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UEquipmentHUD::SetSlotImage(EEquipType type, UTexture2D* image, const FLinearColor* color)
+{
+	switch (type)
+	{
+	case EEquipType::E_Head:
+	{
+		Slot_Head->SetSlotImage(image, color);
+		break;
+	}
+	case EEquipType::E_Chest:
+	{
+		Slot_Chest->SetSlotImage(image, color);
+		break;
+	}
+	case EEquipType::E_Legs:
+	{
+		Slot_Legs->SetSlotImage(image, color);
+		break;
+	}
+	case EEquipType::E_Feet:
+	{
+		Slot_Feet->SetSlotImage(image, color);
+		break;
+	}
+	case EEquipType::E_Hands:
+	{
+		Slot_Hands->SetSlotImage(image, color);
+		break;
+	}
+	case EEquipType::E_Weapon:
+	{
+		Slot_Weapon->SetSlotImage(image, color);
+		break;
+	}
 	}
 }

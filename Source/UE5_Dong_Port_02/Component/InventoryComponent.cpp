@@ -1,5 +1,6 @@
 #include "Component/InventoryComponent.h"
 
+#include "TPS_GameInstance.h"
 #include "Character/BaseCharacter.h"
 #include "../Public/Blueprint/UserWidget.h"
 #include "../Widget/Inventory/InventoryHUD.h"
@@ -7,6 +8,8 @@
 #include "Helper.h"
 #include "Kismet/GameplayStatics.h"
 #include "Component/ItemComponent.h"
+#include "Widget/Inventory/InventoryContextMenu.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 
 DEFINE_LOG_CATEGORY(InventoryCompLog);
 
@@ -21,7 +24,20 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	Owner = Cast<ABaseHuman>(GetOwner());
-	ItemComponent = UItemComponent::GetInstance();
+	//ItemComponent = UItemComponent::GetInstance();
+	UTPS_GameInstance* GameInstance = Cast<UTPS_GameInstance>(GetWorld()->GetGameInstance());
+	if (!GameInstance)
+	{
+		UE_LOG(InventoryCompLog, Warning, TEXT("GameInstance Is NULL !!"));
+		return;
+	}
+
+	ItemComponent = GameInstance->GetItemComponent();
+	if (!ItemComponent)
+	{
+		UE_LOG(InventoryCompLog, Warning, TEXT("ItemComponent Is NULL !!"));
+		return;
+	}
 }
 
 void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -69,7 +85,7 @@ void UInventoryComponent::GetItems(const FItemData itemdata, const int count)
 		newitem.count = count;
 		Items.Add(newitem);
 
-		if (InvenHUD) InvenHUD->AddItem(ItemComponent->GetDataTableBase(itemdata), count);
+		if (InvenHUD) InvenHUD->AddItem(itemdata, ItemComponent->GetDataTableBase(itemdata), count);
 	}
 
 	// Set Weight
@@ -89,7 +105,86 @@ void UInventoryComponent::InitInvenHUD(TObjectPtr<UInventoryHUD> hud)
 	}
 	InvenHUD->SetTextWeight(MaxInvenWeight, CurrentWeight);
 	InvenHUD->SetVisibility(ESlateVisibility::Hidden);
+	InvenHUD->InventoryComponent = this;
 }
+
+void UInventoryComponent::InitContextMenu(TObjectPtr<UInventoryContextMenu> menu)
+{
+	ContextMenu = menu;
+	if (!ContextMenu)
+	{
+		UE_LOG(InventoryCompLog, Warning, TEXT("ContextMenu Is NULL !!"));
+		return;
+	}
+	ContextMenu->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UInventoryComponent::ItemUse(FItemData item)
+{
+	for (int i = 0; i < Items.Num(); i++)
+	{
+		if (Items[i].ItemData.ItemType == item.ItemType && Items[i].ItemData.ItemID == item.ItemID)
+		{
+			Items[i].count--;
+
+			if (Items[i].count <= 0)
+			{
+				if (InvenHUD) InvenHUD->RemoveItem(i);
+				Items.RemoveAt(i);
+			}
+			else
+			{
+				if (InvenHUD) InvenHUD->CountUpItem(i, -1);
+			}
+			break;
+		}
+	}
+}
+
+void UInventoryComponent::ItemClick(FItemData item)
+{
+	if (!Owner->GetHero()) return;
+	
+	FVector2D MouseXY = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
+
+	FWidgetTransform transform;
+	transform.Translation = MouseXY;
+	ContextMenu->SetRenderTransform(transform);
+	ContextMenu->SetItemData(item);
+
+	switch (item.ItemType)
+	{
+	case EItemType::E_Other:
+	{
+		ContextMenu->SetSwitcher(0);
+		break;
+	}
+	case EItemType::E_Equipment:
+	{
+		ContextMenu->SetSwitcher(1);
+		break;
+	}
+	}
+
+	ContextMenu->SetVisibility(ESlateVisibility::Visible);
+}
+
+//void UInventoryComponent::SetFocusHUD()
+//{
+//	TObjectPtr<AHero> hero = Cast<AHero>(Owner);
+//
+//	if (!hero || !InvenHUD) return;
+//	
+//	hero->SetMouseState(true, EInputModeType::E_UIOnly, InvenHUD);
+//}
+//void UInventoryComponent::SetFocusInit()
+//{
+//	TObjectPtr<AHero> hero = Cast<AHero>(Owner);
+//
+//	if (!hero || !InvenHUD) return;
+//
+//	hero->SetMouseState(true, EInputModeType::E_GameAndUIOnly);
+//}
 //
 //void UInventoryComponent::ItemDataTableSetting(FItemData itemdata)
 //{

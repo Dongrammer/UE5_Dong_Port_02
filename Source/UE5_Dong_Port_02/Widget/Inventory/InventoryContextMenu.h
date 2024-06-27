@@ -3,67 +3,65 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "../../Item/ItemData.h"
-#include "EquipmentHUD.generated.h"
+#include "InventoryContextMenu.generated.h"
 
 class USizeBox;
+class UBorder;
+class UVerticalBox;
+class UWidgetSwitcher;
 class UButton;
-class UImage;
-class UEquipSlot;
-
-DECLARE_DELEGATE(FEquipHUDToggle);
+class UTextBlock;
+class UInventoryComponent;
+class UEquipComponent;
 
 UCLASS()
-class UE5_DONG_PORT_02_API UEquipmentHUD : public UUserWidget
+class UE5_DONG_PORT_02_API UInventoryContextMenu : public UUserWidget
 {
 	GENERATED_BODY()
-
-public:
-	virtual void NativeConstruct() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
+	
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USizeBox> SB_Body;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UButton> BT_Head;
+	TObjectPtr<UBorder> BO_01;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UButton> BT_Exit;
+	TObjectPtr<UVerticalBox> VB_01;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UImage> IM_Base;
+	TObjectPtr<UWidgetSwitcher> WS_01;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UButton> BT_Use;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> TB_Use;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UButton> BT_Equip;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> TB_Equip;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UButton> BT_Info;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> TB_Info;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	FItemData itemdata;
+
+	UPROPERTY()
+	TObjectPtr<UInventoryComponent> InventoryComponent;
+	UPROPERTY()
+	TObjectPtr<UEquipComponent> EquipComponent;
 
 public:
-	UFUNCTION()
-	void HeadPressed();
-	UFUNCTION()
-	void HeadReleased();
-	UFUNCTION()
-	void ExitPressed();
-	UFUNCTION()
-	void MovePosition();
-	FVector2D temp;
-	bool ShouldMove;
+	virtual void NativeConstruct() override;
 
-	FEquipHUDToggle DToggle;
+	void SetInvenComp(TObjectPtr<UInventoryComponent> comp);
+	void SetEquipComp(TObjectPtr<UEquipComponent> comp);
+	void SetItemData(FItemData data) { itemdata = data; }
+
+	void SetSwitcher(uint8 num);
 
 	UFUNCTION()
-	void ToggleHUD();
-	
-	void SetSlotImage(EEquipType type, UTexture2D* image, const FLinearColor* color);
-
-private:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UEquipSlot> Slot_Head;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UEquipSlot> Slot_Chest;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UEquipSlot> Slot_Legs;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UEquipSlot> Slot_Feet;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UEquipSlot> Slot_Hands;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UEquipSlot> Slot_Weapon;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TMap<EEquipType, TObjectPtr<UEquipSlot>> Slots;
+	void UseItem();
+	UFUNCTION()
+	void EquipItem();
+	UFUNCTION()
+	void InfoItem();
 };

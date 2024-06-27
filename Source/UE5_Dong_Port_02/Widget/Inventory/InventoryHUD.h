@@ -11,6 +11,7 @@ class UButton;
 class USizeBox;
 struct FItemDataTableBase;
 struct FItemData;
+class UInventoryComponent;
 
 DECLARE_DELEGATE(FInvenHUDToggle);
 
@@ -22,6 +23,7 @@ class UE5_DONG_PORT_02_API UInventoryHUD : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	TObjectPtr<UInventoryComponent> InventoryComponent;
 
 	UFUNCTION()
 	void HeadPressed();
@@ -41,11 +43,14 @@ public:
 
 	// When ItemComponent Adding a new Item
 	UFUNCTION()
-	void AddItem(const FItemDataTableBase additem, const int count);
+	void AddItem(const FItemData data, const FItemDataTableBase additem, const int count);
 
 	// When ItemComponent find the same item
 	UFUNCTION()
 	void CountUpItem(const int index, const int count);
+	
+	UFUNCTION()
+	void RemoveItem(const int index);
 
 	void SetTextWeight(float max, float current);
 
@@ -67,4 +72,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UButton> Button_Exit;
 
+
+public:
+	/*virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;*/
+	UFUNCTION()
+	void ItemUse(FItemData item);
+	UFUNCTION()
+	void ItemClick(FItemData item);
 };

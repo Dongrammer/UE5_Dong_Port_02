@@ -58,7 +58,7 @@ void ABaseItem::Tick(float DeltaTime)
 		// Interaction Text Setting
 		if (Cast<AHero>(AccessPlayer))
 		{
-			FRotator Rotator = AccessPlayer->GetControlRotation() + FRotator(0, 0, -180);
+			FRotator Rotator = FRotator(-AccessPlayer->GetControlRotation().Pitch, AccessPlayer->GetControlRotation().Yaw + 180, AccessPlayer->GetControlRotation().Roll);
 			Text->SetRelativeRotation(Rotator);
 		}
 
