@@ -187,9 +187,29 @@ FItemDataTableBase UItemComponent::GetDataTableBase(FItemData item)
 	return FItemDataTableBase();
 }
 
+FName UItemComponent::GetItemName(FItemData item)
+{
+	switch (item.ItemType)
+	{
+	case EItemType::E_Equipment:
+	{
+		return CachedEquipmentItems.Find(item.ItemID)->Name;
+	}
+	case EItemType::E_Other:
+	{
+		return CachedOtherItems.Find(item.ItemID)->Name;
+	}
+	case EItemType::E_Weapon:
+	{
+		return CachedWeaponItems.Find(item.ItemID)->Name;
+	}
+	}
+
+	return FName();
+}
+
 FEquipmentItem UItemComponent::GetEquipmentDataTable(FItemData item)
 {
-	EItemType type = item.ItemType;
 	FName name = item.ItemID;
 	FEquipmentItem data;
 

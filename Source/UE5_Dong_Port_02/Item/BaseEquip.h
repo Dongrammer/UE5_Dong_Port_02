@@ -13,12 +13,12 @@ public:
 	ABaseEquip();
 
 	virtual void BeginPlay() override;
-	virtual void DataTableSetting() override;
+	//virtual void DataTableSetting() override;
 	void SetEquipment();
 
-public:
-	UPROPERTY(VisibleAnywhere, Category = "DataTable")
-	EEquipType EquipType;
-	UPROPERTY(VisibleAnywhere, Category = "DataTable")
-	TMap<EEquipStatus, int> EquipStatus;
+//public:
+//	UPROPERTY(VisibleAnywhere, Category = "DataTable")
+//	EEquipType EquipType;
+//	UPROPERTY(VisibleAnywhere, Category = "DataTable")
+//	TMap<EEquipStatus, int> EquipStatus;
 };

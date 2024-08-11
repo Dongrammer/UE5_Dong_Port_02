@@ -102,7 +102,7 @@ enum class EEquipType : uint8
 	E_Feet UMETA(DisplayName = "Feet"),
 	E_Hands UMETA(DisplayName = "Hands"),
 	E_Weapon UMETA(DisplayName = "Weapon"),
-	E_SubWeapon UMETA(DisplayName = "Weapon"),
+	E_SubWeapon UMETA(DisplayName = "SubWeapon"),
 	E_Max UMETA(Hidden)
 };
 

@@ -1,9 +1,9 @@
 #include "Component/EquipComponent.h"
 
 #include "TPS_GameInstance.h"
+#include "Component/ItemComponent.h"
 #include "Character/BaseHuman.h"
 #include "Character/Hero.h"
-#include "Component/ItemComponent.h"
 #include "Item/BaseEquip.h"
 #include "Widget/Equipment/EquipmentHUD.h"
 
@@ -15,7 +15,7 @@ UEquipComponent::UEquipComponent()
 
 	OwnerCharacter = Cast<ABaseHuman>(GetOwner());
 
-
+	InitEquipParts();
 }
 
 void UEquipComponent::BeginPlay()
@@ -39,7 +39,22 @@ void UEquipComponent::BeginPlay()
 		}
 	}
 
+	
 	// 
+}
+
+void UEquipComponent::InitEquipParts()
+{
+	FItemData data;
+	data.ItemID = FName("");
+	data.ItemType = EItemType::E_None;
+
+	for (int i = 1; i < static_cast<int>(EEquipType::E_Max); i++)
+	{
+		EEquipType type = static_cast<EEquipType>(i);
+		EquipParts.Add(type, data);
+		EquipmentParts.Add(type, nullptr);
+	}
 }
 
 void UEquipComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -61,8 +76,17 @@ void UEquipComponent::InitEquipmentHUD(TObjectPtr<UEquipmentHUD> hud)
 
 void UEquipComponent::Equip(FItemData item)
 {
-	EEquipType EquipType = ItemComponent->GetEquipmentDataTable(item).EquipType;
+	EEquipType EquipType = ItemComponent->GetEquipType(item);
+	
+	if (EquipParts.FindRef(EquipType).ItemType != EItemType::E_None)
+	{
+		UnEquip(EquipType);
+	}
 
+	EquipParts.Find(EquipType)->ItemID = item.ItemID;
+	EquipParts.Find(EquipType)->ItemType = item.ItemType;
+	SpawnAndAttach(EquipType);
+	/*
 	switch (EquipType)
 	{
 	case EEquipType::E_Head:
@@ -104,7 +128,7 @@ void UEquipComponent::Equip(FItemData item)
 		break;
 	}
 	}
-
+	*/
 	OwnerCharacter->EQuipItemStatus(ItemComponent->GetEquipmentDataTable(item).EquipStatus);
 
 
@@ -116,11 +140,17 @@ void UEquipComponent::Equip(FItemData item)
 
 void UEquipComponent::UnEquip(EEquipType type)
 {
-	FItemData data;
+	/*FItemData data;
 	data.ItemID = FName("");
-	data.ItemType = EItemType::E_None;
+	data.ItemType = EItemType::E_None;*/
+	OwnerCharacter->GetItems(EquipParts.FindRef(type), 1);
+	OwnerCharacter->UnequipItemStatus(ItemComponent->GetEquipmentDataTable(EquipParts.FindRef(type)).EquipStatus);
+	EquipParts.Find(type)->ItemID = FName("");
+	EquipParts.Find(type)->ItemType = EItemType::E_None;
 
-
+	if (EquipmentParts.Contains(type)) EquipmentParts[type]->Destroy();
+	
+	/*
 	switch (type)
 	{
 	case EEquipType::E_Head:
@@ -160,7 +190,7 @@ void UEquipComponent::UnEquip(EEquipType type)
 		break;
 	}
 	}
-
+	*/
 	if (EquipmentHUD)
 	{
 		HUDImageSetting(type);
@@ -169,11 +199,86 @@ void UEquipComponent::UnEquip(EEquipType type)
 
 void UEquipComponent::SpawnAndAttach(EEquipType type)
 {
-	TSubclassOf<ABaseItem> ItemClass;
-
+	TSubclassOf<ABaseItem> ItemClass = ItemComponent->GetEquipItemClass(EquipParts.FindRef(type));
 	FActorSpawnParameters SpawnParameter;
 	SpawnParameter.Owner = OwnerCharacter;
 
+	if (!ItemClass)
+	{
+		UE_LOG(EquipComponentLog, Warning, TEXT("SpawnAndAttach : ItemClass Is NULL !!"));
+		return;
+	}
+
+	TObjectPtr<ABaseEquip> EquipItem = Cast<ABaseEquip>(GetWorld()->SpawnActor<AActor>(ItemClass, FVector(), FRotator(), SpawnParameter));
+	if (!EquipmentParts.Contains(type))
+	{
+		UE_LOG(EquipComponentLog, Warning, TEXT("SpawnAndAttach: EquipmentParts Not Contained the type"));
+		return;
+	}
+	if (!EquipItem)
+	{
+		UE_LOG(EquipComponentLog, Warning, TEXT("SpawnAndAttach: EquipItem Is NULL !!"));
+		return;
+	}
+
+	EquipmentParts[type] = EquipItem;
+
+	if (!EquipmentParts.FindRef(type))
+	{
+		UE_LOG(EquipComponentLog, Warning, TEXT("SpawnAndAttach : EquipmentParts Creating Error !!"));
+		return;
+	}
+
+	EquipmentParts[type]->SetEquipment();
+	
+	// SetSocketName
+	FName SocketName;
+	switch (type)
+	{
+	case EEquipType::E_Head:
+	{
+		SocketName = "Helmet";
+		break;
+	}
+	case EEquipType::E_Chest:
+	{
+		SocketName = "Chest";
+		break;
+	}
+	case EEquipType::E_Legs:
+	{
+		SocketName = "Legs";
+		break;
+	}
+	case EEquipType::E_Feet:
+	{
+		SocketName = "Feet";
+		break;
+	}
+	case EEquipType::E_Hands:
+	{
+		SocketName = "Hands";
+		break;
+	}
+	case EEquipType::E_Weapon:
+	{
+		SocketName = "Weapon";
+		break;
+	}
+	case EEquipType::E_SubWeapon:
+	{
+		SocketName = "SubWeapon";
+		break;
+	}
+	default:
+	{
+		UE_LOG(EquipComponentLog, Warning, TEXT("SpawnAndAttach : ItemType Error !!"));
+		return;
+	}
+	}
+	EquipmentParts[type]->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SocketName);
+
+	/*
 	switch (type)
 	{
 	case EEquipType::E_Head:
@@ -223,11 +328,15 @@ void UEquipComponent::SpawnAndAttach(EEquipType type)
 		return;
 	}
 	}
+	*/
 }
 
 void UEquipComponent::HUDImageSetting(EEquipType type)
 {
 	FItemData data;
+
+	data = EquipParts.FindRef(type);
+	/*
 	switch (type)
 	{
 	case EEquipType::E_Head:
@@ -261,6 +370,7 @@ void UEquipComponent::HUDImageSetting(EEquipType type)
 		break;
 	}
 	}
+	*/
 
 	if (data.ItemType == EItemType::E_None)
 	{

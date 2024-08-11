@@ -6,6 +6,8 @@
 #include "Character/BaseHuman.h"
 #include "Character/Hero.h"
 #include "Helper.h"
+#include "TPS_GameInstance.h"
+#include "Component/ItemComponent.h"
 
 DEFINE_LOG_CATEGORY(ItemLog);
 
@@ -18,7 +20,7 @@ ABaseItem::ABaseItem()
  	PrimaryActorTick.bCanEverTick = true;
 
 	itemdata.ItemType = EItemType::E_None;
-	Rarity = ERarity::E_None;
+	//Rarity = ERarity::E_None;
 
 	StaticMesh = Helper::CreateSceneComponent<UStaticMeshComponent>(this, "Static Mesh");
 	// Scene = Helper::CreateSceneComponent<USceneComponent>(this, "Scene");
@@ -31,6 +33,24 @@ ABaseItem::ABaseItem()
 void ABaseItem::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// ItemComponent Setting
+	{
+		UTPS_GameInstance* GameInstance = Cast<UTPS_GameInstance>(GetWorld()->GetGameInstance());
+		if (!GameInstance)
+		{
+			UE_LOG(ItemLog, Warning, TEXT("GameInstance Is NULL !!"));
+			return;
+		}
+
+		ItemComponent = GameInstance->GetItemComponent();
+		if (!ItemComponent)
+		{
+			UE_LOG(ItemLog, Warning, TEXT("ItemComponent Is NULL !!"));
+			return;
+		}
+	}
+
 	DataTableSetting();
 }
 
@@ -40,6 +60,8 @@ void ABaseItem::DataTableSetting()
 	{
 		UE_LOG(ItemLog, Warning, TEXT("%s : ItemID is NULL"), *this->GetName());
 	}
+
+	Name = ItemComponent->GetItemName(itemdata);
 }
 
 //void ABaseItem::TextSetting()

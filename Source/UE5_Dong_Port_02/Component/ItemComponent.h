@@ -52,6 +52,9 @@ public:
 	const FLinearColor* GetRarityColor(ERarity rarity);
 	float GetItemWeight(FItemData item);
 	FItemDataTableBase GetDataTableBase(FItemData item);
+	FName GetItemName(FItemData item);
+	EEquipType GetEquipType(FItemData item) { return CachedEquipmentItems.Find(item.ItemID)->EquipType; }
+	TSubclassOf<ABaseItem> GetEquipItemClass(FItemData item) { return CachedEquipmentItems.FindRef(item.ItemID).ItemClass; }
 	FEquipmentItem GetEquipmentDataTable(FItemData item);
 
 };

@@ -34,7 +34,7 @@ protected:
 	float StandardWalkSpeed;
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	//TObjectPtr<UItemComponent> ItemComponent;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStatusComponent> StatusComponent;
 
 public:	
