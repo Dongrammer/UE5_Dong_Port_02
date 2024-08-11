@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
+#include "Component/StatusComponent.h"
+
 #include "BaseCharacter.generated.h"
 
 class ABaseItem;
@@ -29,8 +32,10 @@ protected:
 	bool bCanAttack = true;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float StandardWalkSpeed;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UItemComponent> ItemComponent;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//TObjectPtr<UItemComponent> ItemComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UStatusComponent> StatusComponent;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
@@ -46,4 +51,7 @@ public:
 	FORCEINLINE float GetStandardWalkSpeed() { return StandardWalkSpeed; }
 	void SetWalkSpeed(float speed);	
 	void InitWalkSpeed();
+
+	void EQuipItemStatus(TMap<EEquipStatus, int> status) { StatusComponent->EquipItemStatus(status); }
+	void UnequipItemStatus(TMap<EEquipStatus, int> status) { StatusComponent->UnequipItemStatus(status); }
 };

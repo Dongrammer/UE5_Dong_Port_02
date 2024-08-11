@@ -4,6 +4,7 @@
 #include "Widget/Equipment/EquipmentHUD.h"
 #include "Widget/Inventory/InventoryHUD.h"
 #include "Widget/Inventory/InventoryContextMenu.h"
+#include "Widget/Status/StatusHUD.h"
 
 void UMainHUD::NativeConstruct()
 {
@@ -19,10 +20,11 @@ FReply UMainHUD::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPoi
 	return FReply::Handled();
 }
 
-void UMainHUD::InitHUD(TObjectPtr<UEquipmentHUD> equipHUD, TObjectPtr<UInventoryHUD> invenHUD)
+void UMainHUD::InitHUD(TObjectPtr<UEquipmentHUD> equipHUD, TObjectPtr<UInventoryHUD> invenHUD, TObjectPtr<UStatusHUD> statusHUD)
 {
 	EquipHUD = equipHUD;
 	InvenHUD = invenHUD;
+	StatusHUD = statusHUD;
 }
 
 void UMainHUD::ToggleEquipHUD()
@@ -35,11 +37,17 @@ void UMainHUD::ToggleInvenHUD()
 	InvenHUD->ToggleHUD();
 }
 
+void UMainHUD::ToggleStatusHUD()
+{
+	StatusHUD->ToggleHUD();
+}
+
 bool UMainHUD::CheckHUDsVisibility()
 {
 	bool b = false;
 	if (!(EquipHUD->GetVisibility() == ESlateVisibility::Hidden)) b = true;
 	if (!(InvenHUD->GetVisibility() == ESlateVisibility::Hidden)) b = true;
+	if (!(StatusHUD->GetVisibility() == ESlateVisibility::Hidden)) b = true;
 
 	return b;
 }

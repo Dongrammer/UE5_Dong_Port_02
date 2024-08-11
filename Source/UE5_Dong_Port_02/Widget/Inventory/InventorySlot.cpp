@@ -8,6 +8,7 @@
 
 void UInventorySlot::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
+	UE_LOG(LogTemp, Log, TEXT("Create Inventory List Call"));
 	item = Cast<UInventorySlotObject>(ListItemObject);
 
 	if (!item)
@@ -20,8 +21,6 @@ void UInventorySlot::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 	SetCountText(item->ItemCount);
 	item->DItemCountUp.AddUFunction(this, "SetCountText");
-
-	UE_LOG(LogTemp, Log, TEXT("111"));
 	ItemImage->SetBrushFromTexture(item->ItemDataTable.Texture);
 	Text_ItemWeight->SetText(FText::FromString(FString::Printf(TEXT("%0.2f"), item->ItemDataTable.Weight)));
 

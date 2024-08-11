@@ -19,8 +19,11 @@
 #include "Widget/Inventory/InventoryHUD.h"
 #include "Widget/Inventory/InventoryContextMenu.h"
 #include "Widget/Equipment/EquipmentHUD.h"
+#include "Widget/InteractionHUD.h"
+#include "Widget/Status/StatusHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Item/BaseItem.h"
+#include "Kismet/GameplayStatics.h" // 월드 행렬을 뷰포트 행렬로 바꾸기 위해 필요
 
 DEFINE_LOG_CATEGORY(HeroLog);
 
@@ -38,6 +41,13 @@ AHero::AHero()
 	TechniqueComponent = Helper::CreateActorComponent<UTechniqueComponent>(this, "Technique Component");
 	// ActionComponent가 TechniqueComponent보다 위에 있어야함. ActionComponent에 CreateAction이 먼저 실행되어야 하기 때문.
 	SoulComponent = Helper::CreateActorComponent<USoulComponent>(this, "Soul Component");
+	
+	// InteractionCapsule
+	InteractionCapsule = Helper::CreateActorComponent<UCapsuleComponent>(this, "Interaction Capsule");
+	InteractionCapsule->AttachToComponent(Camera, FAttachmentTransformRules::KeepRelativeTransform);
+	InteractionCapsule->SetRelativeLocation(FVector(410, 0, -25));
+	InteractionCapsule->SetRelativeRotation(FRotator(0, -90, 0));
+	InteractionCapsule->SetRelativeScale3D(FVector(1.5, 1.5, 2));
 }
 
 void AHero::Tick(float DeltaSecond)
@@ -92,12 +102,20 @@ void AHero::Look(const FInputActionValue& Value)
 
 void AHero::DoInteraction()
 {
-	bInteraction = true;
+	//bInteraction = true;
+	if (InteractionItem)
+	{
+		GetItems(InteractionItem->itemdata, 1);
+
+		UE_LOG(LogTemp, Log, TEXT("Before Destroy : %p"), InteractionItem);
+		InteractionItem->Destroy();
+		UE_LOG(LogTemp, Log, TEXT("After Destroy : %p"), InteractionItem);
+	}
 }
 
 void AHero::EndInteraction()
 {
-	bInteraction = false;
+	//bInteraction = false;
 }
 
 void AHero::WeaponStartUp()
@@ -219,6 +237,25 @@ void AHero::EquipmentOn()
 	}
 }
 
+void AHero::StatusOn()
+{
+	if (!MainHUD->CheckHUDsVisibility())
+		SetMouseCenter();
+
+	MainHUD->ToggleStatusHUD();
+
+	if (MainHUD->CheckHUDsVisibility())
+	{
+		MainHUD->SetVisibility(ESlateVisibility::Visible);
+		SetMouseState(true, EInputModeType::E_GameAndUIOnly, MainHUD);
+	}
+	else
+	{
+		MainHUD->SetVisibility(ESlateVisibility::Hidden);
+		SetMouseState(false, EInputModeType::E_GameOnly);
+	}
+}
+
 void AHero::BeginPlay()
 {
 	Super::BeginPlay();
@@ -260,6 +297,11 @@ void AHero::BeginPlay()
 	MainHUD->GetInvenHUD()->DToggle.BindUFunction(this, "InventoryOn");
 	EquipComponent->InitEquipmentHUD(MainHUD->GetEquipHUD());
 	MainHUD->GetEquipHUD()->DToggle.BindUFunction(this, "EquipmentOn");
+	UE_LOG(LogTemp, Log, TEXT("%d"), StatusComponent->GetTotalStatus().HP);
+	StatusComponent->InitStatusHUD(MainHUD->GetStatusHUD());
+	UE_LOG(LogTemp, Log, TEXT("%d"), StatusComponent->GetTotalStatus().HP);
+	MainHUD->GetStatusHUD()->DToggle.BindUFunction(this, "StatusOn");
+
 	MainHUD->GetContextMenu()->SetInvenComp(InventoryComponent);
 	MainHUD->GetContextMenu()->SetEquipComp(EquipComponent);
 
@@ -268,6 +310,23 @@ void AHero::BeginPlay()
 	UE_LOG(HeroLog, Log, TEXT("Hero InvenHUD Address: %p"), InvenHUD);
 	UE_LOG(HeroLog, Log, TEXT("MainHUD InvenHUD: %p"), MainHUD->GetInvenHUD());
 
+	// Interaction
+	if (InteractionHUDClass)
+	{
+		InteractionHUD = CreateWidget<UInteractionHUD>(PlayerController, InteractionHUDClass, "Interaction HUD");
+		InteractionHUD->AddToViewport();
+		InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else 
+	{
+		UE_LOG(HeroLog, Warning, TEXT("InteractionHUDClass Is NULL !!"));
+		return;
+	}
+
+	InteractionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AHero::OnInteractionBeginOverlap);
+	InteractionCapsule->OnComponentEndOverlap.AddDynamic(this, &AHero::OnInteractionEndOverlap);
+
+	//
 	FVector Start = GetActorLocation();
 	FVector End = GetActorLocation() + FVector(100, 100, 0);
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red, true, -1, 0, 10);
@@ -331,6 +390,9 @@ void AHero::MappingInputAsset(UEnhancedInputComponent* Comp)
 
 	// Equipment
 	Comp->BindAction(InputAsset->EquipmentOn, ETriggerEvent::Started, this, &AHero::EquipmentOn);
+
+	// Statys
+	Comp->BindAction(InputAsset->StatusOn, ETriggerEvent::Started, this, &AHero::StatusOn);
 }
 
 void AHero::SetMouseState(bool visibility, EInputModeType inputmode, UWidget* widget)
@@ -388,26 +450,12 @@ void AHero::SetMouseCenter()
 
 void AHero::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// Check Item
-	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
-
-	if (Item)
-	{
-		Item->TextOnOff();
-		Item->AccessPlayer = this;
-	}
+	
 }
 
 void AHero::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	// Check Item
-	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
-
-	if (Item)
-	{
-		Item->TextOnOff();
-		Item->AccessPlayer = nullptr;
-	}
+	
 }
 
 void AHero::DoDashMovement()
@@ -415,24 +463,88 @@ void AHero::DoDashMovement()
 	ActionComponent->DoDashMovement();
 }
 
-bool AHero::CurrentStateAre(TArray<EStateType> states)
+void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	for (EStateType st : states)
+	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
+
+	if (Item && Item->bInField == true)
 	{
-		if (CurrentState == st)
-			return true;
+		OverlapedItems.AddUnique(Item);
+
+		UE_LOG(LogTemp, Log, TEXT("OverlapedItems Num : %d"), OverlapedItems.Num());
+
+		InteractionItem = Item;
+		InteractionHUD->SetName(InteractionItem->Name);
+
+		if (InteractionHUD->GetVisibility() == ESlateVisibility::Hidden)
+			InteractionHUD->SetVisibility(ESlateVisibility::HitTestInvisible);
 	}
-
-	return false;
 }
 
-bool AHero::CurrentStateIs(EStateType state)
+void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (CurrentState == state)
-		return true;
-	else
-		return false;
+	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
+
+	if (Item)
+	{
+		if (OverlapedItems.Contains(Item))
+			OverlapedItems.RemoveAt(OverlapedItems.Find(Item));
+
+		if (InteractionItem == Item)
+		{
+			InteractionItem = nullptr;
+
+			if (OverlapedItems.Num() == 0)
+			{
+				InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
+			}
+			else
+			{
+				InteractionItem = OverlapedItems[OverlapedItems.Num() - 1];
+				InteractionHUD->SetName(InteractionItem->Name);
+			}
+		}
+		else
+		{
+			if (OverlapedItems.Num() == 0)
+			{
+				InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
+			}
+		}
+	}
+	//if (InteractionItem == nullptr)
+	//{
+	//	if (OverlapedItems.Num() == 0)
+	//	{
+	//		InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
+	//	}
+	//	else
+	//	{
+	//		InteractionItem = OverlapedItems[OverlapedItems.Num() - 1];
+	//		InteractionHUD->SetName(InteractionItem->Name);
+	//	}
+	//}
+	//else
+	//{
+	//	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
+	//	OverlapedItems.RemoveAt(OverlapedItems.Find(Item));
+
+	//	if (InteractionItem == Item)
+	//	{
+	//		if (OverlapedItems.Num() == 0)
+	//		{
+	//			InteractionItem = nullptr;
+	//			InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
+	//		}
+	//		else
+	//		{
+	//			//InteractionItem = OverlapedItems[OverlapedItems.Num() - 1];
+	//			//InteractionHUD->SetName(InteractionItem->Name);
+	//		}
+	//	}
+	//}
 }
+
 
 void AHero::InitState()
 {

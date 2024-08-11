@@ -41,16 +41,10 @@ public:
 
 	/* ==================== Equipment ==================== */
 private:
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<ABaseEquip> Head;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<ABaseEquip> Chest;
+	TMap<EEquipType, FItemData> EquipParts;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<ABaseEquip> Legs;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<ABaseEquip> Feet;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<ABaseEquip> Hands;*/
+	TMap<EEquipType, TObjectPtr<ABaseEquip>> EquipmentParts;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FItemData Head;
@@ -65,8 +59,13 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FItemData Weapon;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ABaseEquip> HeadEquipment;
+
 public:
 	void Equip(FItemData item);
+	void UnEquip(EEquipType type);
+	void SpawnAndAttach(EEquipType type);
 
 	void HUDImageSetting(EEquipType type);
 };

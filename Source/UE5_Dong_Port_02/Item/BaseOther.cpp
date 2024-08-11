@@ -6,13 +6,11 @@ ABaseOther::ABaseOther()
 {
 	itemdata.ItemType = EItemType::E_Other;
 	DataTable = Helper::GetAsset<UDataTable>(L"/Game/Items/DT_Item_Other");
-
 }
 
 void ABaseOther::BeginPlay()
 {
 	Super::BeginPlay();
-	DataTableSetting();
 }
 
 void ABaseOther::DataTableSetting()
@@ -35,4 +33,5 @@ void ABaseOther::DataTableSetting()
 	EffectParticle = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->EffectParticle;
 	Description = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->Description;
 	Weight = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->Weight;
+	//ItemClass = DataTable->FindRow<FOtherItem>(itemdata.ItemID, "Row Name Error")->ItemClass;
 }

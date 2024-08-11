@@ -91,11 +91,12 @@ void UInventoryHUD::ToggleHUD()
 void UInventoryHUD::AddItem(const FItemData data, const FItemDataTableBase additem, const int count)
 {
 	// Create Data Object
-	int32 C = ItemList->GetNumItems();
-	FString SlotNameFString = FString::Printf(TEXT("Slot_%d"), C);
+	//int32 C = ItemList->GetNumItems();
+	//FString SlotNameFString = FString::Printf(TEXT("Slot_%d"), C);
+	FGuid SlotNameID = FGuid::NewGuid();
+	FString SlotNameFString = FString::Printf(TEXT("Slot_%d"), *SlotNameID.ToString());
 	FName SlotNameFName(*SlotNameFString);
 	TObjectPtr<UInventorySlotObject> ItemObject = NewObject<UInventorySlotObject>(this, UInventorySlotObject::StaticClass(), SlotNameFName);
-	
 	ItemObject->ItemDataTable.Name = additem.Name;
 	ItemObject->ItemDataTable.Rarity = additem.Rarity;
 	ItemObject->ItemDataTable.Texture = additem.Texture;
@@ -104,7 +105,7 @@ void UInventoryHUD::AddItem(const FItemData data, const FItemDataTableBase addit
 	ItemObject->ItemData = data;
 	ItemObject->DItemUse.AddUFunction(this, "ItemUse");
 	ItemObject->DItemClick.AddUFunction(this, "ItemClick");
-
+	
 	ItemList->AddItem(ItemObject);
 }
 
@@ -119,7 +120,14 @@ void UInventoryHUD::CountUpItem(const int index, const int count)
 
 void UInventoryHUD::RemoveItem(const int index)
 {
-	ItemList->RemoveItem(ItemList->GetItemAt(index));
+	TObjectPtr<UObject> LItem = ItemList->GetItemAt(index);
+	if (LItem)
+	{
+		ItemList->RemoveItem(ItemList->GetItemAt(index));
+		LItem->ConditionalBeginDestroy();
+	}
+
+	//SetSlotName();
 }
 
 void UInventoryHUD::SetTextWeight(float max, float current)
@@ -150,3 +158,19 @@ void UInventoryHUD::ItemClick(FItemData item)
 {
 	InventoryComponent->ItemClick(item);
 }
+
+//void UInventoryHUD::SetSlotName()
+//{
+//	for (int i = 0; i < ItemList->GetNumItems(); i++)
+//	{
+//		TObjectPtr<UInventorySlotObject> obj = Cast<UInventorySlotObject>(ItemList->GetItemAt(i));
+//
+//		if (obj)
+//		{
+//			FString SlotNameFString = FString::Printf(TEXT("Slot_%d"), i + 1);
+//			FName SlotNameFName(*SlotNameFString);
+//
+//			obj->Rename(*SlotNameFString);
+//		}
+//	}
+//}

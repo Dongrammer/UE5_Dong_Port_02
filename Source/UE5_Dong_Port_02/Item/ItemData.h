@@ -1,7 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "ItemData.generated.h"
+
+class ABaseItem;
 
 /* ==================== Base ==================== */
 UENUM(BlueprintType)
@@ -53,6 +56,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
 	UStaticMesh* StaticMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
+	TSubclassOf<ABaseItem> ItemClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
 	float Weight = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
 	FString Description;
@@ -97,6 +102,7 @@ enum class EEquipType : uint8
 	E_Feet UMETA(DisplayName = "Feet"),
 	E_Hands UMETA(DisplayName = "Hands"),
 	E_Weapon UMETA(DisplayName = "Weapon"),
+	E_SubWeapon UMETA(DisplayName = "Weapon"),
 	E_Max UMETA(Hidden)
 };
 
@@ -128,6 +134,21 @@ public:
 };
 
 /* ==================== Weapon ==================== */
+
+UENUM(BlueprintType)
+enum class EWeaponStatus : uint8
+{
+	E_None UMETA(Hidden),
+	E_MHP UMETA(DisplayName = "MHP"),
+	E_MMP UMETA(DisplayName = "MMP"),
+	E_MSoul UMETA(DisplayName = "MSoul"),
+	E_ATK UMETA(DisplayName = "ATK"),
+	E_MATK UMETA(DisplayName = "MATK"),
+	E_DEF UMETA(DisplayName = "DEF"),
+	E_MDEF UMETA(DisplayName = "MDEF"),
+	E_Critical UMETA(DisplayName = "Critical"),
+	E_Max UMETA(Hidden)
+};
 
 USTRUCT(BlueprintType)
 struct FWeaponItem : public FItemDataTableBase

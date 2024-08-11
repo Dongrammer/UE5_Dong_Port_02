@@ -84,14 +84,12 @@ void UInventoryComponent::GetItems(const FItemData itemdata, const int count)
 		newitem.ItemData = itemdata;
 		newitem.count = count;
 		Items.Add(newitem);
-
 		if (InvenHUD) InvenHUD->AddItem(itemdata, ItemComponent->GetDataTableBase(itemdata), count);
 	}
 
 	// Set Weight
 	for (int i = 0; i < count; i++)
-		CurrentWeight += ItemComponent->GetItemWeight(itemdata);// RowData.Weight;
-	if (InvenHUD) InvenHUD->SetTextWeight(MaxInvenWeight, CurrentWeight);
+		SetWeight(ItemComponent->GetItemWeight(itemdata));
 }
 
 void UInventoryComponent::InitInvenHUD(TObjectPtr<UInventoryHUD> hud)
@@ -126,6 +124,7 @@ void UInventoryComponent::ItemUse(FItemData item)
 		if (Items[i].ItemData.ItemType == item.ItemType && Items[i].ItemData.ItemID == item.ItemID)
 		{
 			Items[i].count--;
+			SetWeight(-ItemComponent->GetItemWeight(item));
 
 			if (Items[i].count <= 0)
 			{
@@ -167,6 +166,15 @@ void UInventoryComponent::ItemClick(FItemData item)
 	}
 
 	ContextMenu->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UInventoryComponent::SetWeight(float weight)
+{
+	CurrentWeight += weight;
+
+	if (CurrentWeight < 0) CurrentWeight = 0;
+
+	if (InvenHUD) InvenHUD->SetTextWeight(MaxInvenWeight, CurrentWeight);
 }
 
 //void UInventoryComponent::SetFocusHUD()

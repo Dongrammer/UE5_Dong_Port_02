@@ -30,3 +30,10 @@ void UEquipSlot::SetSlotImage(UTexture2D* image, const FLinearColor* color)
 	IM_Rarity->GetDynamicMaterial()->SetVectorParameterValue("Color", c);
 	IM_Rarity->SetVisibility(ESlateVisibility::Visible);
 }
+
+void UEquipSlot::InitSlotImage()
+{
+	IM_Base->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	IM_Item->SetVisibility(ESlateVisibility::Hidden);
+	IM_Rarity->SetVisibility(ESlateVisibility::Hidden);
+}

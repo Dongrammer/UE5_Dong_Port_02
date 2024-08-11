@@ -72,7 +72,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UButton> Button_Exit;
 
-
 public:
 	/*virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;*/
@@ -80,4 +79,6 @@ public:
 	void ItemUse(FItemData item);
 	UFUNCTION()
 	void ItemClick(FItemData item);
+
+	//void SetSlotName();
 };

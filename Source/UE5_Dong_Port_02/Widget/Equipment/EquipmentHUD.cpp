@@ -119,3 +119,44 @@ void UEquipmentHUD::SetSlotImage(EEquipType type, UTexture2D* image, const FLine
 	}
 	}
 }
+
+void UEquipmentHUD::InitSlotImage(EEquipType type)
+{
+	switch (type)
+	{
+	case EEquipType::E_Head:
+	{
+		Slot_Head->InitSlotImage();
+		break;
+	}
+	case EEquipType::E_Chest:
+	{
+		Slot_Chest->InitSlotImage();
+		break;
+	}
+	case EEquipType::E_Legs:
+	{
+		Slot_Legs->InitSlotImage();
+		break;
+	}
+	case EEquipType::E_Feet:
+	{
+		Slot_Feet->InitSlotImage();
+		break;
+	}
+	case EEquipType::E_Hands:
+	{
+		Slot_Hands->InitSlotImage();
+		break;
+	}
+	case EEquipType::E_Weapon:
+	{
+		Slot_Weapon->InitSlotImage();
+		break;
+	}
+	default:
+	{
+		return;
+	}
+	}
+}

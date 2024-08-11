@@ -54,7 +54,7 @@ public:
 	void SetInfoDashNode();
 
 private:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Technique|Essential", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTechniqueHUDDataAsset> TechniqueHUDDataAsset;
 	UPROPERTY()
 	TMap<EWeaponType, TObjectPtr<UTechniqueHUD>> HUDs;
@@ -65,9 +65,9 @@ private:
 	void NodeSelected(UTechniqueNode* node);
 
 private:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Technique|Action", meta = (AllowPrivateAccess = "true"))
 	TArray<FActionData> AvailableAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Action", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Technique|Action", meta = (AllowPrivateAccess = "true"))
 	TArray<FActionData> SelectedAction;
 
 public:

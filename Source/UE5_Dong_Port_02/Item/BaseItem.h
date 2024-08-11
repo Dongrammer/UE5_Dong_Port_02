@@ -8,7 +8,8 @@ DECLARE_LOG_CATEGORY_EXTERN(ItemLog, Log, All);
 
 class ABaseHuman;
 class USphereComponent;
-class UTextRenderComponent;
+class UBoxComponent;
+//class UTextRenderComponent;
 
 UCLASS()
 class UE5_DONG_PORT_02_API ABaseItem : public AActor
@@ -21,27 +22,28 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void DataTableSetting();
-	virtual void TextSetting();
+	//virtual void TextSetting();
 
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION()
-	virtual void TextOnOff();
+	//UFUNCTION()
+	//virtual void TextOnOff();
 
 public:
 	ABaseHuman* Owner;
-	ABaseHuman* AccessPlayer;
+	// ABaseHuman* AccessPlayer;
+	bool bInField = true;
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
-	USceneComponent* Scene;
+	//UPROPERTY(EditDefaultsOnly)
+	//USceneComponent* Scene;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	TObjectPtr<USphereComponent> SphereComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	TObjectPtr<UStaticMeshComponent> StaticMesh;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
-	TObjectPtr<UTextRenderComponent> Text;
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
+	TObjectPtr<UTextRenderComponent> Text;*/
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "DataTable")
@@ -63,4 +65,6 @@ public:
 	FString Description = "";
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DataTable")
 	float Weight = 0;
+	//UPROPERTY(VisibleAnywhere, Category = "DataTable")
+	//TObjectPtr<ABaseItem> ItemClass;
 };

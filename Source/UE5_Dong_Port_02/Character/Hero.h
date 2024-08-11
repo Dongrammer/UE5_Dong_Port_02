@@ -20,12 +20,15 @@ struct FInputActionValue;
 class UMainHUD;
 class UInventoryHUD;
 class UWidget;
+class UInteractionHUD;
 // Technique
 class UTechniqueComponent;
 // Action
 class UActionComponent;
 // Soul
 class USoulComponent;
+//
+class ABaseItem;
 
 UENUM()
 enum class EInputModeType : uint8
@@ -44,15 +47,6 @@ enum class EInputDirection : uint8
 	E_Back UMETA(DisplayName = "Back")
 };
 
-UENUM(BlueprintType)
-enum class EStateType : uint8
-{
-	E_Idle UMETA(DisplayName = "Idle"),
-	E_Attack UMETA(DisplayName = "Attack"),
-	E_Avoid UMETA(DisplayName = "Avoid"),
-	E_Hitted UMETA(DisplayName = "Hitted"),
-	E_Dead UMETA(DisplayName = "Dead")
-};
 
 /*
 	[Key Mapping Context], [InputAsset] Direct Specification required.
@@ -71,16 +65,19 @@ public:
 	FORCEINLINE APlayerController* GetPlayerController() { return PlayerController; }
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAcces = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraArm;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAcces = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* Camera;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAcces = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+	UCapsuleComponent* InteractionCapsule;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Essential", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* KeyMappingContext;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input|Essential", meta = (AllowPrivateAccesss = "true"))
 	UInputDataAsset* InputAsset;
 
 public:
@@ -133,11 +130,14 @@ public:
 	UFUNCTION()
 	void EquipmentOn();
 
+	UFUNCTION()
+	void StatusOn();
+
 	/* ==================== HUD ==================== */
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMainHUD> MainHUD;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD|Essential", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UMainHUD> MainHUDClass;
 
 
@@ -145,7 +145,7 @@ private:
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD")
 	TObjectPtr<UInventoryHUD> InvenHUD;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD|Essential", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UInventoryHUD> InvenHUDClass;
 	
 private:
@@ -172,21 +172,33 @@ public:
 	FORCEINLINE UActionComponent* GetActionComponent() { return ActionComponent; }
 
 	/* ==================== Interaction ==================== */
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Interaction")
+	TObjectPtr<UInteractionHUD> InteractionHUD;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Interaction|Essential", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UInteractionHUD> InteractionHUDClass;
+	UPROPERTY(VisibleAnywhere, Category = "Interaction")
+	TArray<TObjectPtr<ABaseItem>> OverlapedItems;
+
+
+	UFUNCTION()
+	void OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 public:
 	bool bLeftClicked = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<ABaseItem> InteractionItem;
 
 	/* ==================== State ==================== */
-private:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	EStateType CurrentState = EStateType::E_Idle;
-
 public:
 	UFUNCTION(BlueprintCallable)
-	bool CurrentStateAre(TArray<EStateType> states);
+	bool CurrentStateAre(TArray<EStateType> states) { return StatusComponent->CurrentStateAre(states); }
 	UFUNCTION(BlueprintCallable)
-	bool CurrentStateIs(EStateType state);
-	void SetCurrentState(EStateType state) { CurrentState = state; }
-	FORCEINLINE EStateType GetCurrentState() { return CurrentState; }
+	bool CurrentStateIs(EStateType state) { return StatusComponent->CurrentStateIs(state); }
+	void SetCurrentState(EStateType state) { StatusComponent->SetCurrentState(state); }
+	FORCEINLINE EStateType GetCurrentState() { return StatusComponent->GetCurrentState(); }
 	void InitState();
 
 	/* ==================== Soul ==================== */

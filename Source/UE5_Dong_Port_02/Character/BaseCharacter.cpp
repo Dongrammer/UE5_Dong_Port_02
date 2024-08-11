@@ -2,7 +2,8 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Component/ItemComponent.h"
+
+//#include "Component/ItemComponent.h"
 #include "Item/BaseItem.h"
 #include "Helper.h"
 
@@ -14,7 +15,8 @@ ABaseCharacter::ABaseCharacter()
 	BodyCollision->InitCapsuleSize(42.0f, 96.0f);
 	SetCharacterMovement();
 
-	ItemComponent = Helper::CreateActorComponent<UItemComponent>(this, "Item Component");
+	StatusComponent = Helper::CreateActorComponent<UStatusComponent>(this, "Status Component");
+	//ItemComponent = Helper::CreateActorComponent<UItemComponent>(this, "Item Component");
 }
 
 void ABaseCharacter::BeginPlay()

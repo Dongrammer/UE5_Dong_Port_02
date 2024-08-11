@@ -65,6 +65,7 @@ void UInventoryContextMenu::UseItem()
 void UInventoryContextMenu::EquipItem()
 {
 	this->SetVisibility(ESlateVisibility::Hidden);
+	InventoryComponent->ItemUse(itemdata);
 	EquipComponent->Equip(itemdata);
 }
 

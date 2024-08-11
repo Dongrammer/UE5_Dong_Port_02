@@ -49,6 +49,7 @@ public:
 	void ToggleHUD();
 	
 	void SetSlotImage(EEquipType type, UTexture2D* image, const FLinearColor* color);
+	void InitSlotImage(EEquipType type);
 
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))

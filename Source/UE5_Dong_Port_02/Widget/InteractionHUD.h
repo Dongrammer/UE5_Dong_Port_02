@@ -2,34 +2,32 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "EquipSlot.generated.h"
+#include "InteractionHUD.generated.h"
 
+class UCanvasPanel;
 class USizeBox;
-class UBorder;
-class UImage;
+class UTextBlock;
+class UVerticalBox;
 
 UCLASS()
-class UE5_DONG_PORT_02_API UEquipSlot : public UUserWidget
+class UE5_DONG_PORT_02_API UInteractionHUD : public UUserWidget
 {
 	GENERATED_BODY()
-
-private:
+	
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UCanvasPanel> CP_01;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USizeBox> SB_Body;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UBorder> BO_Hover;
+	TObjectPtr<UVerticalBox> VB_01;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UImage> IM_Base;
+	TObjectPtr<UTextBlock> TB_Interaction;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UImage> IM_Item;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UImage> IM_Rarity;
-
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UTexture2D> EmptyImage;
+	TObjectPtr<UTextBlock> TB_Name;
 
 public:
-	void NativePreConstruct() override;
-	void SetSlotImage(UTexture2D* image, const FLinearColor* color);
-	void InitSlotImage();
+	void SetName(FName name);
+	void SetPosition(FVector2D position);
+	//void SetPosition();
 };

@@ -17,10 +17,6 @@ class UE5_DONG_PORT_02_API UItemComponent : public UActorComponent
 public:	
 	UItemComponent();
 
-	//static UItemComponent* GetInstance();
-
-private:
-	//static UItemComponent* Instance;
 
 protected:
 	virtual void BeginPlay() override;
