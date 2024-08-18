@@ -47,6 +47,7 @@ public:
 	void ToggleEquipHUD();
 	void ToggleInvenHUD();
 	void ToggleStatusHUD();
+	void SetAllHidden();
 
 	bool CheckHUDsVisibility(); // HUD가 하나라도 열려있는가?
 };

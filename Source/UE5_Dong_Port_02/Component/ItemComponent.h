@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "../Item/ItemData.h"
+#include "../Weapon/WeaponData.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(ItemCompLog, Log, All);
 
@@ -56,5 +57,6 @@ public:
 	EEquipType GetEquipType(FItemData item) { return CachedEquipmentItems.Find(item.ItemID)->EquipType; }
 	TSubclassOf<ABaseItem> GetEquipItemClass(FItemData item) { return CachedEquipmentItems.FindRef(item.ItemID).ItemClass; }
 	FEquipmentItem GetEquipmentDataTable(FItemData item);
+	EWeaponType GetWeaponType(FItemData item) { return CachedEquipmentItems.FindRef(item.ItemID).WeaponType; }
 
 };

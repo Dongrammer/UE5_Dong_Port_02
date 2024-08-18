@@ -66,6 +66,7 @@ public:
 	void ItemUse(FItemData item);
 	void ItemClick(FItemData item);
 	void SetWeight(float weight);
+	void EquipItem(FItemData item);
 	/*void SetFocusHUD();
 	void SetFocusInit();*/
 

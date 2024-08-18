@@ -163,6 +163,11 @@ void UInventoryComponent::ItemClick(FItemData item)
 		ContextMenu->SetSwitcher(1);
 		break;
 	}
+	case EItemType::E_Weapon:
+	{
+		ContextMenu->SetSwitcher(1);
+		break;
+	}
 	}
 
 	ContextMenu->SetVisibility(ESlateVisibility::Visible);
@@ -175,6 +180,12 @@ void UInventoryComponent::SetWeight(float weight)
 	if (CurrentWeight < 0) CurrentWeight = 0;
 
 	if (InvenHUD) InvenHUD->SetTextWeight(MaxInvenWeight, CurrentWeight);
+}
+
+void UInventoryComponent::EquipItem(FItemData item)
+{
+	ContextMenu->SetItemData(item);
+	ContextMenu->EquipItem();
 }
 
 //void UInventoryComponent::SetFocusHUD()

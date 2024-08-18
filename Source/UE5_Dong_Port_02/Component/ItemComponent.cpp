@@ -9,7 +9,7 @@ UItemComponent::UItemComponent()
 
 	OtherDataTable = Helper::GetAssetDynamic<UDataTable>(L"/Game/Items/DT_Item_Other");
 	EquipmentDataTable = Helper::GetAssetDynamic<UDataTable>(L"/Game/Items/DT_Item_Equipment");
-	WeaponDataTable = Helper::GetAssetDynamic<UDataTable>(L"/Game/Items/DT_Item_Other");
+	WeaponDataTable = Helper::GetAssetDynamic<UDataTable>(L"/Game/Items/DT_Item_Weapon");
 
 	CachingDataTable();
 }
@@ -38,7 +38,9 @@ void UItemComponent::CachingDataTable()
 
 	for (auto& Row : OtherDataTable->GetRowMap())
 	{
-		FOtherItem* data = (FOtherItem*)Row.Value;
+		//FOtherItem* data = (FOtherItem*)Row.Value;
+		FOtherItem* data = OtherDataTable->FindRow<FOtherItem>(Row.Key, TEXT("Caching Other Data"), true);
+
 		if (data)
 			CachedOtherItems.Add(Row.Key, *data);
 	}
@@ -52,7 +54,8 @@ void UItemComponent::CachingDataTable()
 
 	for (auto& Row : EquipmentDataTable->GetRowMap())
 	{
-		FEquipmentItem* data = (FEquipmentItem*)Row.Value;
+		//FEquipmentItem* data = (FEquipmentItem*)Row.Value;
+		FEquipmentItem* data = EquipmentDataTable->FindRow<FEquipmentItem>(Row.Key, TEXT("Caching Equipment Data"), true);
 		if (data)
 			CachedEquipmentItems.Add(Row.Key, *data);
 	}
@@ -66,7 +69,8 @@ void UItemComponent::CachingDataTable()
 
 	for (auto& Row : WeaponDataTable->GetRowMap())
 	{
-		FWeaponItem* data = (FWeaponItem*)Row.Value;
+		//FWeaponItem* data = (FWeaponItem*)Row.Value;
+		FWeaponItem* data = WeaponDataTable->FindRow<FWeaponItem>(Row.Key, TEXT("Caching Weapon Data"), true);
 		if (data)
 			CachedWeaponItems.Add(Row.Key, *data);
 	}
@@ -136,12 +140,14 @@ FItemDataTableBase UItemComponent::GetDataTableBase(FItemData item)
 	FName name = item.ItemID;
 	FItemDataTableBase data;
 
+	UE_LOG(LogTemp, Log, TEXT(" GetDT : %s, %d"), *name.ToString(), static_cast<uint8>(type));
 	switch (type)
 	{
 	case EItemType::E_Equipment:
 	{
 		if (CachedEquipmentItems.Contains(name))
 		{
+			UE_LOG(LogTemp, Log, TEXT(" EQuip !!"));
 			data.Name = CachedEquipmentItems.FindRef(name).Name;
 			data.Rarity = CachedEquipmentItems.FindRef(name).Rarity;
 			data.Texture = CachedEquipmentItems.FindRef(name).Texture;
@@ -153,8 +159,10 @@ FItemDataTableBase UItemComponent::GetDataTableBase(FItemData item)
 	}
 	case EItemType::E_Weapon:
 	{
+		UE_LOG(LogTemp, Log, TEXT(" Weapon?? "));
 		if (CachedWeaponItems.Contains(name))
 		{
+			UE_LOG(LogTemp, Log, TEXT(" Weapon!! "));
 			data.Name = CachedWeaponItems.FindRef(name).Name;
 			data.Rarity = CachedWeaponItems.FindRef(name).Rarity;
 			data.Texture = CachedWeaponItems.FindRef(name).Texture;
@@ -170,6 +178,7 @@ FItemDataTableBase UItemComponent::GetDataTableBase(FItemData item)
 	{
 		if (CachedOtherItems.Contains(name))
 		{
+			UE_LOG(LogTemp, Log, TEXT(" Other!! "));
 			data.Name = CachedOtherItems.FindRef(name).Name;
 			data.Rarity = CachedOtherItems.FindRef(name).Rarity;
 			data.Texture = CachedOtherItems.FindRef(name).Texture;
@@ -180,7 +189,10 @@ FItemDataTableBase UItemComponent::GetDataTableBase(FItemData item)
 		}
 	}
 	default:
+	{
+		UE_LOG(LogTemp, Log, TEXT(" Default!! "));
 		break;
+	}
 	}
 
 	UE_LOG(ItemCompLog, Warning, TEXT("GetDataTableBase : ItemType Error !!"));
@@ -193,19 +205,22 @@ FName UItemComponent::GetItemName(FItemData item)
 	{
 	case EItemType::E_Equipment:
 	{
+		if (CachedEquipmentItems.Find(item.ItemID))
 		return CachedEquipmentItems.Find(item.ItemID)->Name;
 	}
 	case EItemType::E_Other:
 	{
+		if (CachedOtherItems.Find(item.ItemID))
 		return CachedOtherItems.Find(item.ItemID)->Name;
 	}
 	case EItemType::E_Weapon:
 	{
+		if (CachedWeaponItems.Find(item.ItemID))
 		return CachedWeaponItems.Find(item.ItemID)->Name;
 	}
 	}
 
-	return FName();
+	return FName("Nope");
 }
 
 FEquipmentItem UItemComponent::GetEquipmentDataTable(FItemData item)

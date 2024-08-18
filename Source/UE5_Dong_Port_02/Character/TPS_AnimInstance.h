@@ -4,6 +4,7 @@
 #include "Animation/AnimInstance.h"
 
 #include "../Weapon/WeaponData.h"
+#include "../Item/ItemData.h"
 
 #include "TPS_AnimInstance.generated.h"
 

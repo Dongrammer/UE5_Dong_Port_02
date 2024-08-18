@@ -4,6 +4,7 @@
 #include "Engine/DataAsset.h"
 
 #include "../Weapon/WeaponData.h"
+#include "../Item/ItemData.h"
 
 #include "TechniqueHUDDataAsset.generated.h"
 

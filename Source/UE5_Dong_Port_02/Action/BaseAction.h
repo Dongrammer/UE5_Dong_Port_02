@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "../Weapon/WeaponData.h"
+#include "../Item/ItemData.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(ActionLog, Log, All);
 

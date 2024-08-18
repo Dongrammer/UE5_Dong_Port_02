@@ -42,6 +42,13 @@ void UMainHUD::ToggleStatusHUD()
 	StatusHUD->ToggleHUD();
 }
 
+void UMainHUD::SetAllHidden()
+{
+	EquipHUD->SetVisibility(ESlateVisibility::Hidden);
+	InvenHUD->SetVisibility(ESlateVisibility::Hidden);
+	StatusHUD->SetVisibility(ESlateVisibility::Hidden);
+}
+
 bool UMainHUD::CheckHUDsVisibility()
 {
 	bool b = false;

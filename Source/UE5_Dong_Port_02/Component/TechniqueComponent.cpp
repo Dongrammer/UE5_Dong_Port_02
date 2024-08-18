@@ -23,9 +23,14 @@ UTechniqueComponent::UTechniqueComponent()
 
 	// ActionData Init
 	FActionData TempData;
+	FActionDataArray TempArray;
 	TempData.ActionNumber = 0;
 	TempData.ActionType = EActionType::E_None;
-	SelectedAction.Init(TempData, 5);
+	TempArray.ActionDatas.Init(TempData, 5);
+	for (int i = static_cast<uint8>(EWeaponType::E_None) + 1; i < static_cast<uint8>(EWeaponType::E_Max); i++)
+	{
+		SelectedAction.Add(static_cast<EWeaponType>(i), TempArray);
+	}
 }
 
 void UTechniqueComponent::ToggleHUD()
@@ -61,6 +66,11 @@ void UTechniqueComponent::ToggleHUD()
 			hud->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
+}
+
+bool UTechniqueComponent::GetHUDVisible()
+{
+	return CurrentHUD->IsVisible();
 }
 
 void UTechniqueComponent::NodeHUDNodeClick(UTechniqueNode* node)
@@ -168,9 +178,9 @@ void UTechniqueComponent::BeginPlay()
 			}
 			break;
 		}
-		case EWeaponType::E_Sword:
+		case EWeaponType::E_OneHandSword:
 		{
-			for (int j = static_cast<uint8>(EDashAction::E_SW_Dash_Start) + 1; j < static_cast<uint8>(EDashAction::E_SW_Dash_End); j++)
+			for (int j = static_cast<uint8>(EDashAction::E_OHSW_Dash_Start) + 1; j < static_cast<uint8>(EDashAction::E_OHSW_Dash_End); j++)
 			{
 				dashes.Add(static_cast<EDashAction>(j));
 			}
@@ -276,7 +286,28 @@ void UTechniqueComponent::SelectDashAction(EDashAction dash)
 
 void UTechniqueComponent::SelectHUDNodeClick(FActionData action, uint8 spaceNum)
 {
-	SelectedAction[spaceNum] = action;
-	Player->GetActionComponent()->SettingActions(SelectedAction);
+	SelectedAction.Find(static_cast<EWeaponType>(static_cast<uint8>(action.ActionType)))->ActionDatas[spaceNum] = action;
+	//SelectedAction.FindRef(static_cast<EWeaponType>(static_cast<uint8>(action.ActionType))).ActionDatas[spaceNum].ActionType = action.ActionType;
+	//SelectedAction.FindRef(static_cast<EWeaponType>(static_cast<uint8>(action.ActionType))).ActionDatas[spaceNum].ActionNumber = action.ActionNumber;
+	//SelectedAction.Find(EWeaponType::E_Gauntlet).ActionDatas[spaceNum] = action;
+	//SelectedAction.Find(EWeaponType::E_Gauntlet)->ActionDatas[spaceNum] = action;
+
+	//UE_LOG(LogTemp, Log, TEXT("ActionType : %d, Action Num : %d, spaceNum : %d"), static_cast<uint8>(action.ActionType), static_cast<uint8>(action.ActionNumber), spaceNum);
+
+	//UEnum* EnumPtr1 = StaticEnum<EActionType>();
+	//FString EnumString1 = EnumPtr1->GetNameStringByIndex(static_cast<uint8>(action.ActionType));
+	//UE_LOG(LogTemp, Log, TEXT("%s"), *EnumString1);
+
+	//UEnum* EnumPtr2 = StaticEnum<EWeaponType>();
+	//FString EnumString2 = EnumPtr2->GetNameStringByIndex(static_cast<uint8>(static_cast<EWeaponType>(static_cast<uint8>(action.ActionType))));
+	//UE_LOG(LogTemp, Log, TEXT("%s"), *EnumString2);
+
+	//SelectedAction[spaceNum] = action;
+	/*UE_LOG(LogTemp, Log, TEXT("TechniqueComp :  - %d"), action.ActionNumber);
+	for (int i = 0; i < 5; i++)
+	{
+		UE_LOG(LogTemp, Log, TEXT("TechniqueComp : SelectedAction[%d] - %d"), i, SelectedAction.FindRef(EWeaponType::E_Gauntlet).ActionDatas[i].ActionNumber);
+	}*/
+	Player->GetActionComponent()->SettingActions(SelectedAction.FindRef(static_cast<EWeaponType>(static_cast<uint8>(action.ActionType))).ActionDatas);
 }
 

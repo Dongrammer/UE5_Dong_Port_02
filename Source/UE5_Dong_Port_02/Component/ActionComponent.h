@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Action/ActionData.h"
 #include "../Weapon/WeaponData.h"
+#include "../Item/ItemData.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(ActionCompLog, Log, All);
 
@@ -15,6 +16,16 @@ class AHero;
 class ABaseAction;
 class UActionDataAsset;
 class ABaseDash;
+
+USTRUCT(BlueprintType)
+struct FActionArray
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<TObjectPtr<ABaseAction>> Actions;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE5_DONG_PORT_02_API UActionComponent : public UActorComponent
@@ -36,6 +47,7 @@ public:
 	void SettingActions(TArray<FActionData> actions);
 	void CreateActions();
 	void PassiveLevelUp(FActionData InAction, EActionPassiveType Ptype);
+	void SetCurrentWeaponType(EWeaponType type) { CurrentWeaponType = type; }
 
 	UFUNCTION()
 	void DoAction();
@@ -45,8 +57,11 @@ public:
 	bool bNextAction = false; // Set true when action is playing
 
 private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	EWeaponType CurrentWeaponType = EWeaponType::E_Gauntlet;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
-	TArray<TObjectPtr<ABaseAction>> SelectActions;
+	TMap<EWeaponType, FActionArray> SelectActions;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
 	TObjectPtr<UActionDataAsset> ActionDataAsset;
 	UPROPERTY(BlueprintReadOnly, meta = (AllowprivateAccess = "true"))

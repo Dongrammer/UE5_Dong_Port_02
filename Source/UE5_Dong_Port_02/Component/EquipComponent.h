@@ -12,6 +12,7 @@ class UEquipmentHUD;
 class ABaseHuman;
 class ABaseEquip;
 class UItemComponent;
+class UWeaponComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE5_DONG_PORT_02_API UEquipComponent : public UActorComponent
@@ -25,7 +26,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	void InitEquipParts();
-
+	
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -35,8 +36,11 @@ private:
 	TObjectPtr<UEquipmentHUD> EquipmentHUD;
 	UPROPERTY()
 	TObjectPtr<UItemComponent> ItemComponent;
+	UPROPERTY()
+	TObjectPtr<UWeaponComponent> WeaponComponent;
 
 public:
+	void GetWeaponComponent(TObjectPtr<UWeaponComponent> weaponcomponent) { WeaponComponent = weaponcomponent; }
 	void ToggleHUD();
 	void InitEquipmentHUD(TObjectPtr<UEquipmentHUD> hud);
 

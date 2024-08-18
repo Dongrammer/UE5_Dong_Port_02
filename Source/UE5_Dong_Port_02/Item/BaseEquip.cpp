@@ -12,6 +12,7 @@ void ABaseEquip::SetEquipment()
 	bInField = false;
 	StaticMesh->SetSimulatePhysics(false);
 	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABaseEquip::BeginPlay()

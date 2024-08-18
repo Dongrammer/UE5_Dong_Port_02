@@ -7,6 +7,7 @@
 #include "TechniqueSelectHUD.h"
 #include "TechniqueNodeInfoHUD.h"
 #include "TechniqueDashHUD.h"
+#include "../../Item/ItemData.h"
 
 #include "TechniqueHUD.generated.h"
 

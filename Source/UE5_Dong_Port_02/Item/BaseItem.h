@@ -3,6 +3,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ItemData.h"
+#include "Components/SphereComponent.h"
+#include "Helper.h"
+
 DECLARE_LOG_CATEGORY_EXTERN(ItemLog, Log, All);
 #include "BaseItem.generated.h"
 
@@ -39,8 +42,10 @@ public:
 protected:
 	UPROPERTY()
 	TObjectPtr<UItemComponent> ItemComponent;
-	//UPROPERTY(EditDefaultsOnly)
-	//USceneComponent* Scene;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<USceneComponent> Scene;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<USceneComponent> FixedPoint; // 캐릭터 소켓에 붙을 위치 기준점.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	TObjectPtr<USphereComponent> SphereComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")

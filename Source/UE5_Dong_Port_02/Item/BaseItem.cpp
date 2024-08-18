@@ -1,11 +1,10 @@
 #include "Item/BaseItem.h"
 
-#include "Components/SphereComponent.h"
+
 #include "Components/BoxComponent.h"
 //#include "Components/TextRenderComponent.h"
 #include "Character/BaseHuman.h"
 #include "Character/Hero.h"
-#include "Helper.h"
 #include "TPS_GameInstance.h"
 #include "Component/ItemComponent.h"
 
@@ -22,9 +21,11 @@ ABaseItem::ABaseItem()
 	itemdata.ItemType = EItemType::E_None;
 	//Rarity = ERarity::E_None;
 
-	StaticMesh = Helper::CreateSceneComponent<UStaticMeshComponent>(this, "Static Mesh");
+	Scene = Helper::CreateSceneComponent<USceneComponent>(this, "Scene");
+	FixedPoint = Helper::CreateSceneComponent<USceneComponent>(this, "Fixed Point", Scene);
+	StaticMesh = Helper::CreateSceneComponent<UStaticMeshComponent>(this, "Static Mesh", FixedPoint);
 	// Scene = Helper::CreateSceneComponent<USceneComponent>(this, "Scene");
-	SphereComponent = Helper::CreateSceneComponent<USphereComponent>(this, "Sphere Component", StaticMesh);
+	SphereComponent = Helper::CreateSceneComponent<USphereComponent>(this, "Interaction Sphere", StaticMesh);
 	//Text = Helper::CreateSceneComponent<UTextRenderComponent>(this, "Interaction Text", StaticMesh);
 
 	//TextSetting();
@@ -59,6 +60,7 @@ void ABaseItem::DataTableSetting()
 	if (itemdata.ItemID == "")
 	{
 		UE_LOG(ItemLog, Warning, TEXT("%s : ItemID is NULL"), *this->GetName());
+		return;
 	}
 
 	Name = ItemComponent->GetItemName(itemdata);

@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "../Action/ActionData.h"
 #include "../Weapon/WeaponData.h"
+#include "../Item/ItemData.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(TechniqueComponentLog, Log, All);
 
@@ -12,6 +13,16 @@ DECLARE_LOG_CATEGORY_EXTERN(TechniqueComponentLog, Log, All);
 class AHero;
 class UTechniqueHUDDataAsset;
 class UTechniqueHUD;
+
+USTRUCT(BlueprintType)
+struct FActionDataArray
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<FActionData> ActionDatas;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE5_DONG_PORT_02_API UTechniqueComponent : public UActorComponent
@@ -22,6 +33,7 @@ public:
 	UTechniqueComponent();
 
 	void ToggleHUD();
+	bool GetHUDVisible();
 
 	// Select Node in TechniqueNodeHUD
 	UFUNCTION()
@@ -30,6 +42,8 @@ public:
 	// Select Node in TechniqueSelectHUD
 	UFUNCTION()
 	void SelectHUDNodeClick(FActionData action, uint8 spaceNum);
+
+	void SetCurrentWeaponType(EWeaponType type) { CurrentWeaponType = type; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -68,7 +82,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Technique|Action", meta = (AllowPrivateAccess = "true"))
 	TArray<FActionData> AvailableAction;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Technique|Action", meta = (AllowPrivateAccess = "true"))
-	TArray<FActionData> SelectedAction;
+	TMap<EWeaponType, FActionDataArray> SelectedAction;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Technique|Action", meta = (AllowPrivateAccess = "true"))
+	//FActionArray SelectedAction;
 
 public:
 	UFUNCTION()

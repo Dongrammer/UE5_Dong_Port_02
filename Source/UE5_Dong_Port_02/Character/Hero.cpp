@@ -106,10 +106,7 @@ void AHero::DoInteraction()
 	if (InteractionItem)
 	{
 		GetItems(InteractionItem->itemdata, 1);
-
-		UE_LOG(LogTemp, Log, TEXT("Before Destroy : %p"), InteractionItem);
 		InteractionItem->Destroy();
-		UE_LOG(LogTemp, Log, TEXT("After Destroy : %p"), InteractionItem);
 	}
 }
 
@@ -171,6 +168,8 @@ void AHero::ReleasedAvoid()
 
 void AHero::InventoryOn()
 {
+	if (TechniqueComponent->GetHUDVisible()) return;
+
 	if (!MainHUD->CheckHUDsVisibility())
 		SetMouseCenter();
 
@@ -195,6 +194,12 @@ void AHero::QuickSlotWheel()
 void AHero::TechniqueOn()
 {
 	TechniqueComponent->ToggleHUD();
+
+	if (MainHUD->IsVisible())
+	{
+		MainHUD->SetAllHidden();
+		MainHUD->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 void AHero::EquipWeapon()
@@ -220,6 +225,7 @@ void AHero::SoulBurn()
 
 void AHero::EquipmentOn()
 {
+	if (TechniqueComponent->GetHUDVisible()) return;
 	if (!MainHUD->CheckHUDsVisibility())
 		SetMouseCenter();
 
@@ -239,6 +245,7 @@ void AHero::EquipmentOn()
 
 void AHero::StatusOn()
 {
+	if (TechniqueComponent->GetHUDVisible()) return;
 	if (!MainHUD->CheckHUDsVisibility())
 		SetMouseCenter();
 
@@ -295,11 +302,10 @@ void AHero::BeginPlay()
 	InventoryComponent->InitInvenHUD(MainHUD->GetInvenHUD());
 	InventoryComponent->InitContextMenu(MainHUD->GetContextMenu());
 	MainHUD->GetInvenHUD()->DToggle.BindUFunction(this, "InventoryOn");
+	if (!MainHUD->GetEquipHUD()) { UE_LOG(LogTemp, Warning, TEXT("MainHUD : EquipHUD Is NULL !!")); }
 	EquipComponent->InitEquipmentHUD(MainHUD->GetEquipHUD());
 	MainHUD->GetEquipHUD()->DToggle.BindUFunction(this, "EquipmentOn");
-	UE_LOG(LogTemp, Log, TEXT("%d"), StatusComponent->GetTotalStatus().HP);
 	StatusComponent->InitStatusHUD(MainHUD->GetStatusHUD());
-	UE_LOG(LogTemp, Log, TEXT("%d"), StatusComponent->GetTotalStatus().HP);
 	MainHUD->GetStatusHUD()->DToggle.BindUFunction(this, "StatusOn");
 
 	MainHUD->GetContextMenu()->SetInvenComp(InventoryComponent);
@@ -551,4 +557,12 @@ void AHero::InitState()
 	SetCanMove(true);
 	SetCanAttack(true);
 	SetCurrentState(EStateType::E_Idle);
+}
+
+void AHero::SetCurrentWeaponType(EWeaponType type)
+{
+	Super::SetCurrentWeaponType(type);
+
+	TechniqueComponent->SetCurrentWeaponType(type);
+	ActionComponent->SetCurrentWeaponType(type);
 }

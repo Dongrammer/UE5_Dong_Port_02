@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "Character/BaseCharacter.h"
+#include "Component/WeaponComponent.h"
 #include "../Item/ItemData.h"
 #include "BaseHuman.generated.h"
 
 class UInventoryComponent;
-class UWeaponComponent;
 class UEquipComponent;
 class AHero;
 
@@ -24,6 +24,7 @@ public:
 	virtual bool CheckItemWeight(float itemweight);
 	virtual TObjectPtr<UWeaponComponent> GetWeaponComponent() { return WeaponComponent; }
 	virtual bool GetWeaponHolding();
+	virtual void SetCurrentWeaponType(EWeaponType type);
 
 protected:
 	virtual void BeginPlay() override;

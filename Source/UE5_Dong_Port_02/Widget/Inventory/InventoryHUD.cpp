@@ -151,7 +151,9 @@ void UInventoryHUD::SetTextWeight(float max, float current)
 
 void UInventoryHUD::ItemUse(FItemData item)
 {
-	InventoryComponent->ItemUse(item);
+	if (item.ItemType == EItemType::E_Other) InventoryComponent->ItemUse(item);
+	else if (item.ItemType == EItemType::E_Equipment) InventoryComponent->EquipItem(item);
+	else if (item.ItemType == EItemType::E_Weapon) InventoryComponent->EquipItem(item);
 }
 
 void UInventoryHUD::ItemClick(FItemData item)

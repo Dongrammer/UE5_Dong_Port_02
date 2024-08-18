@@ -6,6 +6,7 @@ void UTPS_GameInstance::Init()
 
 	ItemComponentInstance = NewObject<UItemComponent>(this);
 	ItemComponentInstance->SetRarityColor();
+	
 }
 
 UItemComponent* UTPS_GameInstance::GetItemComponent()

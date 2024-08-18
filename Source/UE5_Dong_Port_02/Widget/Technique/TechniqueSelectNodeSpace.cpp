@@ -46,7 +46,7 @@ void UTechniqueSelectNodeSpace::AddNode(UTechniqueNode* node)
 		NodeFName = FName(*FString::Printf(TEXT("Gauntlet Action - %d"), node->GetAction().ActionNumber));
 		break;
 	}
-	case EActionType::E_Sword:
+	case EActionType::E_OneHandSword:
 	{
 		NodeFName = FName(*FString::Printf(TEXT("Sword Action - %d"), node->GetAction().ActionNumber));
 		break;

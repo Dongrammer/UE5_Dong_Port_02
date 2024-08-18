@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "../Item/ItemData.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(SoulCompLog, Log, All);
 
@@ -45,17 +46,17 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USoulHUD> SoulHUD;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Blueprint Essential")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Essential")
 	TSubclassOf<USoulHUD> SoulHUDClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Blueprint Essential")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Essential")
 	TObjectPtr<UAnimMontage> SoulBurnAnim;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Blueprint Essential")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Essential")
 	TArray<TObjectPtr<UNiagaraSystem>> NS_SoulBurnTrail;
 	TObjectPtr<UNiagaraComponent> TrailComponent;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Blueprint Essential")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Essential")
 	TObjectPtr<UNiagaraSystem> NS_SoulBurnExplosion;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Blueprint Essential")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Essential")
 	TSubclassOf<UCameraShakeBase> CS_SoulBurn;
 
 public:	

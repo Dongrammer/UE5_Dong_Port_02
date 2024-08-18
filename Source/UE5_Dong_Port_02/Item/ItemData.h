@@ -44,7 +44,7 @@ public:
 USTRUCT(BlueprintType)
 struct FItemDataTableBase : public FTableRowBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
@@ -62,6 +62,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
 	FString Description;
 };
+
 // Item Class 넣어야하나?
 /* ==================== Others ==================== */
 
@@ -77,7 +78,7 @@ enum class EOtherEffect : uint8
 USTRUCT(BlueprintType)
 struct FOtherItem : public FItemDataTableBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
@@ -88,6 +89,26 @@ public:
 	float Duration;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
 	UParticleSystem* EffectParticle;
+};
+
+/* ==================== Weapon ==================== */
+
+UENUM(BlueprintType)
+enum class EAttachType : uint8
+{
+	E_None UMETA(Hidden),
+	E_Holder UMETA(DisplayName = "Holder"),
+	E_Handle UMETA(DisplayName = "Handle"),
+	E_Max UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EWeaponType : uint8
+{
+	E_None UMETA(Hidden),
+	E_Gauntlet UMETA(DisplayName = "Gauntlet"),
+	E_OneHandSword UMETA(DisplayName = "OneHandSword"),
+	E_Max UMETA(Hidden)
 };
 
 /* ==================== Equipment ==================== */
@@ -121,19 +142,24 @@ enum class EEquipStatus : uint8
 	E_Max UMETA(Hidden)
 };
 
+
 USTRUCT(BlueprintType)
 struct FEquipmentItem : public FItemDataTableBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equipment")
 	EEquipType EquipType;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equipment")
 	TMap<EEquipStatus, int> EquipStatus;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+	EWeaponType WeaponType;
 };
 
 /* ==================== Weapon ==================== */
+
 
 UENUM(BlueprintType)
 enum class EWeaponStatus : uint8
@@ -153,7 +179,14 @@ enum class EWeaponStatus : uint8
 USTRUCT(BlueprintType)
 struct FWeaponItem : public FItemDataTableBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equipment")
+	EEquipType EquipType;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equipment")
+	TMap<EWeaponStatus, int> EquipStatus;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+	EWeaponType WeaponType;
 };

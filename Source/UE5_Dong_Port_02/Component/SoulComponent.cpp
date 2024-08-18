@@ -146,7 +146,27 @@ void USoulComponent::NiagaraSetting()
 		return;
 	}
 
-	FName SocketName = "Gauntlet_Trail_Start";
+	EWeaponType wtype = OwnerCharacter->GetCurrentWeaponType();
+	FName SocketName = "";
+	switch (wtype)
+	{
+	case EWeaponType::E_None:
+		break;
+	case EWeaponType::E_Gauntlet:
+	{
+		SocketName = "Gauntlet_Trail_Start";
+		break;
+	}
+	case EWeaponType::E_OneHandSword:
+	{
+		SocketName = "OneHandSword_Trail_Start";
+		break;
+	}
+	case EWeaponType::E_Max:
+		break;
+	default:
+		break;
+	}
 	FVector Location = FVector(0, 0, 0);
 	FRotator Rotation = FRotator(0, 0, 0);
 	

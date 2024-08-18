@@ -6,6 +6,10 @@
 #include "Character/Hero.h"
 #include "Item/BaseEquip.h"
 #include "Widget/Equipment/EquipmentHUD.h"
+#include "WeaponComponent.h"
+
+#include "Item/BaseWeapon.h"
+#include "Weapon/WeaponData.h"
 
 DEFINE_LOG_CATEGORY(EquipComponentLog);
 
@@ -40,7 +44,17 @@ void UEquipComponent::BeginPlay()
 	}
 
 	
-	// 
+	//
+	if (!ItemComponent)
+	{
+		UE_LOG(EquipComponentLog, Warning, TEXT("ItemComponent Is NULL !!"));
+		return;
+	}
+	if (!WeaponComponent)
+	{
+		UE_LOG(EquipComponentLog, Warning, TEXT("WeaponComponent Is NULL !!"));
+		return;
+	}
 }
 
 void UEquipComponent::InitEquipParts()
@@ -86,6 +100,12 @@ void UEquipComponent::Equip(FItemData item)
 	EquipParts.Find(EquipType)->ItemID = item.ItemID;
 	EquipParts.Find(EquipType)->ItemType = item.ItemType;
 	SpawnAndAttach(EquipType);
+
+	// Set OwnerWeaponType
+	if (EquipType == EEquipType::E_Weapon)
+	{
+		OwnerCharacter->SetCurrentWeaponType(ItemComponent->GetWeaponType(item));
+	}
 	/*
 	switch (EquipType)
 	{
@@ -199,6 +219,7 @@ void UEquipComponent::UnEquip(EEquipType type)
 
 void UEquipComponent::SpawnAndAttach(EEquipType type)
 {
+	
 	TSubclassOf<ABaseItem> ItemClass = ItemComponent->GetEquipItemClass(EquipParts.FindRef(type));
 	FActorSpawnParameters SpawnParameter;
 	SpawnParameter.Owner = OwnerCharacter;
@@ -232,7 +253,7 @@ void UEquipComponent::SpawnAndAttach(EEquipType type)
 	EquipmentParts[type]->SetEquipment();
 	
 	// SetSocketName
-	FName SocketName;
+	FName SocketName = "";
 	switch (type)
 	{
 	case EEquipType::E_Head:
@@ -262,7 +283,13 @@ void UEquipComponent::SpawnAndAttach(EEquipType type)
 	}
 	case EEquipType::E_Weapon:
 	{
-		SocketName = "Weapon";
+		//SocketName = FName(*FString::Printf(TEXT("%s_Holder"), *EquipItem->itemdata.ItemID.ToString()));
+
+		UEnum* EnumPtr = StaticEnum<EWeaponType>();
+		FString EnumString = EnumPtr->GetNameStringByIndex(static_cast<uint8>(ItemComponent->GetWeaponType(EquipItem->itemdata)));
+		EnumString = EnumString.Replace(TEXT("E_"), TEXT(""));
+		SocketName = FName(*FString::Printf(TEXT("%s_Holder"), *EnumString));
+		UE_LOG(LogTemp, Log, TEXT("%s"), *FString::Printf(TEXT("%s"), *SocketName.ToString()));
 		break;
 	}
 	case EEquipType::E_SubWeapon:
@@ -276,8 +303,27 @@ void UEquipComponent::SpawnAndAttach(EEquipType type)
 		return;
 	}
 	}
-	EquipmentParts[type]->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SocketName);
+	if (SocketName != "") EquipmentParts[type]->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, SocketName);
 
+	//// Weapon
+	//switch (type)
+	//{
+	//case EEquipType::E_Weapon:
+	//{
+	//	SocketName = FName(*FString::Printf(TEXT("%s_Holder"), *EquipItem->itemdata.ItemID.ToString()));
+	//	break;
+	//}
+	//case EEquipType::E_SubWeapon:
+	//{
+	//	SocketName = "SubWeapon";
+	//	break;
+	//}
+	//default:
+	//{
+	//	UE_LOG(EquipComponentLog, Warning, TEXT("SpawnAndAttach : ItemType Error !!"));
+	//	return;
+	//}
+	//}
 	/*
 	switch (type)
 	{

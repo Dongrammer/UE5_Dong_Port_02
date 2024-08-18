@@ -3,12 +3,14 @@
 #include "CoreMinimal.h"
 #include "ActionData.generated.h"
 
+class ABaseAction;
+
 UENUM(BlueprintType)
 enum class EActionType : uint8
 {
 	E_None UMETA(Hidden),
 	E_Gauntlet UMETA(DisplayName = "Gauntlet Action"),
-	E_Sword UMETA(DisplayName = "Sword Action"),
+	E_OneHandSword UMETA(DisplayName = "OneHandSword Action"),
 	E_Max UMETA(Hidden)
 };
 
@@ -43,9 +45,9 @@ enum class EDashAction : uint8
 	E_GA_Dash_02 UMETA(DisplayName = "GA Dash 02"),
 	E_GA_Dash_03 UMETA(DisplayName = "GA Dash 03"),
 	E_GA_Dash_End UMETA(Hidden),
-	E_SW_Dash_Start UMETA(Hidden),
-	E_SW_Dash_01 UMETA(DisplayName = "SW Dash 01"),
-	E_SW_Dash_End UMETA(Hidden),
+	E_OHSW_Dash_Start UMETA(Hidden),
+	E_OHSW_Dash_01 UMETA(DisplayName = "OHSW Dash 01"),
+	E_OHSW_Dash_End UMETA(Hidden),
 	E_Max UMETA(Hidden)
 };
 
@@ -63,8 +65,9 @@ UENUM(BlueprintType)
 enum class ESwordAction : uint8
 {
 	E_None UMETA(Hidden),
-	E_Cutting_01 UMETA(DisplayName = "Cutting 01"),
-	E_Cutting_02 UMETA(DisplayName = "Cutting 02"),
+	E_Attack_01 UMETA(DisplayName = "Attack 01"),
+	E_Attack_02 UMETA(DisplayName = "Attack 02"),
+	E_Attack_03 UMETA(DisplayName = "Attack 03"),
 	E_Max
 };
 

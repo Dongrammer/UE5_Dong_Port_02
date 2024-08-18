@@ -208,6 +208,12 @@ private:
 
 	/* ==================== Status ==================== */
 
+
+	/* ==================== Weapon ==================== */
+public:
+	FORCEINLINE EWeaponType GetCurrentWeaponType() { return WeaponComponent->GetCurrentWeaponType(); }
+
+	void SetCurrentWeaponType(EWeaponType type) override;
 };
 
 /*

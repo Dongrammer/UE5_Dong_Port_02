@@ -16,7 +16,15 @@ UActionComponent::UActionComponent()
 
 	ActionDataAsset = Helper::GetAsset<UActionDataAsset>(L"/Game/Actions/DA_Action");
 
-	SelectActions.Init(nullptr, 5);
+	// Init SelectAction 
+	FActionArray TempArray;
+	TempArray.Actions.Init(nullptr, 5);
+
+	for (int i = static_cast<uint8>(EWeaponType::E_None) + 1; i < static_cast<uint8>(EWeaponType::E_Max); i++)
+	{
+		SelectActions.Add(static_cast<EWeaponType>(i), TempArray);
+	}
+	//
 }
 
 void UActionComponent::BeginPlay()
@@ -50,12 +58,17 @@ void UActionComponent::SettingActions(TArray<FActionData> actions)
 		{
 		case EActionType::E_Gauntlet:
 		{
-			SelectActions[i] = GauntletActionPtr.FindRef(static_cast<EGauntletAction>(actions[i].ActionNumber));
+			SelectActions.Find(static_cast<EWeaponType>(static_cast<uint8>(actions[i].ActionType)))->Actions[i] = GauntletActionPtr.FindRef(static_cast<EGauntletAction>(actions[i].ActionNumber));
 			break;
 		}
-		case EActionType::E_Sword:
+		case EActionType::E_OneHandSword:
 		{
-			SelectActions[i] = SwordActionPtr.FindRef(static_cast<ESwordAction>(actions[i].ActionNumber));
+			SelectActions.Find(static_cast<EWeaponType>(static_cast<uint8>(actions[i].ActionType)))->Actions[i] = SwordActionPtr.FindRef(static_cast<ESwordAction>(actions[i].ActionNumber));
+			break;
+		}
+		default:
+		{
+			//SelectActions.Find(static_cast<EWeaponType>(static_cast<uint8>(actions[i].ActionType)))->Actions[i] = nullptr;
 			break;
 		}
 		/*case EActionType::E_None:
@@ -102,7 +115,7 @@ void UActionComponent::PassiveLevelUp(FActionData InAction, EActionPassiveType P
 		action = GauntletActionPtr.FindRef(static_cast<EGauntletAction>(InAction.ActionNumber));
 		break;
 	}
-	case EActionType::E_Sword:
+	case EActionType::E_OneHandSword:
 	{
 		action = SwordActionPtr.FindRef(static_cast<ESwordAction>(InAction.ActionNumber));
 		break;
@@ -128,21 +141,38 @@ void UActionComponent::PassiveLevelUp(FActionData InAction, EActionPassiveType P
 
 void UActionComponent::DoAction()
 {
+	TArray<TObjectPtr<ABaseAction>> actions = SelectActions.Find(CurrentWeaponType)->Actions;
+
 	// Check Safe
-	if (!SelectActions[0]) return;
-	if (!SelectActions[MontageIndex]) MontageIndex = 0;
+	/*if (!SelectActions[0]) return;
+	if (!SelectActions[MontageIndex]) MontageIndex = 0;*/
+	if (!actions[0]) return;
+	if (!actions[MontageIndex]) MontageIndex = 0;
 
 	// Set CanMove
-	if (SelectActions[MontageIndex]->GetCanMove() == false) Owner->SetCanMove(false);
+	//if (SelectActions[MontageIndex]->GetCanMove() == false) Owner->SetCanMove(false);
+	if (actions[MontageIndex]->GetCanMove() == false) Owner->SetCanMove(false);
+	else Owner->SetCanMove(true); // Can't Move Attack -> Can Move Attack 으로 넘어갈 때 필요
 
 	// Set CanAttack
 	Owner->SetCanAttack(false);
 	Owner->SetCurrentState(EStateType::E_Attack);
-	Owner->bUseControllerRotationYaw = false;
+
+	/*if (SelectActions[MontageIndex]->GetCanMove() == false)
+		Owner->bUseControllerRotationYaw = false;
+	else
+		Owner->bUseControllerRotationYaw = true;*/
+
+	if (actions[MontageIndex]->GetCanMove() == false)
+		Owner->bUseControllerRotationYaw = false;
+	else
+		Owner->bUseControllerRotationYaw = true;
 
 	// Do Action
-	SelectActions[MontageIndex]->DoAction();
-	NowAction = SelectActions[MontageIndex];
+	/*SelectActions[MontageIndex]->DoAction();
+	NowAction = SelectActions[MontageIndex];*/
+	actions[MontageIndex]->DoAction();
+	NowAction = actions[MontageIndex];
 
 	MontageIndex++;
 }

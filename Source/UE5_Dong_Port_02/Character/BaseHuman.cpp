@@ -1,7 +1,6 @@
 #include "Character/BaseHuman.h"
 
 #include "Component/InventoryComponent.h"
-#include "Component/WeaponComponent.h"
 #include "Component/EquipComponent.h"
 #include "Hero.h"
 #include "Helper.h"
@@ -12,12 +11,13 @@ ABaseHuman::ABaseHuman()
 	WeaponComponent = Helper::CreateActorComponent<UWeaponComponent>(this, "Weapon Component");
 	EquipComponent = Helper::CreateActorComponent<UEquipComponent>(this, "Equip Component");
 
+	EquipComponent->GetWeaponComponent(WeaponComponent);
 }
 
 void ABaseHuman::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 void ABaseHuman::CreateCharacter()
@@ -59,4 +59,9 @@ bool ABaseHuman::CheckItemWeight(float itemweight)
 bool ABaseHuman::GetWeaponHolding()
 {
 	return WeaponComponent->GetWeaponHolding();
+}
+
+void ABaseHuman::SetCurrentWeaponType(EWeaponType type)
+{
+	WeaponComponent->SetCurrentWeaponType(type);
 }
