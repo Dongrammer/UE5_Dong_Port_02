@@ -16,7 +16,10 @@ public class UE5_Dong_Port_02 : ModuleRules
 			"EnhancedInput",
             "AnimGraphRuntime",
             "Niagara",
-			"UMG"
+			"UMG",
+			"AIModule",
+			"GameplayTasks",
+			"NavigationSystem" 
         });
 
         PublicIncludePaths.Add(ModuleDirectory);

@@ -9,6 +9,7 @@
 class UInventoryComponent;
 class UEquipComponent;
 class AHero;
+class ABuilding;
 
 UCLASS()
 class UE5_DONG_PORT_02_API ABaseHuman : public ABaseCharacter
@@ -54,4 +55,16 @@ public:
 	void SetPlayRate(float playrate);
 	FORCEINLINE float GetPlayRate() { return PlayRate; }
 
+
+	/* ========== Building ========== */
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<ABuilding> CurrentBuilding;
+
+public:
+	UFUNCTION()
+	void SetCurrentBuilding(ABuilding* building) { CurrentBuilding = building; }
+
+	bool IsInBuilding() { return !(CurrentBuilding == nullptr); }
+	TObjectPtr<ABuilding> GetCurrentBuilding() { return CurrentBuilding; }
 };

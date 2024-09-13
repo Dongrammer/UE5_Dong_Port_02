@@ -5,10 +5,13 @@
 
 #include "Component/StatusComponent.h"
 
+#include "../Land/TimeData.h"
+
 #include "BaseCharacter.generated.h"
 
 class ABaseItem;
 class UItemComponent;
+class UTPS_GameInstance;
 
 UCLASS()
 class UE5_DONG_PORT_02_API ABaseCharacter : public ACharacter
@@ -54,4 +57,15 @@ public:
 
 	void EQuipItemStatus(TMap<EEquipStatus, int> status) { StatusComponent->EquipItemStatus(status); }
 	void UnequipItemStatus(TMap<EEquipStatus, int> status) { StatusComponent->UnequipItemStatus(status); }
+
+
+	/* ==================== Time ==================== */
+protected:
+	TObjectPtr<UTPS_GameInstance> GameInstance;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
+	FGlobalTime GlobalTime;
+
+public:
+	UFUNCTION()
+	virtual void OneMinuteTimePass();
 };
