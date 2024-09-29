@@ -100,7 +100,6 @@ const FLinearColor* UItemComponent::GetRarityColor(ERarity rarity)
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("GetRarityColor : Does not contain key: %d"), (int32)rarity);
 		s = FLinearColor(0.2f, 0.8f, 0.3f, 1.0f);
 		return &s;
 	}
@@ -140,14 +139,12 @@ FItemDataTableBase UItemComponent::GetDataTableBase(FItemData item)
 	FName name = item.ItemID;
 	FItemDataTableBase data;
 
-	UE_LOG(LogTemp, Log, TEXT(" GetDT : %s, %d"), *name.ToString(), static_cast<uint8>(type));
 	switch (type)
 	{
 	case EItemType::E_Equipment:
 	{
 		if (CachedEquipmentItems.Contains(name))
 		{
-			UE_LOG(LogTemp, Log, TEXT(" EQuip !!"));
 			data.Name = CachedEquipmentItems.FindRef(name).Name;
 			data.Rarity = CachedEquipmentItems.FindRef(name).Rarity;
 			data.Texture = CachedEquipmentItems.FindRef(name).Texture;
@@ -159,10 +156,8 @@ FItemDataTableBase UItemComponent::GetDataTableBase(FItemData item)
 	}
 	case EItemType::E_Weapon:
 	{
-		UE_LOG(LogTemp, Log, TEXT(" Weapon?? "));
 		if (CachedWeaponItems.Contains(name))
 		{
-			UE_LOG(LogTemp, Log, TEXT(" Weapon!! "));
 			data.Name = CachedWeaponItems.FindRef(name).Name;
 			data.Rarity = CachedWeaponItems.FindRef(name).Rarity;
 			data.Texture = CachedWeaponItems.FindRef(name).Texture;
@@ -178,7 +173,6 @@ FItemDataTableBase UItemComponent::GetDataTableBase(FItemData item)
 	{
 		if (CachedOtherItems.Contains(name))
 		{
-			UE_LOG(LogTemp, Log, TEXT(" Other!! "));
 			data.Name = CachedOtherItems.FindRef(name).Name;
 			data.Rarity = CachedOtherItems.FindRef(name).Rarity;
 			data.Texture = CachedOtherItems.FindRef(name).Texture;

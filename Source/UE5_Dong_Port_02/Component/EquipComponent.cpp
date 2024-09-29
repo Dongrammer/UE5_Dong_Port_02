@@ -289,7 +289,6 @@ void UEquipComponent::SpawnAndAttach(EEquipType type)
 		FString EnumString = EnumPtr->GetNameStringByIndex(static_cast<uint8>(ItemComponent->GetWeaponType(EquipItem->itemdata)));
 		EnumString = EnumString.Replace(TEXT("E_"), TEXT(""));
 		SocketName = FName(*FString::Printf(TEXT("%s_Holder"), *EnumString));
-		UE_LOG(LogTemp, Log, TEXT("%s"), *FString::Printf(TEXT("%s"), *SocketName.ToString()));
 		break;
 	}
 	case EEquipType::E_SubWeapon:

@@ -11,6 +11,5 @@ class UE5_DONG_PORT_02_API UBTService_CheckRoutine : public UBTService_Blackboar
 	
 public:
 	UBTService_CheckRoutine();
-	void OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 };

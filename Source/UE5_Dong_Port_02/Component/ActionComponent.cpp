@@ -241,7 +241,6 @@ void UActionComponent::OnEndDashNotify()
 
 void UActionComponent::SettingDashAction(EDashAction dash)
 {
-	UE_LOG(LogTemp, Log, TEXT("Setting Dash Action Call %d"), static_cast<uint8>(dash));
 	SelectDashAction = DashActionPtr.FindRef(dash);
 }
 

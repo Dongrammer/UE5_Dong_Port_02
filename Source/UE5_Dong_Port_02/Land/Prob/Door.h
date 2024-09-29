@@ -42,27 +42,20 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Timeline|Essential")
 	float YawOffset;
 
-	/* ========== Body ==========*/
-private:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
-	TObjectPtr<USceneComponent> Architecture;
-
 	/* ========== Activation ==========*/
-public:
-	void Active() override;
-	FVector GetOutDoorLocation() { return ActiveMeshOut->GetComponentToWorld().GetLocation(); }
-	FVector GetInDoorLocation() { return ActiveMeshIn->GetComponentToWorld().GetLocation(); }
-
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
 	bool bIsOpen = false;
 
-	/* ========== NPC ==========*/
-private:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
-	TObjectPtr<UChildActorComponent> NavLinkProxyChildActor;
-
 public:
+	void Active(ABaseHuman* human) override;
+	FVector GetOutDoorLocation() { return ActiveMeshOut->GetComponentToWorld().GetLocation(); }
+	FVector GetInDoorLocation() { return ActiveMeshIn->GetComponentToWorld().GetLocation(); }
+
 	UFUNCTION()
-	void SmartLinkFunc(UNavLinkCustomComponent* SmartLink, UObject* PathComp, const FVector& DestPoint);
+	void AutoClose(); // Timer Open / Close
+	FTimerHandle ActiveTimerHandle;
+
+	bool GetIsOpen() { return bIsOpen; }
+
 };

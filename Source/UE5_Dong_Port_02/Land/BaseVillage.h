@@ -1,13 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "TimeData.h"
 #include "BaseVillage.generated.h"
 
 class ANavModifierVolume;
 class ABuilding;
+class ABaseProb;
+class ABaseLight;
+class UTPS_GameInstance;
 
 UCLASS()
 class UE5_DONG_PORT_02_API ABaseVillage : public AActor
@@ -15,16 +17,15 @@ class UE5_DONG_PORT_02_API ABaseVillage : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ABaseVillage();
+	UFUNCTION()
+	virtual void OneMinuteTimePass();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	TObjectPtr<UTPS_GameInstance> GameInstance;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
+	FGlobalTime GlobalTime;
 
 	/* ========== Area ========== */
 protected:
@@ -35,4 +36,33 @@ protected:
 protected:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
 	TArray<TObjectPtr<ABuilding>> Buildings;
+
+	/* ========== Probs ========== */
+protected:
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
+	TArray<TObjectPtr<ABaseProb>> Probs;
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
+	TArray<TObjectPtr<ABaseLight>> Lights;
+
+public:
+	template<typename T>
+	TArray<TObjectPtr<T>> GetProbs()
+	{
+		TArray<TObjectPtr<T>> temp;
+
+		for (auto& p : Probs)
+		{
+			TObjectPtr<T> CastProb = Cast<T>(p);
+
+			if (CastProb)
+			{
+				temp.Add(CastProb);
+			}
+		}
+
+		return temp;
+	}
+
+public:
+	TArray<TObjectPtr<ABaseProb>> GetAllProbs() { return Probs; }
 };

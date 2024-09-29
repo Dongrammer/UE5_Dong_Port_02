@@ -36,13 +36,10 @@ struct FGlobalTime
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time", meta = (ClampMin = "0"))
-	uint8 CurrentDay;
+	int64 CurrentDay;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time", meta = (ClampMin = "0", ClampMax = "24"))
-	uint8 CurrentHour;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time", meta = (ClampMin = "0", ClampMax = "60"))
-	uint8 CurrentMinute;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time", meta = (ClampMin = "0", ClampMax = "1440"))
+	int32 CurrentTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time")
 	EWeekType CurrentWeek;

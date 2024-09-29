@@ -8,7 +8,7 @@
 
 void UInventorySlot::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
-	UE_LOG(LogTemp, Log, TEXT("Create Inventory List Call"));
+	//UE_LOG(LogTemp, Log, TEXT("Create Inventory List Call"));
 	item = Cast<UInventorySlotObject>(ListItemObject);
 
 	if (!item)
@@ -65,8 +65,6 @@ void UInventorySlot::NativeOnMouseEnter(const FGeometry& InGeometry, const FPoin
 void UInventorySlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
-
-	UE_LOG(LogTemp, Log, TEXT("Leave"));
 
 	BO_Hovered->SetVisibility(ESlateVisibility::Hidden);
 	bIsMouseOn = false;

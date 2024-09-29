@@ -1,7 +1,5 @@
 #include "BaseCharacter.h"
 
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "TPS_GameInstance.h"
 
 //#include "Component/ItemComponent.h"
@@ -13,7 +11,6 @@ ABaseCharacter::ABaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	BodyCollision = GetCapsuleComponent();
-	BodyCollision->InitCapsuleSize(42.0f, 96.0f);
 	SetCharacterMovement();
 
 	StatusComponent = Helper::CreateActorComponent<UStatusComponent>(this, "Status Component");

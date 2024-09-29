@@ -2,7 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
+#include "Components/CapsuleComponent.h"
 #include "Component/StatusComponent.h"
 
 #include "../Land/TimeData.h"
@@ -52,6 +54,7 @@ public:
 	float GetCapsuleRadius();
 
 	FORCEINLINE float GetStandardWalkSpeed() { return StandardWalkSpeed; }
+	FORCEINLINE float GetCurrentSpeed() { return GetVelocity().Size2D(); }
 	void SetWalkSpeed(float speed);	
 	void InitWalkSpeed();
 

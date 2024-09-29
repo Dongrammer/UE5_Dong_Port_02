@@ -38,7 +38,6 @@ void ABuilding::ComeInCharacter(UPrimitiveComponent* OverlappedComponent, AActor
 		if (!human->IsInBuilding())
 		{
 			human->SetCurrentBuilding(this);
-			UE_LOG(LogTemp, Log, TEXT("%s"), *human->GetFName().ToString());
 		}
 	}
 }

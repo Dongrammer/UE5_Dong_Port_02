@@ -40,10 +40,10 @@ void AWorldController::BeginPlay()
 		UE_LOG(WorldContLog, Warning, TEXT("Moon Is NULL !!"));
 		return;
 	}
-	//MoonRotator = SunRotator + FRotator(180, 180, 180);
+	//MoonRotator = SunRotator + FRotator(180, 180, 180);s
 	//Moon->AttachToActor(Sun, FAttachmentTransformRules::KeepRelativeTransform);
 	//Moon->SetActorRotation(SunRotator + FRotator(0, 180.0f, 0));
-	Moon->SetActorRotation(Moon->GetActorRotation() + FRotator(0, 180, 0));
+	Moon->SetActorRotation(SunRotator + FRotator(180, 0, 0));
 }
 
 // Called every frame
@@ -61,7 +61,7 @@ void AWorldController::OneMinuteTimePass()
 
 void AWorldController::UpdateSun()
 {
-	float CurTime = (GlobalTime.CurrentHour * 60) + GlobalTime.CurrentMinute;
+	float CurTime = GlobalTime.CurrentTime;
 	
 	//FRotator ro = Sun->GetActorRotation();
 	//ro.Pitch = ((360.0f / 1440.0f) * CurTime);
@@ -70,6 +70,7 @@ void AWorldController::UpdateSun()
 	/*if (CurTime > 1080) ro.Pitch -= 360.0f;
 	else ro.Pitch += 180.0f;*/
 	SunRotator.Pitch = ((360.0f / 1440.0f) * CurTime) + 60;
+	//SunRotator.Pitch = ((360.0f / 1440.0f) * CurTime) - 90;
 
 	Sun->SetActorRotation(SunRotator);
 	//UE_LOG(LogTemp, Log, TEXT("%0.2f, %0.2f, %0.2f"),ro.Roll ,ro.Pitch, ro.Yaw);

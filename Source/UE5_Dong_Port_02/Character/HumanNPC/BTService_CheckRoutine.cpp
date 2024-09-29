@@ -6,31 +6,7 @@
 
 UBTService_CheckRoutine::UBTService_CheckRoutine()
 {
-	bNotifyBecomeRelevant = true;
 	NodeName = TEXT("Check Routines And SetHome");
-
-}
-
-void UBTService_CheckRoutine::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
-{
-	// Get Player
-	TObjectPtr<AHumanNPC_AIController> cont = Cast<AHumanNPC_AIController>(OwnerComp.GetAIOwner());
-	if (!cont)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("CheckRoutine : NPC Controller Is NULL !!"));
-		return;
-	}
-	TObjectPtr<AHumanNPC> npc = Cast<AHumanNPC>(cont->GetPawn());
-	if (!npc)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("CheckRoutine : NPC Is NULL !!"));
-		return;
-	}
-
-	// Get Home Location
-	FVector HomeLocation = npc->GetHomeLocation(); // 지금은 집 위치로 가도록 만들었는데, 나중에 집의 문을 열고 들어갈 때까지로 설정.
-
-	OwnerComp.GetBlackboardComponent()->SetValueAsVector("HomeLocation", HomeLocation);
 }
 
 void UBTService_CheckRoutine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -49,6 +25,20 @@ void UBTService_CheckRoutine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		return;
 	}
 
+	// Temp
+	if (npc->CheckOverFatique() && npc->CheckBehavior(EBehaviorType::E_Working))
+	{
+		npc->SetBehavior(EBehaviorType::E_Resting);
+		if (npc->GetUsingProb())
+			npc->GetUsingProb()->Deactive(npc);
+	}
+	if (npc->GetCurrentFatigue() <= 0 && (npc->GetCurrentRoutine() == ERoutineType::E_GoWork))
+	{
+		npc->SetBehavior(EBehaviorType::E_None);
+		if (npc->GetUsingProb())
+			npc->GetUsingProb()->Deactive(npc);
+	}
+
 	// Get Time
 	TObjectPtr<UTPS_GameInstance> GameInstance = Cast<UTPS_GameInstance>(GetWorld()->GetGameInstance());
 	if (!GameInstance)
@@ -61,10 +51,7 @@ void UBTService_CheckRoutine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	// Check Routine
 	TMap<ERoutineType, FGlobalTime> routines = npc->GetRoutines();
 
-	uint8 CheckH = 0;
-	uint8 CheckM = 0;
-
-	for (auto rou : routines)
+	for (auto rou : routines) // 루틴이 내림차순으로 정렬되어있음.
 	{
 		// 지정한 요일과 현재 요일이 맞지 않는다면 해당 루틴을 실행하지 않음.
 		if (!(time.CurrentWeek == EWeekType::E_None))
@@ -73,14 +60,16 @@ void UBTService_CheckRoutine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 				continue;
 		}
 
-		if ((rou.Value.CurrentHour == time.CurrentHour) && (rou.Value.CurrentMinute <= time.CurrentMinute))
+		if (rou.Value.CurrentTime <= time.CurrentTime)
 		{
-			if ((CheckH <= rou.Value.CurrentHour) && (CheckM <= rou.Value.CurrentMinute))
+			if (npc->GetUsingProb() && (npc->GetCurrentRoutine() != rou.Key))
 			{
-				OwnerComp.GetBlackboardComponent()->SetValueAsEnum(GetSelectedBlackboardKey(), static_cast<uint8>(rou.Key));
-				CheckH = rou.Value.CurrentHour;
-				CheckM = rou.Value.CurrentMinute;
+				npc->GetUsingProb()->Deactive(npc);
 			}
+
+			OwnerComp.GetBlackboardComponent()->SetValueAsEnum(GetSelectedBlackboardKey(), static_cast<uint8>(rou.Key));
+			npc->SetCurrentRoutine(rou.Key);
+			return;
 		}
 	}
 }

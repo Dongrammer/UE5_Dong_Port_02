@@ -22,28 +22,45 @@ EBTNodeResult::Type UBTTask_MoveToBuilding::ExecuteTask(UBehaviorTreeComponent& 
 		return EBTNodeResult::Failed;
 	}
 
-	// Set TargetBuilding // Temp
-	OwnerComp.GetBlackboardComponent()->SetValueAsObject(GetSelectedBlackboardKey(), npc->GetHome());
+	if (!npc->GetCanMove())
+		return EBTNodeResult::Failed;
 
-	// 
-	TObjectPtr<ABuilding> building = Cast<ABuilding>(OwnerComp.GetBlackboardComponent()->GetValueAsObject("TargetBuilding"));
+	//TObjectPtr<ABuilding> building = Cast<ABuilding>(OwnerComp.GetBlackboardComponent()->GetValueAsObject("TargetBuilding"));
+	TObjectPtr<ABuilding> building = Cast<ABuilding>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()));
+	
 	if (!building)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BTT_MoveToBuilding : Casting ABuilding Fail !!"));
 		return EBTNodeResult::Failed;
 	}
 	
-	//FVector loc = building->GetOutDoorLocation();
 	FVector loc = building->GetInDoorLocation();
 	EPathFollowingRequestResult::Type t = OwnerComp.GetAIOwner()->MoveToLocation(loc);
 	
 	if (t == EPathFollowingRequestResult::RequestSuccessful)
 	{
-		//GetWorld()->GetTimerManager().SetTimer(EndTimer, this, &UBTTask_MoveToBuilding::EndTask, 1.0f, false);
 		return EBTNodeResult::Succeeded;
 	}
 	else
 	{
 		return EBTNodeResult::Failed;
 	}
+}
+
+void UBTTask_MoveToBuilding::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+{
+	TObjectPtr<AAIController> cont = OwnerComp.GetAIOwner();
+	TObjectPtr<AHumanNPC> npc = Cast<AHumanNPC>(cont->GetPawn());
+	if (!npc)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BTT_MoveToBuilding : npc Is NULL !!"));
+		return;
+	}
+
+	if (!npc->GetCanMove())
+	{
+		cont->StopMovement();
+	}
+	
+	return;
 }

@@ -13,7 +13,6 @@
 #include "../Component/SoulComponent.h"
 #include "../Component/EquipComponent.h"
 #include "Item/BaseItem.h"
-#include "Components/CapsuleComponent.h"
 #include "Widget/MainHUD.h"
 // MainHUD만 포함하고 다른 HUD는 MainHUD의 헤더에 포함시킬지 고민.
 #include "Widget/Inventory/InventoryHUD.h"
@@ -25,7 +24,8 @@
 #include "Item/BaseItem.h"
 #include "Kismet/GameplayStatics.h" // 월드 행렬을 뷰포트 행렬로 바꾸기 위해 필요
 //#include "TPS_GameInstance.h"
-#include "Land/Prob/BaseProb.h"
+#include "../Land/Prob/BaseProb.h"
+#include "../Land/Prob/Shop.h"
 
 DEFINE_LOG_CATEGORY(HeroLog);
 
@@ -46,7 +46,7 @@ AHero::AHero()
 	
 	// InteractionCapsule
 	InteractionCapsule = Helper::CreateActorComponent<UCapsuleComponent>(this, "Interaction Capsule");
-	InteractionCapsule->AttachToComponent(Camera, FAttachmentTransformRules::KeepRelativeTransform);
+	InteractionCapsule->AttachToComponent(CameraArm, FAttachmentTransformRules::KeepRelativeTransform);
 	InteractionCapsule->SetRelativeLocation(FVector(410, 0, -25));
 	InteractionCapsule->SetRelativeRotation(FRotator(0, -90, 0));
 	InteractionCapsule->SetRelativeScale3D(FVector(1.5, 1.5, 2));
@@ -113,7 +113,12 @@ void AHero::DoInteraction()
 
 	if (InteractionProb)
 	{
-		InteractionProb->Active();
+		//if (CheckBehavior(EBehaviorType::E_Working))
+			//InteractionProb->Deactive(this);
+		if (UsingProb)
+			UsingProb->Deactive(this);
+		else
+			InteractionProb->Active(this);
 	}
 }
 
@@ -156,6 +161,8 @@ void AHero::EndSubAction()
 
 void AHero::PressedAvoid()
 {
+	if (!bCanMove) return;
+
 	TArray<EStateType> state;
 	state.Add(EStateType::E_Idle);
 	state.Add(EStateType::E_Attack);
@@ -320,9 +327,6 @@ void AHero::BeginPlay()
 
 	MainHUD->SetVisibility(ESlateVisibility::Hidden);
 
-	UE_LOG(HeroLog, Log, TEXT("Hero InvenHUD Address: %p"), InvenHUD);
-	UE_LOG(HeroLog, Log, TEXT("MainHUD InvenHUD: %p"), MainHUD->GetInvenHUD());
-
 	// Interaction
 	if (InteractionHUDClass)
 	{
@@ -338,7 +342,7 @@ void AHero::BeginPlay()
 
 	InteractionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AHero::OnInteractionBeginOverlap);
 	InteractionCapsule->OnComponentEndOverlap.AddDynamic(this, &AHero::OnInteractionEndOverlap);
-
+	
 	//
 	FVector Start = GetActorLocation();
 	FVector End = GetActorLocation() + FVector(100, 100, 0);
@@ -491,10 +495,8 @@ void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 		UE_LOG(LogTemp, Log, TEXT("OverlapedItems Num : %d"), OverlapedItems.Num());
 
 		InteractionItem = Item;
-		InteractionHUD->SetName(InteractionItem->Name);
 
-		if (InteractionHUD->GetVisibility() == ESlateVisibility::Hidden)
-			InteractionHUD->SetVisibility(ESlateVisibility::HitTestInvisible);
+		InteractionHUD->ActiveWidget(EInteractionHUDType::E_Get, InteractionItem->Name);
 	}
 
 	// Prob
@@ -502,8 +504,24 @@ void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 	if (Prob && !InteractionProb)
 	{
-		InteractionProb = Prob;
+		// Shop
+		TObjectPtr<AShop> shop = Cast<AShop>(Prob);
+		if (shop)
+		{
+			InteractionProb = Prob;
+
+			InteractionHUD->ActiveWidget(EInteractionHUDType::E_Trade, InteractionProb->GetName());
+		}
+		// Prob
+		else if (Prob->GetCanPlayerUse())
+		{
+			InteractionProb = Prob;
+
+			InteractionHUD->ActiveWidget(EInteractionHUDType::E_Use, InteractionProb->GetName());
+		}
 	}
+
+	
 }
 
 void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -522,19 +540,19 @@ void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 
 			if (OverlapedItems.Num() == 0)
 			{
-				InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
+				InteractionHUD->DeactiveWidget();
 			}
 			else
 			{
 				InteractionItem = OverlapedItems[OverlapedItems.Num() - 1];
-				InteractionHUD->SetName(InteractionItem->Name);
+				InteractionHUD->ChangeName(InteractionItem->Name);
 			}
 		}
 		else
 		{
 			if (OverlapedItems.Num() == 0)
 			{
-				InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
+				InteractionHUD->DeactiveWidget();
 			}
 		}
 	}
@@ -547,43 +565,10 @@ void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 		if (InteractionProb == Prob)
 		{
 			InteractionProb = nullptr;
+
+			InteractionHUD->DeactiveWidget();
 		}
 	}
-
-
-
-
-	//if (InteractionItem == nullptr)
-	//{
-	//	if (OverlapedItems.Num() == 0)
-	//	{
-	//		InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
-	//	}
-	//	else
-	//	{
-	//		InteractionItem = OverlapedItems[OverlapedItems.Num() - 1];
-	//		InteractionHUD->SetName(InteractionItem->Name);
-	//	}
-	//}
-	//else
-	//{
-	//	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
-	//	OverlapedItems.RemoveAt(OverlapedItems.Find(Item));
-
-	//	if (InteractionItem == Item)
-	//	{
-	//		if (OverlapedItems.Num() == 0)
-	//		{
-	//			InteractionItem = nullptr;
-	//			InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
-	//		}
-	//		else
-	//		{
-	//			//InteractionItem = OverlapedItems[OverlapedItems.Num() - 1];
-	//			//InteractionHUD->SetName(InteractionItem->Name);
-	//		}
-	//	}
-	//}
 }
 
 

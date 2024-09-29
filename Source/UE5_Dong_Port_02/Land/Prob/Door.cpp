@@ -6,28 +6,8 @@
 
 ADoor::ADoor()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	 
-	Architecture = Helper::CreateSceneComponent<USceneComponent>(this, "Architecture", Scene);
-	//NavLink = Helper::CreateSceneComponent<ANavLinkProxy>(this, "NavLink", Scene);
-	NavLinkProxyChildActor = Helper::CreateSceneComponent<UChildActorComponent>(this, "NavLink", Scene);
-	NavLinkProxyChildActor->SetChildActorClass(ANavLinkProxy::StaticClass());
-
-	TObjectPtr<ANavLinkProxy> NavLink = Cast<ANavLinkProxy>(NavLinkProxyChildActor->GetChildActor());
-	if (!NavLink)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Casting to ANavLinkProxy Fail !!"));
-		return;
-	}
-	NavLink->PointLinks.Empty();
-	NavLink->SetSmartLinkEnabled(true);
-	TObjectPtr<UNavLinkCustomComponent> SmartLink = NavLink->GetSmartLinkComp();
-	if (SmartLink)
-	{
-		FVector Start = GetActorLocation() + FVector(0, 100, 20);
-		FVector End = GetActorLocation() + FVector(0, -100, 20);
-		SmartLink->SetLinkData(Start, End, ENavLinkDirection::BothWays);
-	}
+	ProbType = EProbType::E_OneTimeProb;
+	InteractionType = EInteractionType::E_OpenDoor;
 }
 
 void ADoor::BeginPlay()
@@ -48,25 +28,6 @@ void ADoor::BeginPlay()
 		StartRot = EndRot = GetActorRotation();
 		EndRot.Yaw += YawOffset;
 	}
-
-	TObjectPtr<ANavLinkProxy> NavLink = Cast<ANavLinkProxy>(NavLinkProxyChildActor->GetChildActor());
-	if (!NavLink)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Casting to ANavLinkProxy Fail !!"));
-		return;
-	}
-	NavLink->PointLinks.Empty();
-	NavLink->SetSmartLinkEnabled(true);
-	TObjectPtr<UNavLinkCustomComponent> SmartLink = NavLink->GetSmartLinkComp();
-	if (SmartLink)
-	{
-		FVector Start = GetActorLocation() + FVector(0, 100, 20);
-		FVector End = GetActorLocation() + FVector(0, -100, 20);
-		SmartLink->SetLinkData(Start, End, ENavLinkDirection::BothWays);
-		
-		SmartLink->SetMoveReachedLink(this, &ADoor::SmartLinkFunc);
-	}
-	
 }
 
 void ADoor::Tick(float DeltaTime)
@@ -82,7 +43,7 @@ void ADoor::Tick(float DeltaTime)
 void ADoor::SetRotation(float Value)
 {
 	FRotator NewRot = FMath::Lerp(StartRot, EndRot, Value);
-	Architecture->SetWorldRotation(NewRot);
+	Body->SetWorldRotation(NewRot);
 }
 
 void ADoor::EndEvent()
@@ -90,17 +51,26 @@ void ADoor::EndEvent()
 	this->SetActorEnableCollision(true);
 }
 
-void ADoor::Active()
+void ADoor::Active(ABaseHuman* human)
 {
+	Super::Active(human);
+
+	// Active Door
 	this->SetActorEnableCollision(false);
 
 	if (bIsOpen) CurveTimeline.ReverseFromEnd();
 	else CurveTimeline.PlayFromStart();
 
 	bIsOpen = !bIsOpen;
+
+	GetWorld()->GetTimerManager().SetTimer(ActiveTimerHandle, this, &ADoor::AutoClose, 3.0f);
 }
 
-void ADoor::SmartLinkFunc(UNavLinkCustomComponent* SmartLink, UObject* PathComp, const FVector& DestPoint)
+void ADoor::AutoClose()
 {
-	UE_LOG(LogTemp, Log, TEXT("!!!"));
+	if (bIsOpen)
+	{
+		CurveTimeline.ReverseFromEnd();
+		bIsOpen = !bIsOpen;
+	}
 }

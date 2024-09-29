@@ -1,25 +1,45 @@
-
 #include "Land/BaseVillage.h"
 #include "NavModifierVolume.h"
+#include "TPS_GameInstance.h"
+#include "Light/BaseLight.h"
+// #include "Prob/BaseProb.h"
+// #include "Building/Building.h"
 
 ABaseVillage::ABaseVillage()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 }
 
-// Called when the game starts or when spawned
 void ABaseVillage::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Time
+	GameInstance = Cast<UTPS_GameInstance>(GetWorld()->GetGameInstance());
+	if (!GameInstance)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Game Instance Is NULL !!"));
+		return;
+	}
+
+	GameInstance->DOneMinuteTimePass.AddUFunction(this, "OneMinuteTimePass");
 }
 
-// Called every frame
-void ABaseVillage::Tick(float DeltaTime)
+void ABaseVillage::OneMinuteTimePass()
 {
-	Super::Tick(DeltaTime);
+	GlobalTime = GameInstance->GetGlobalTime();
 
+	if (GlobalTime.CurrentTime == 1140)
+	{
+		for (TObjectPtr<ABaseLight> light : Lights)
+		{
+			light->Active();
+		}
+	}
+	else if (GlobalTime.CurrentTime == 420)
+	{
+		for (TObjectPtr<ABaseLight> light : Lights)
+		{
+			light->Deactive();
+		}
+	}
 }
-

@@ -61,4 +61,23 @@ public:
 	void GetOut(ABaseHuman* human);
 	UFUNCTION()
 	void GetIn(ABaseHuman* human);
+
+public:
+	template<typename T>
+	TArray<TObjectPtr<T>> GetInsideProbs()
+	{
+		TArray<TObjectPtr<T>> temp;
+
+		for (auto& p : Probs)
+		{
+			TObjectPtr<T> CastProb = Cast<T>(p);
+
+			if (CastProb)
+			{
+				temp.Add(CastProb);
+			}
+		}
+
+		return temp;
+	}
 };

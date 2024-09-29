@@ -82,7 +82,6 @@ void UStatusHUD::UpdateLevel(uint8 level)
 {
 	FText t = FText::AsNumber(level);
 	TB_C_Level->SetText(t);
-	UE_LOG(LogTemp, Log, TEXT("UpdateLevel Call"));
 	
 }
 
@@ -90,5 +89,4 @@ void UStatusHUD::UpdateHP(int mhp, int hp)
 {
 	FText t = FText::FromString(FString::Printf(TEXT("%d / %d"), hp, mhp));
 	TB_C_HP->SetText(t);
-	UE_LOG(LogTemp, Log, TEXT("UpdateHP Call"));
 }
