@@ -12,11 +12,8 @@
 class UInventoryComponent;
 class UEquipComponent;
 class AHero;
-<<<<<<< HEAD
 class ABuilding;
 class ABaseProb;
-=======
->>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 
 UCLASS()
 class UE5_DONG_PORT_02_API ABaseHuman : public ABaseCharacter
@@ -63,7 +60,6 @@ public:
 	void SetPlayRate(float playrate);
 	FORCEINLINE float GetPlayRate() { return PlayRate; }
 
-<<<<<<< HEAD
 public:
 	FORCEINLINE AHero* GetHero() { return hero; }
 
@@ -127,6 +123,4 @@ public:
 public:
 	TArray<TObjectPtr<ABaseProb>> SphereTraceForBaseProbs(float radius);
 
-=======
->>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 };

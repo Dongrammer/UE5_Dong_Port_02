@@ -27,16 +27,16 @@ EBTNodeResult::Type UBTTask_MoveToBuilding::ExecuteTask(UBehaviorTreeComponent& 
 
 	//TObjectPtr<ABuilding> building = Cast<ABuilding>(OwnerComp.GetBlackboardComponent()->GetValueAsObject("TargetBuilding"));
 	TObjectPtr<ABuilding> building = Cast<ABuilding>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()));
-	
+
 	if (!building)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BTT_MoveToBuilding : Casting ABuilding Fail !!"));
 		return EBTNodeResult::Failed;
 	}
-	
+
 	FVector loc = building->GetInDoorLocation();
 	EPathFollowingRequestResult::Type t = OwnerComp.GetAIOwner()->MoveToLocation(loc);
-	
+
 	if (t == EPathFollowingRequestResult::RequestSuccessful)
 	{
 		return EBTNodeResult::Succeeded;
@@ -61,6 +61,6 @@ void UBTTask_MoveToBuilding::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	{
 		cont->StopMovement();
 	}
-	
+
 	return;
 }

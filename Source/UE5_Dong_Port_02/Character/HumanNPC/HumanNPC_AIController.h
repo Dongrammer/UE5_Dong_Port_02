@@ -13,11 +13,11 @@ UCLASS()
 class UE5_DONG_PORT_02_API AHumanNPC_AIController : public AAIController
 {
 	GENERATED_BODY()
-	
+
 public:
 	//explicit AHumanNPC_AIController(FObjectInitializer const& ObjectInitializer);
 	AHumanNPC_AIController();
-	
+
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;

@@ -12,7 +12,7 @@ ABaseLight::ABaseLight()
 void ABaseLight::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	PointLight->SetHiddenInGame(true);
 }
 

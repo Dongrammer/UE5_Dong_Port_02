@@ -2,12 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "Character/BaseHuman.h"
+#include "BehaviorTree/BehaviorTree.h"
+
+// #include "../Land/Trigger/Home/NPCHome_LocationVolume.h"
+#include "../Land/Building/Building.h"
+#include "../Land/BaseVillage.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(HumanNPCLog, Log, All);
 
 #include "HumanNPC.generated.h"
 
-<<<<<<< HEAD
 class ANPCHome_LocationVolume;
 
 UENUM(BlueprintType)
@@ -39,8 +43,6 @@ enum class EHobbies : uint8
 	E_Max UMETA(Hidden)
 };
 
-=======
->>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 UCLASS()
 class UE5_DONG_PORT_02_API AHumanNPC : public ABaseHuman
 {
@@ -49,7 +51,6 @@ class UE5_DONG_PORT_02_API AHumanNPC : public ABaseHuman
 public:
 	AHumanNPC();
 
-<<<<<<< HEAD
 	TObjectPtr<UBehaviorTree> GetBehaviorTree() const { return BehaviorTree; }
 	void Tick(float DeltaTime) override;
 
@@ -69,7 +70,7 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UCapsuleComponent> PushedCapsule;
-	
+
 	TArray<TObjectPtr<ABaseHuman>> OverlapHuman;
 
 
@@ -125,7 +126,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Condition", meta = (AllowprivateAccess = "true"), meta = (ClampMin = 0))
 	int MaxFatigue = 1000; // 최대 피로도
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Condition", meta = (AllowprivateAccess = "true"), meta = (ClampMin = 0))
-	int CurrentFatigue = 0; 
+	int CurrentFatigue = 0;
 	int FatigueValue = 1; // 피로도 증가량 = 직업에 따라 다름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Condition", meta = (AllowprivateAccess = "true"), meta = (ClampMin = 0), meta = (ClampMax = 100))
 	uint8 Endurance = 0; // 인내력 (퍼센트)
@@ -144,9 +145,4 @@ public:
 	void RecoveryFatigue(uint8 percent);
 
 
-=======
-protected:
-	void BeginPlay() override;
-	void CreateCharacter() override;
->>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 };

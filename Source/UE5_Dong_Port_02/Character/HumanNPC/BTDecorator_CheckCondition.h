@@ -9,7 +9,7 @@ UCLASS()
 class UE5_DONG_PORT_02_API UBTDecorator_CheckCondition : public UBTDecorator
 {
 	GENERATED_BODY()
-	
+
 protected:
 	UBTDecorator_CheckCondition();
 

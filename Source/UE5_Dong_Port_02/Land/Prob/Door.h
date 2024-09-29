@@ -14,8 +14,8 @@ UCLASS()
 class UE5_DONG_PORT_02_API ADoor : public ABaseProb
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ADoor();
 
 	virtual void Tick(float DeltaTime) override;

@@ -15,8 +15,8 @@ UCLASS()
 class UE5_DONG_PORT_02_API ABaseVillage : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ABaseVillage();
 	UFUNCTION()
 	virtual void OneMinuteTimePass();

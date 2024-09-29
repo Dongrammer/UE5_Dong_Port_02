@@ -7,10 +7,13 @@
 #include "Components/CapsuleComponent.h"
 #include "Component/StatusComponent.h"
 
+#include "../Land/TimeData.h"
+
 #include "BaseCharacter.generated.h"
 
 class ABaseItem;
 class UItemComponent;
+class UTPS_GameInstance;
 
 UCLASS()
 class UE5_DONG_PORT_02_API ABaseCharacter : public ACharacter
@@ -39,7 +42,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStatusComponent> StatusComponent;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -52,9 +55,20 @@ public:
 
 	FORCEINLINE float GetStandardWalkSpeed() { return StandardWalkSpeed; }
 	FORCEINLINE float GetCurrentSpeed() { return GetVelocity().Size2D(); }
-	void SetWalkSpeed(float speed);	
+	void SetWalkSpeed(float speed);
 	void InitWalkSpeed();
 
 	void EQuipItemStatus(TMap<EEquipStatus, int> status) { StatusComponent->EquipItemStatus(status); }
 	void UnequipItemStatus(TMap<EEquipStatus, int> status) { StatusComponent->UnequipItemStatus(status); }
+
+
+	/* ==================== Time ==================== */
+protected:
+	TObjectPtr<UTPS_GameInstance> GameInstance;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
+	FGlobalTime GlobalTime;
+
+public:
+	UFUNCTION()
+	virtual void OneMinuteTimePass();
 };

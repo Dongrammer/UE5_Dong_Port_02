@@ -8,7 +8,7 @@ UCLASS()
 class UE5_DONG_PORT_02_API UBTTask_MoveToBuilding : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
-	
+
 public:
 	UBTTask_MoveToBuilding();
 

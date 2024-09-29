@@ -16,8 +16,8 @@ UCLASS()
 class UE5_DONG_PORT_02_API ABaseAction : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ABaseAction();
 
 protected:
@@ -26,7 +26,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<AHero> ActionOwner;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SettingOwner(TObjectPtr<AHero> InOwner);
@@ -73,7 +73,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Essential")
 	TMap<uint8, float> SpeedLevelData; // <노드레벨, 재생속도>
 	uint8 SpeedLevel = 0;
-	float PlayRate = 1.0f; 
+	float PlayRate = 1.0f;
 	void PassiveSpeedUp();
 
 };

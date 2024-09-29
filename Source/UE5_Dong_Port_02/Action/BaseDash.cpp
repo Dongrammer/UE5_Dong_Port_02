@@ -18,7 +18,7 @@ ABaseDash::ABaseDash()
 void ABaseDash::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 void ABaseDash::Tick(float DeltaTime)

@@ -13,7 +13,7 @@ void AChair::Active(ABaseHuman* human)
 
 	human->SetActorLocation(ActiveMeshIn->GetComponentLocation());
 	human->SetActorRotation(ActiveMeshIn->GetComponentRotation() + FRotator(0, 90 + 180, 0));
-	
+
 	if (!TimerHandle.IsValid())
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AChair::RecoveryCondition, 1.0f, true);
 }

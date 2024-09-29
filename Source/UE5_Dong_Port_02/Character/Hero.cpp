@@ -23,12 +23,9 @@
 #include "Blueprint/UserWidget.h"
 #include "Item/BaseItem.h"
 #include "Kismet/GameplayStatics.h" // 월드 행렬을 뷰포트 행렬로 바꾸기 위해 필요
-<<<<<<< HEAD
 //#include "TPS_GameInstance.h"
 #include "../Land/Prob/BaseProb.h"
-#include "../Land/Prob/Shop.h"
-=======
->>>>>>> parent of 61cfc84 (~2024/09/14 Update)
+//#include "../Land/Prob/Shop.h"
 
 DEFINE_LOG_CATEGORY(HeroLog);
 
@@ -46,7 +43,7 @@ AHero::AHero()
 	TechniqueComponent = Helper::CreateActorComponent<UTechniqueComponent>(this, "Technique Component");
 	// ActionComponent가 TechniqueComponent보다 위에 있어야함. ActionComponent에 CreateAction이 먼저 실행되어야 하기 때문.
 	SoulComponent = Helper::CreateActorComponent<USoulComponent>(this, "Soul Component");
-	
+
 	// InteractionCapsule
 	InteractionCapsule = Helper::CreateActorComponent<UCapsuleComponent>(this, "Interaction Capsule");
 	InteractionCapsule->AttachToComponent(CameraArm, FAttachmentTransformRules::KeepRelativeTransform);
@@ -70,7 +67,7 @@ void AHero::CreateCharacter()
 void AHero::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
-	
+
 	// Set InputDirection
 	if (MovementVector.Y > 0) inputDirection = EInputDirection::E_Forward;
 	else if (MovementVector.Y < 0) inputDirection = EInputDirection::E_Back;
@@ -84,8 +81,8 @@ void AHero::Move(const FInputActionValue& Value)
 
 	// Movement
 
-	const FRotator Rotation = Controller->GetControlRotation();	// ī�޶� ������ �� ��� �� ȸ����
-	const FRotator YawRotation = FRotator(0, Rotation.Yaw, 0);	// ĳ���� ������ �� Y�� ȸ����
+	const FRotator Rotation = Controller->GetControlRotation();	// ī ޶                   ȸ    
+	const FRotator YawRotation = FRotator(0, Rotation.Yaw, 0);	// ĳ               Y   ȸ    
 
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
@@ -113,7 +110,6 @@ void AHero::DoInteraction()
 		GetItems(InteractionItem->itemdata, 1);
 		InteractionItem->Destroy();
 	}
-<<<<<<< HEAD
 
 	if (InteractionProb)
 	{
@@ -124,8 +120,6 @@ void AHero::DoInteraction()
 		else
 			InteractionProb->Active(this);
 	}
-=======
->>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 }
 
 void AHero::EndInteraction()
@@ -340,7 +334,7 @@ void AHero::BeginPlay()
 		InteractionHUD->AddToViewport();
 		InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
 	}
-	else 
+	else
 	{
 		UE_LOG(HeroLog, Warning, TEXT("InteractionHUDClass Is NULL !!"));
 		return;
@@ -348,11 +342,14 @@ void AHero::BeginPlay()
 
 	InteractionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AHero::OnInteractionBeginOverlap);
 	InteractionCapsule->OnComponentEndOverlap.AddDynamic(this, &AHero::OnInteractionEndOverlap);
-	
+
 	//
 	FVector Start = GetActorLocation();
 	FVector End = GetActorLocation() + FVector(100, 100, 0);
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red, true, -1, 0, 10);
+
+
+
 }
 
 void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -421,7 +418,7 @@ void AHero::MappingInputAsset(UEnhancedInputComponent* Comp)
 void AHero::SetMouseState(bool visibility, EInputModeType inputmode, UWidget* widget)
 {
 	APlayerController* cont = Cast<APlayerController>(GetController());
-	
+
 	switch (inputmode)
 	{
 	case EInputModeType::E_GameOnly:
@@ -473,12 +470,12 @@ void AHero::SetMouseCenter()
 
 void AHero::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
+
 }
 
 void AHero::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	
+
 }
 
 void AHero::DoDashMovement()
@@ -488,6 +485,7 @@ void AHero::DoDashMovement()
 
 void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// Item
 	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
 
 	if (Item && Item->bInField == true)
@@ -500,7 +498,6 @@ void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 		InteractionHUD->ActiveWidget(EInteractionHUDType::E_Get, InteractionItem->Name);
 	}
-<<<<<<< HEAD
 
 	// Prob
 	TObjectPtr<ABaseProb> Prob = Cast<ABaseProb>(OtherComp->GetOwner());
@@ -508,15 +505,17 @@ void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	if (Prob && !InteractionProb)
 	{
 		// Shop
-		TObjectPtr<AShop> shop = Cast<AShop>(Prob);
+		/*TObjectPtr<AShop> shop = Cast<AShop>(Prob);
 		if (shop)
 		{
 			InteractionProb = Prob;
 
 			InteractionHUD->ActiveWidget(EInteractionHUDType::E_Trade, InteractionProb->GetName());
-		}
+		}*/
 		// Prob
-		else if (Prob->GetCanPlayerUse())
+		//else if (Prob->GetCanPlayerUse())
+
+		if (Prob->GetCanPlayerUse())
 		{
 			InteractionProb = Prob;
 
@@ -524,13 +523,12 @@ void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 		}
 	}
 
-	
-=======
->>>>>>> parent of 61cfc84 (~2024/09/14 Update)
+
 }
 
 void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	// Item
 	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
 
 	if (Item)
@@ -560,7 +558,6 @@ void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 			}
 		}
 	}
-<<<<<<< HEAD
 
 	// Prob
 	TObjectPtr<ABaseProb> Prob = Cast<ABaseProb>(OtherComp->GetOwner());
@@ -574,39 +571,6 @@ void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 			InteractionHUD->DeactiveWidget();
 		}
 	}
-=======
-	//if (InteractionItem == nullptr)
-	//{
-	//	if (OverlapedItems.Num() == 0)
-	//	{
-	//		InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
-	//	}
-	//	else
-	//	{
-	//		InteractionItem = OverlapedItems[OverlapedItems.Num() - 1];
-	//		InteractionHUD->SetName(InteractionItem->Name);
-	//	}
-	//}
-	//else
-	//{
-	//	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
-	//	OverlapedItems.RemoveAt(OverlapedItems.Find(Item));
-
-	//	if (InteractionItem == Item)
-	//	{
-	//		if (OverlapedItems.Num() == 0)
-	//		{
-	//			InteractionItem = nullptr;
-	//			InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
-	//		}
-	//		else
-	//		{
-	//			//InteractionItem = OverlapedItems[OverlapedItems.Num() - 1];
-	//			//InteractionHUD->SetName(InteractionItem->Name);
-	//		}
-	//	}
-	//}
->>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 }
 
 
@@ -623,4 +587,9 @@ void AHero::SetCurrentWeaponType(EWeaponType type)
 
 	TechniqueComponent->SetCurrentWeaponType(type);
 	ActionComponent->SetCurrentWeaponType(type);
+}
+
+void AHero::OneMinuteTimePass()
+{
+	Super::OneMinuteTimePass();
 }

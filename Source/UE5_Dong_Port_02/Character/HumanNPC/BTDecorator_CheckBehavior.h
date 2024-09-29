@@ -8,7 +8,7 @@
 #include "BTDecorator_CheckBehavior.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class UE5_DONG_PORT_02_API UBTDecorator_CheckBehavior : public UBTDecorator

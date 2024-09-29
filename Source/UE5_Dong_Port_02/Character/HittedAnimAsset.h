@@ -26,7 +26,7 @@ UCLASS()
 class UE5_DONG_PORT_02_API UHittedAnimAsset : public UDataAsset
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TMap<EHittedDirection, TObjectPtr<UAnimMontage>> PushedAnim;

@@ -10,8 +10,8 @@ UCLASS()
 class UE5_DONG_PORT_02_API ABaseLight : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ABaseLight();
 
 protected:

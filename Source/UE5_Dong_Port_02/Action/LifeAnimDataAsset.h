@@ -13,7 +13,7 @@ UCLASS()
 class UE5_DONG_PORT_02_API ULifeAnimDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Interaction Anim")
 	TMap<EInteractionType, TObjectPtr<UAnimMontage>> InteractionAnim;

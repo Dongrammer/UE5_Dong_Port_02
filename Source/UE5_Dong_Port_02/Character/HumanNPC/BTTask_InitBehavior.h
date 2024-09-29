@@ -8,7 +8,7 @@ UCLASS()
 class UE5_DONG_PORT_02_API UBTTask_InitBehavior : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
+
 protected:
 	UBTTask_InitBehavior();
 

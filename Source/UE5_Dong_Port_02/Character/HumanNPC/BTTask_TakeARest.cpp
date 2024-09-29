@@ -26,7 +26,7 @@ EBTNodeResult::Type UBTTask_TakeARest::ExecuteTask(UBehaviorTreeComponent& Owner
 		UE_LOG(LogTemp, Warning, TEXT("BTT_TakeARset : npc Is NULL !!"));
 		return EBTNodeResult::Failed;
 	}
-	
+
 
 
 
@@ -52,7 +52,7 @@ EBTNodeResult::Type UBTTask_TakeARest::ExecuteTask(UBehaviorTreeComponent& Owner
 			}
 		}
 	}
-	
+
 	if (SelectedChair)
 	{
 		FVector loc = SelectedChair->GetActiveMeshInLocation();

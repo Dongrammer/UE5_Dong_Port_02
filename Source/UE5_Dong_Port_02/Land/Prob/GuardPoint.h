@@ -4,8 +4,8 @@
 #include "Land/Prob/BaseProb.h"
 #include "GuardPoint.generated.h"
 
-/* 
-	- 교대 시간을 위해 다음 근무자와 출퇴근 시간을 10분 정도 조정 
+/*
+	- 다음 근무자가 와야만 해제되도록
 	- ActiveMeshIn Only
 */
 
@@ -13,7 +13,7 @@ UCLASS()
 class UE5_DONG_PORT_02_API AGuardPoint : public ABaseProb
 {
 	GENERATED_BODY()
-	
+
 protected:
 	AGuardPoint();
 

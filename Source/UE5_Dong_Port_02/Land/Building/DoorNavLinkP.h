@@ -10,7 +10,7 @@ UCLASS()
 class UE5_DONG_PORT_02_API ADoorNavLinkP : public ANavLinkProxy
 {
 	GENERATED_BODY()
-	
+
 public:
 	ADoorNavLinkP();
 

@@ -9,7 +9,7 @@ DEFINE_LOG_CATEGORY(HmNPCAIContLog);
 
 AHumanNPC_AIController::AHumanNPC_AIController()
 {
-	/* ========== Setup Perception System ========== */ 
+	/* ========== Setup Perception System ========== */
 	AIPerception = Helper::CreateActorComponent<UAIPerceptionComponent>(this, "AIPerception");
 	SetPerceptionComponent(*AIPerception);
 
@@ -47,7 +47,7 @@ void AHumanNPC_AIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	TObjectPtr<AHumanNPC> const npc = Cast<AHumanNPC>(InPawn);
-	
+
 	if (!npc)
 	{
 		UE_LOG(HmNPCAIContLog, Warning, TEXT("%s : Casting AHumanNPC Fail !!"), *InPawn->GetFName().ToString());

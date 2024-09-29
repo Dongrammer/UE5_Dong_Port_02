@@ -149,14 +149,14 @@ TArray<TObjectPtr<ABaseProb>> ABaseHuman::SphereTraceForBaseProbs(float radius)
 	TArray<FHitResult> hitResult;
 
 	UKismetSystemLibrary::SphereTraceMultiForObjects(
-		this, 
-		GetActorLocation(), 
-		GetActorLocation(), 
-		radius, 
-		objType, 
-		false, 
-		actor, 
-		EDrawDebugTrace::ForDuration, 
+		this,
+		GetActorLocation(),
+		GetActorLocation(),
+		radius,
+		objType,
+		false,
+		actor,
+		EDrawDebugTrace::ForDuration,
 		hitResult,
 		true);
 

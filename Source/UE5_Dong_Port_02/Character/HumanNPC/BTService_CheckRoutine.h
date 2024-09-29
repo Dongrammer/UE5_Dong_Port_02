@@ -8,7 +8,7 @@ UCLASS()
 class UE5_DONG_PORT_02_API UBTService_CheckRoutine : public UBTService_BlackboardBase
 {
 	GENERATED_BODY()
-	
+
 public:
 	UBTService_CheckRoutine();
 	void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;

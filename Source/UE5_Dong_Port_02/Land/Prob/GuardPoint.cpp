@@ -12,10 +12,10 @@ AGuardPoint::AGuardPoint()
 void AGuardPoint::Active(ABaseHuman* human)
 {
 	Super::Active(human);
-	
+
 	if (FVector::Distance(this->GetActiveMeshInLocation(), human->GetActorLocation()) > 100.0f)
 		human->SetActorLocation(ActiveMeshIn->GetComponentLocation());
-	
+
 	FRotator TargetRotator = ActiveMeshIn->GetComponentRotation() + FRotator(0, 90, 0);
 	FRotator HumanRotator = human->GetActorRotation();
 	if (!TargetRotator.Equals(HumanRotator, 10.0f))

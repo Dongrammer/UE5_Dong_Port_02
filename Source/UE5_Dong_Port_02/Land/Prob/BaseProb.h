@@ -27,8 +27,8 @@ UCLASS()
 class UE5_DONG_PORT_02_API ABaseProb : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ABaseProb();
 
 protected:
@@ -62,7 +62,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Essential")
 	EInteractionType InteractionType = EInteractionType::E_None;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	FName GetName() { return Name; }

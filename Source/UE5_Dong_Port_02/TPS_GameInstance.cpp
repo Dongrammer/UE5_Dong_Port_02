@@ -6,14 +6,20 @@ void UTPS_GameInstance::Init()
 
 	ItemComponentInstance = NewObject<UItemComponent>(this);
 	ItemComponentInstance->SetRarityColor();
-	
+
+}
+
+void UTPS_GameInstance::OnStart()
+{
+	Super::OnStart();
+
+	InitGlobalTime();
 }
 
 UItemComponent* UTPS_GameInstance::GetItemComponent()
 {
 	return ItemComponentInstance;
 }
-<<<<<<< HEAD
 
 void UTPS_GameInstance::InitGlobalTime()
 {
@@ -30,7 +36,7 @@ void UTPS_GameInstance::OneMinuteTimePass()
 	{
 		GlobalTime.CurrentTime = 0;
 		GlobalTime.CurrentDay++;
-		
+
 		uint8 tempWeek = static_cast<uint8>(GlobalTime.CurrentWeek);
 		if (tempWeek >= static_cast<uint8>(EWeekType::E_SunDay))
 			tempWeek = 0;
@@ -58,5 +64,3 @@ void UTPS_GameInstance::SetTimeMult(float f)
 //
 //	return times;
 //}
-=======
->>>>>>> parent of 61cfc84 (~2024/09/14 Update)

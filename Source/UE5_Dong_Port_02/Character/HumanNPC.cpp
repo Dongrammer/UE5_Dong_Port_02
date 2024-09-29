@@ -79,7 +79,6 @@ void AHumanNPC::Tick(float DeltaTime)
 void AHumanNPC::BeginPlay()
 {
 	Super::BeginPlay();
-<<<<<<< HEAD
 
 	PushedCapsule->OnComponentBeginOverlap.AddDynamic(this, &AHumanNPC::OnBeginOverlap);
 	PushedCapsule->OnComponentEndOverlap.AddDynamic(this, &AHumanNPC::OnEndOverlap);
@@ -92,8 +91,6 @@ void AHumanNPC::BeginPlay()
 		return;
 	}
 	SetWorkProb();
-=======
->>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 }
 
 void AHumanNPC::CreateCharacter()
@@ -101,7 +98,6 @@ void AHumanNPC::CreateCharacter()
 	Super::CreateCharacter();
 
 	GetMesh()->SetAnimInstanceClass(Helper::GetClass<UAnimInstance>(L"/Game/Characters/HumanNPC/ABP_HumanNPC"));
-<<<<<<< HEAD
 }
 
 void AHumanNPC::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -301,6 +297,3 @@ void AHumanNPC::RecoveryFatigue(uint8 percent)
 //
 //
 //}
-=======
-}
->>>>>>> parent of 61cfc84 (~2024/09/14 Update)

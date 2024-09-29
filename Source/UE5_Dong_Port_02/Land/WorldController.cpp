@@ -62,7 +62,7 @@ void AWorldController::OneMinuteTimePass()
 void AWorldController::UpdateSun()
 {
 	float CurTime = GlobalTime.CurrentTime;
-	
+
 	//FRotator ro = Sun->GetActorRotation();
 	//ro.Pitch = ((360.0f / 1440.0f) * CurTime);
 	//FQuat qu = FQuat(ro);

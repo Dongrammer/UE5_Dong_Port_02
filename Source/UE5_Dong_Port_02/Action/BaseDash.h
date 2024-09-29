@@ -14,8 +14,8 @@ UCLASS()
 class UE5_DONG_PORT_02_API ABaseDash : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ABaseDash();
 
 protected:
@@ -34,7 +34,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool bCanMove = true;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SettingOwner(TObjectPtr<AHero> InOwner);
@@ -44,7 +44,7 @@ public:
 	UFUNCTION()
 	void ReleasedDash();
 	UFUNCTION(BlueprintCallable) // 아직 안쓰는 함수
-	void SetLocation();
+		void SetLocation();
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void DoDashMovement();
 
@@ -57,5 +57,5 @@ public:
 	FORCEINLINE bool GetActivation() { return bActivation; }
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TMap<EInputDirection ,TObjectPtr<UAnimMontage>> AnimAsset;
+	TMap<EInputDirection, TObjectPtr<UAnimMontage>> AnimAsset;
 };

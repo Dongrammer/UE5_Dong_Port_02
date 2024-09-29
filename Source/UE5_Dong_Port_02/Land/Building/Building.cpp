@@ -18,7 +18,7 @@ ABuilding::ABuilding()
 void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	InAndOutBox->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::ComeInCharacter);
 	InAndOutBox->OnComponentEndOverlap.AddDynamic(this, &ABuilding::GetOutCharacter);
 }
@@ -62,7 +62,7 @@ FVector ABuilding::GetOutDoorLocation()
 		UE_LOG(LogTemp, Warning, TEXT("Building : Door Is NULL !!"));
 		return FVector::Zero();
 	}
-	
+
 	return door->GetOutDoorLocation();
 }
 

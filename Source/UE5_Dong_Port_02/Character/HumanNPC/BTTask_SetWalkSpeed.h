@@ -11,7 +11,7 @@ class UE5_DONG_PORT_02_API UBTTask_SetWalkSpeed : public UBTTaskNode
 
 protected:
 	UBTTask_SetWalkSpeed();
-	
+
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

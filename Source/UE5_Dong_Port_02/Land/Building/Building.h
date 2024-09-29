@@ -17,14 +17,14 @@ UCLASS()
 class UE5_DONG_PORT_02_API ABuilding : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ABuilding();
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 	/* ========== Body ==========*/

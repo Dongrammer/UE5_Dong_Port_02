@@ -8,7 +8,7 @@ UCLASS()
 class UE5_DONG_PORT_02_API ABed : public ABaseProb
 {
 	GENERATED_BODY()
-	
+
 protected:
 	ABed();
 

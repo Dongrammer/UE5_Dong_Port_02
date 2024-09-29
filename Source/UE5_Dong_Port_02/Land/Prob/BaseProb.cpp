@@ -8,20 +8,20 @@ DEFINE_LOG_CATEGORY(ProbLog);
 ABaseProb::ABaseProb()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	Scene = Helper::CreateSceneComponent<USceneComponent>(this, "Scene");
 	Body = Helper::CreateSceneComponent<USceneComponent>(this, "Architecture", Scene);
 	ActiveMeshIn = Helper::CreateSceneComponent<USkeletalMeshComponent>(this, "Active Mesh In", Scene);
 	ActiveMeshOut = Helper::CreateSceneComponent<USkeletalMeshComponent>(this, "Active Mesh Out", Scene);
-	
+
 	StimulusSource = Helper::CreateActorComponent<UAIPerceptionStimuliSourceComponent>(this, "Stimulus");
-	
+
 }
 
 void ABaseProb::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	// Check Safe
 	switch (ProbType)
 	{

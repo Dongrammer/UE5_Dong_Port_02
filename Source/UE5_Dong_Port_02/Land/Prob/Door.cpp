@@ -13,7 +13,7 @@ ADoor::ADoor()
 void ADoor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (CurveFloat)
 	{
 		FOnTimelineFloat ActionTimeline;

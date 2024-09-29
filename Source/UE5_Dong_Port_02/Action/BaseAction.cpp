@@ -18,7 +18,7 @@ ABaseAction::ABaseAction()
 void ABaseAction::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 void ABaseAction::Tick(float DeltaTime)

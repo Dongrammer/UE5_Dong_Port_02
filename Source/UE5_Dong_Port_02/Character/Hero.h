@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Character/BaseHuman.h"
 #include "Logging/LogMacros.h"
+#include "../TPS_GameInstance.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(HeroLog, Log, All);
 
@@ -147,7 +148,7 @@ public:
 	TObjectPtr<UInventoryHUD> InvenHUD;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD|Essential", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UInventoryHUD> InvenHUDClass;
-	
+
 private:
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
@@ -188,6 +189,8 @@ public:
 	bool bLeftClicked = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<ABaseItem> InteractionItem;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<ABaseProb> InteractionProb;
 
 	/* ==================== State ==================== */
 public:
@@ -212,6 +215,12 @@ public:
 	FORCEINLINE EWeaponType GetCurrentWeaponType() { return WeaponComponent->GetCurrentWeaponType(); }
 
 	void SetCurrentWeaponType(EWeaponType type) override;
+
+	/* ==================== Time ==================== */
+public:
+	void OneMinuteTimePass() override;
+	UFUNCTION(BlueprintCallable)
+	void SetTimeMult(float f) { GameInstance->SetTimeMult(f); }
 };
 
 /*

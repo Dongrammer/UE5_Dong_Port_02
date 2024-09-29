@@ -8,7 +8,7 @@
 
 #include "TPS_AnimInstance.generated.h"
 
-// ���漱��
+//    漱  
 class ABaseHuman;
 class UCharacterMovementComponent;
 
