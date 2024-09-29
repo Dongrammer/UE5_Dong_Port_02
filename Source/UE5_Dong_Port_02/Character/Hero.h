@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "Character/BaseHuman.h"
 #include "Logging/LogMacros.h"
-#include "../TPS_GameInstance.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(HeroLog, Log, All);
 
@@ -189,8 +188,6 @@ public:
 	bool bLeftClicked = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<ABaseItem> InteractionItem;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<ABaseProb> InteractionProb;
 
 	/* ==================== State ==================== */
 public:
@@ -215,12 +212,6 @@ public:
 	FORCEINLINE EWeaponType GetCurrentWeaponType() { return WeaponComponent->GetCurrentWeaponType(); }
 
 	void SetCurrentWeaponType(EWeaponType type) override;
-
-	/* ==================== Time ==================== */
-public:
-	void OneMinuteTimePass() override;
-	UFUNCTION(BlueprintCallable)
-	void SetTimeMult(float f) { GameInstance->SetTimeMult(f); }
 };
 
 /*

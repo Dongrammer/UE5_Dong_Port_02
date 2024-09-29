@@ -2,16 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "Character/BaseHuman.h"
-#include "BehaviorTree/BehaviorTree.h"
-
-#include "../Land/Trigger/Home/NPCHome_LocationVolume.h"
-#include "../Land/Building/Building.h"
-#include "../Land/BaseVillage.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(HumanNPCLog, Log, All);
 
 #include "HumanNPC.generated.h"
 
+<<<<<<< HEAD
 class ANPCHome_LocationVolume;
 
 UENUM(BlueprintType)
@@ -43,6 +39,8 @@ enum class EHobbies : uint8
 	E_Max UMETA(Hidden)
 };
 
+=======
+>>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 UCLASS()
 class UE5_DONG_PORT_02_API AHumanNPC : public ABaseHuman
 {
@@ -51,6 +49,7 @@ class UE5_DONG_PORT_02_API AHumanNPC : public ABaseHuman
 public:
 	AHumanNPC();
 
+<<<<<<< HEAD
 	TObjectPtr<UBehaviorTree> GetBehaviorTree() const { return BehaviorTree; }
 	void Tick(float DeltaTime) override;
 
@@ -145,4 +144,9 @@ public:
 	void RecoveryFatigue(uint8 percent);
 
 
+=======
+protected:
+	void BeginPlay() override;
+	void CreateCharacter() override;
+>>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 };

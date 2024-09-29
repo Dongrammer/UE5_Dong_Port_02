@@ -23,9 +23,12 @@
 #include "Blueprint/UserWidget.h"
 #include "Item/BaseItem.h"
 #include "Kismet/GameplayStatics.h" // 월드 행렬을 뷰포트 행렬로 바꾸기 위해 필요
+<<<<<<< HEAD
 //#include "TPS_GameInstance.h"
 #include "../Land/Prob/BaseProb.h"
 #include "../Land/Prob/Shop.h"
+=======
+>>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 
 DEFINE_LOG_CATEGORY(HeroLog);
 
@@ -110,6 +113,7 @@ void AHero::DoInteraction()
 		GetItems(InteractionItem->itemdata, 1);
 		InteractionItem->Destroy();
 	}
+<<<<<<< HEAD
 
 	if (InteractionProb)
 	{
@@ -120,6 +124,8 @@ void AHero::DoInteraction()
 		else
 			InteractionProb->Active(this);
 	}
+=======
+>>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 }
 
 void AHero::EndInteraction()
@@ -347,9 +353,6 @@ void AHero::BeginPlay()
 	FVector Start = GetActorLocation();
 	FVector End = GetActorLocation() + FVector(100, 100, 0);
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red, true, -1, 0, 10);
-
-	
-	
 }
 
 void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -485,7 +488,6 @@ void AHero::DoDashMovement()
 
 void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// Item
 	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
 
 	if (Item && Item->bInField == true)
@@ -498,6 +500,7 @@ void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 		InteractionHUD->ActiveWidget(EInteractionHUDType::E_Get, InteractionItem->Name);
 	}
+<<<<<<< HEAD
 
 	// Prob
 	TObjectPtr<ABaseProb> Prob = Cast<ABaseProb>(OtherComp->GetOwner());
@@ -522,11 +525,12 @@ void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	}
 
 	
+=======
+>>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 }
 
 void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	// Item
 	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
 
 	if (Item)
@@ -556,6 +560,7 @@ void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 			}
 		}
 	}
+<<<<<<< HEAD
 
 	// Prob
 	TObjectPtr<ABaseProb> Prob = Cast<ABaseProb>(OtherComp->GetOwner());
@@ -569,6 +574,39 @@ void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 			InteractionHUD->DeactiveWidget();
 		}
 	}
+=======
+	//if (InteractionItem == nullptr)
+	//{
+	//	if (OverlapedItems.Num() == 0)
+	//	{
+	//		InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
+	//	}
+	//	else
+	//	{
+	//		InteractionItem = OverlapedItems[OverlapedItems.Num() - 1];
+	//		InteractionHUD->SetName(InteractionItem->Name);
+	//	}
+	//}
+	//else
+	//{
+	//	TObjectPtr<ABaseItem> Item = Cast<ABaseItem>(OtherComp->GetOwner());
+	//	OverlapedItems.RemoveAt(OverlapedItems.Find(Item));
+
+	//	if (InteractionItem == Item)
+	//	{
+	//		if (OverlapedItems.Num() == 0)
+	//		{
+	//			InteractionItem = nullptr;
+	//			InteractionHUD->SetVisibility(ESlateVisibility::Hidden);
+	//		}
+	//		else
+	//		{
+	//			//InteractionItem = OverlapedItems[OverlapedItems.Num() - 1];
+	//			//InteractionHUD->SetName(InteractionItem->Name);
+	//		}
+	//	}
+	//}
+>>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 }
 
 
@@ -585,9 +623,4 @@ void AHero::SetCurrentWeaponType(EWeaponType type)
 
 	TechniqueComponent->SetCurrentWeaponType(type);
 	ActionComponent->SetCurrentWeaponType(type);
-}
-
-void AHero::OneMinuteTimePass()
-{
-	Super::OneMinuteTimePass();
 }

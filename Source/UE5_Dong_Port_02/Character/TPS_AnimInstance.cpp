@@ -28,7 +28,6 @@ void UTPS_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	Rotation = FRotator(0, Owner->GetControlRotation().Yaw, 0);
 	Direction = CalculateDirection(Velocity, Rotation);
-	
 	if (Owner->GetWeaponComponent())
 	{
 		bWeaponHolding = Owner->GetWeaponHolding();

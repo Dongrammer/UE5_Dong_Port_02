@@ -1,6 +1,11 @@
 #include "BaseCharacter.h"
 
+<<<<<<< HEAD
 #include "TPS_GameInstance.h"
+=======
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
+>>>>>>> parent of 61cfc84 (~2024/09/14 Update)
 
 //#include "Component/ItemComponent.h"
 #include "Item/BaseItem.h"
@@ -20,16 +25,6 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Time
-	GameInstance = Cast<UTPS_GameInstance>(GetWorld()->GetGameInstance());
-	if (!GameInstance)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Game Instance Is NULL !!"));
-		return;
-	}
-
-	GameInstance->DOneMinuteTimePass.AddUFunction(this, "OneMinuteTimePass");
 }
 
 void ABaseCharacter::CreateCharacter()
@@ -51,7 +46,7 @@ void ABaseCharacter::SetCharacterMovement()
 	// 멈췄을 때 감속
 	Comp->BrakingDecelerationWalking = 2000.0f;
 	// 떨어질 때 감속
-	//Comp->BrakingDecelerationFalling = 1500.0f;
+	Comp->BrakingDecelerationFalling = 1500.0f;
 }
 
 void ABaseCharacter::Tick(float DeltaTime)
@@ -79,9 +74,4 @@ void ABaseCharacter::SetWalkSpeed(float speed)
 void ABaseCharacter::InitWalkSpeed()
 {
 	GetCharacterMovement()->MaxWalkSpeed = StandardWalkSpeed;
-}
-
-void ABaseCharacter::OneMinuteTimePass()
-{
-	GlobalTime = GameInstance->GetGlobalTime();
 }

@@ -9,17 +9,11 @@ void UTPS_GameInstance::Init()
 	
 }
 
-void UTPS_GameInstance::OnStart()
-{
-	Super::OnStart();
-
-	InitGlobalTime();
-}
-
 UItemComponent* UTPS_GameInstance::GetItemComponent()
 {
 	return ItemComponentInstance;
 }
+<<<<<<< HEAD
 
 void UTPS_GameInstance::InitGlobalTime()
 {
@@ -64,3 +58,5 @@ void UTPS_GameInstance::SetTimeMult(float f)
 //
 //	return times;
 //}
+=======
+>>>>>>> parent of 61cfc84 (~2024/09/14 Update)

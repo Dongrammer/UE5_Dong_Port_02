@@ -12,7 +12,7 @@ void USetNextAction::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequence
 void USetNextAction::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime);
-	
+
 	TObjectPtr<AHero> hero = Cast<AHero>(MeshComp->GetOwner());
 	// Check bSafe
 	if (!hero)
