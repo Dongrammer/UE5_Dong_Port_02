@@ -83,6 +83,5 @@ EBTNodeResult::Type UBTTask_TakeARest::ExecuteTask(UBehaviorTreeComponent& Owner
 		npc->RecoveryFatigue(100);
 	}
 
-
 	return EBTNodeResult::Failed;
 }

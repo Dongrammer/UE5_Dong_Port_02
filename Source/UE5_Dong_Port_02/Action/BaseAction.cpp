@@ -44,6 +44,11 @@ void ABaseAction::DoAction()
 	ActionOwner->PlayAnimMontage(AnimAsset, AnimSpeed);
 }
 
+void ABaseAction::EndAction()
+{
+	ActionOwner->StopAnimMontage(AnimAsset);
+}
+
 void ABaseAction::SetLocation()
 {
 	FVector Start = ActionOwner->GetActorLocation();
@@ -57,8 +62,6 @@ void ABaseAction::SetLocation()
 
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(ActionOwner);
-
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, true, -1, 0, 1);
 
 	FHitResult HitResult;
 	GetWorld()->LineTraceSingleByObjectType(HitResult, Start, End, ObjectParams, Params);
@@ -89,4 +92,10 @@ void ABaseAction::PassiveSpeedUp()
 	SpeedLevel++;
 	PlayRate = SpeedLevelData.FindRef(SpeedLevel);
 
+}
+
+void ABaseAction::PassiveDamageUp()
+{
+	DamageLevel++;
+	DamageRate = DamageLevelData.FindRef(DamageLevel);
 }

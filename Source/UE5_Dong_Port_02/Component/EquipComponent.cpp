@@ -7,6 +7,7 @@
 #include "Item/BaseEquip.h"
 #include "Widget/Equipment/EquipmentHUD.h"
 #include "WeaponComponent.h"
+#include "Item/ItemData.h"
 
 #include "Item/BaseWeapon.h"
 #include "Weapon/WeaponData.h"
@@ -104,7 +105,12 @@ void UEquipComponent::Equip(FItemData item)
 	// Set OwnerWeaponType
 	if (EquipType == EEquipType::E_Weapon)
 	{
-		OwnerCharacter->SetCurrentWeaponType(ItemComponent->GetWeaponType(item));
+		TObjectPtr<ABaseWeapon> weapon = Cast<ABaseWeapon>(EquipmentParts.FindRef(EEquipType::E_Weapon));
+		if (weapon)
+		{
+			OwnerCharacter->SetCurrentWeapon(weapon);
+			OwnerCharacter->UpdateAttack(ItemComponent->GetEquipmentDataTable(item).EquipStatus.FindRef(EEquipStatus::E_ATK));
+		}
 	}
 	/*
 	switch (EquipType)
@@ -163,12 +169,18 @@ void UEquipComponent::UnEquip(EEquipType type)
 	/*FItemData data;
 	data.ItemID = FName("");
 	data.ItemType = EItemType::E_None;*/
+	if (type == EEquipType::E_Weapon)
+	{
+		OwnerCharacter->UpdateAttack(-(ItemComponent->GetEquipmentDataTable(EquipParts.FindRef(type)).EquipStatus.FindRef(EEquipStatus::E_ATK)));
+	}
+
 	OwnerCharacter->GetItems(EquipParts.FindRef(type), 1);
 	OwnerCharacter->UnequipItemStatus(ItemComponent->GetEquipmentDataTable(EquipParts.FindRef(type)).EquipStatus);
 	EquipParts.Find(type)->ItemID = FName("");
 	EquipParts.Find(type)->ItemType = EItemType::E_None;
 
 	if (EquipmentParts.Contains(type)) EquipmentParts[type]->Destroy();
+	
 	
 	/*
 	switch (type)
@@ -374,6 +386,11 @@ void UEquipComponent::SpawnAndAttach(EEquipType type)
 	}
 	}
 	*/
+}
+
+void UEquipComponent::HandleWeapon(bool equip)
+{
+
 }
 
 void UEquipComponent::HUDImageSetting(EEquipType type)

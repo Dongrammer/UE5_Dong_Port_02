@@ -15,7 +15,7 @@ void ABed::Active(ABaseHuman* human)
 
 	double DistanceIn = FVector::Distance(ActiveMeshIn->GetComponentLocation(), human->GetActorLocation());
 
-	human->SetActorLocation(ActiveMeshIn->GetComponentLocation());
+	human->SetActorLocation(ActiveMeshIn->GetComponentLocation() + FVector(0, 0, 100));
 	human->SetActorRotation(ActiveMeshIn->GetComponentRotation() + FRotator(0, 90, 0));
 
 	if (!TimerHandle.IsValid())

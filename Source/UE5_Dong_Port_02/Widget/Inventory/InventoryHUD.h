@@ -14,6 +14,7 @@ struct FItemData;
 class UInventoryComponent;
 
 DECLARE_DELEGATE(FInvenHUDToggle);
+DECLARE_DELEGATE_OneParam(DGoldUpdate, int);
 
 UCLASS()
 class UE5_DONG_PORT_02_API UInventoryHUD : public UUserWidget
@@ -57,9 +58,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UListView> ItemList;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UInventorySlotObject> SlotClass;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<USizeBox> SB_Body;
 
@@ -72,6 +70,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UButton> Button_Exit;
 
+	UPROPERTY(meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> TB_Gold;
 public:
 	/*virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;*/
@@ -81,4 +81,9 @@ public:
 	void ItemClick(FItemData item);
 
 	//void SetSlotName();
+
+	DGoldUpdate FGoldUpdate;
+
+	UFUNCTION()
+	void GoldUpdate(int gold);
 };

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "../../Character/StatusData.h"
 #include "StatusHUD.generated.h"
 
 class USizeBox;
@@ -45,11 +46,32 @@ private:
 	TObjectPtr<UTextBlock> TB_C_Level;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UHorizontalBox> HB_05;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> TB_EXP;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> TB_C_EXP;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UHorizontalBox> HB_03;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> TB_HP;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> TB_C_HP;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UHorizontalBox> HB_04;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> TB_Attack;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> TB_C_Attack;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UHorizontalBox> HB_06;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> TB_EffectState;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> TB_C_EffectState;
 
 public:
 	UFUNCTION()
@@ -71,6 +93,8 @@ public:
 	/* ========== SetStatus ========== */
 public:
 	void UpdateLevel(uint8 level);
+	void UpdateEXP(int currentexp, int maxexp);
 	void UpdateHP(int mhp, int hp);
-
+	void UpdateAttack(int val);
+	void UpdateEffectState(EStateEffectType type);
 };

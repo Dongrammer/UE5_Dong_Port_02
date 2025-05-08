@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "../Weapon/WeaponData.h"
 #include "../Item/ItemData.h"
+#include "ActionData.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(ActionLog, Log, All);
 
@@ -33,6 +34,7 @@ public:
 
 public:
 	void DoAction();
+	void EndAction();
 	UFUNCTION(BlueprintCallable)
 	void SetLocation();
 public:
@@ -51,6 +53,16 @@ private:
 	TObjectPtr<UTexture2D> ActionImage;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Essential")
 	bool bCanMove = true;
+	//UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"), Category = "Essential")
+	//EActiveCollisionType ActiveCollisionType = EActiveCollisionType::E_None;
+	/* ========== Action Status ========== */
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Status")
+	float DamageRate = 100.0f;
+	
+public:
+	FORCEINLINE float GetDamageRate() { return DamageRate; }
+	//FORCEINLINE EActiveCollisionType GetActiveCollisionType() { return ActiveCollisionType; }
 
 	/* ========== Action Elements ========== */
 public:
@@ -75,5 +87,9 @@ public:
 	uint8 SpeedLevel = 0;
 	float PlayRate = 1.0f;
 	void PassiveSpeedUp();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Essential")
+	TMap<uint8, float> DamageLevelData; // <노드레벨, 데미지 계수>
+	uint8 DamageLevel = 0;
+	void PassiveDamageUp();
 
 };

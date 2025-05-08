@@ -42,6 +42,19 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct FItem
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"))
+	FItemData ItemData;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0"))
+	int count = 0;
+};
+
+USTRUCT(BlueprintType)
 struct FItemDataTableBase : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -61,6 +74,10 @@ public:
 	float Weight = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Other")
 	FString Description;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Base")
+	int PurchaseValue = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Base")
+	int SellingValue = 1;
 };
 
 // Item Class 넣어야하나?

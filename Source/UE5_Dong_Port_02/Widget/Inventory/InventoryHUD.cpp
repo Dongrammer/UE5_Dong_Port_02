@@ -24,6 +24,8 @@ void UInventoryHUD::NativeConstruct()
 	FScriptDelegate ExitPressed;
 	ExitPressed.BindUFunction(this, "ExitPressed");
 	Button_Exit->OnPressed.Add(ExitPressed);
+
+	FGoldUpdate.BindUFunction(this, "GoldUpdate");
 }
 
 void UInventoryHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -159,6 +161,11 @@ void UInventoryHUD::ItemUse(FItemData item)
 void UInventoryHUD::ItemClick(FItemData item)
 {
 	InventoryComponent->ItemClick(item);
+}
+
+void UInventoryHUD::GoldUpdate(int gold)
+{
+	TB_Gold->SetText(FText::FromString(FString::Printf(TEXT("[ Gold : %d ]"), gold)));
 }
 
 //void UInventoryHUD::SetSlotName()

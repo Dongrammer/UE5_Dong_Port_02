@@ -15,26 +15,13 @@ class UInventoryHUD;
 class UInventoryContextMenu;
 struct FItemDataTableBase;
 
-USTRUCT(BlueprintType)
-struct FItem
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"))
-	FItemData ItemData;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0"))
-	int count = 0;
-};
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE5_DONG_PORT_02_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UInventoryComponent();
 	void SetItemComponent(TObjectPtr<UItemComponent> comp) { ItemComponent = comp; }
 
@@ -42,11 +29,15 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-public:	
+public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	UFUNCTION()
 	bool CheckWeight(float itemweight);
 	void GetItems(const FItemData itemdata, const int count);
+	TArray<FItem> GetHaveItems() { return Items; }
+	int GetCurrentGold() { return CurrentGold; }
+	void GetGold(int gold) { CurrentGold += gold; }
+	bool CheckCanGetItem(FItemData data);
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -55,6 +46,8 @@ protected:
 	float MaxInvenWeight = 100.0;
 	UPROPERTY(VisibleAnywhere, Category = "Weight")
 	float CurrentWeight = 0;
+	UPROPERTY(VisibleAnywhere, Category = "Money")
+	int CurrentGold = 0;
 
 public:
 	ABaseHuman* Owner;
@@ -67,6 +60,9 @@ public:
 	void ItemClick(FItemData item);
 	void SetWeight(float weight);
 	void EquipItem(FItemData item);
+	
+	FORCEINLINE float GetMaxWeight() { return MaxInvenWeight; }
+	FORCEINLINE float GetCurrentWeight() { return CurrentWeight; }
 	/*void SetFocusHUD();
 	void SetFocusInit();*/
 

@@ -1,5 +1,6 @@
 #include "Item/BaseWeapon.h"
 #include "Components/CapsuleComponent.h"
+#include "Component/ItemComponent.h"
 
 ABaseWeapon::ABaseWeapon()
 {
@@ -13,4 +14,10 @@ void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (itemdata.ItemType == EItemType::E_None)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ABaseWeapon : Itemdata Is NULL !!"));
+	}
+
+	WeaponType = ItemComponent->GetWeaponType(itemdata);
 }

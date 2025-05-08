@@ -35,10 +35,8 @@ void UItemComponent::CachingDataTable()
 		UE_LOG(ItemCompLog, Warning, TEXT("OtherDataTable Is NULL !!"));
 		return;
 	}
-
 	for (auto& Row : OtherDataTable->GetRowMap())
 	{
-		//FOtherItem* data = (FOtherItem*)Row.Value;
 		FOtherItem* data = OtherDataTable->FindRow<FOtherItem>(Row.Key, TEXT("Caching Other Data"), true);
 
 		if (data)
@@ -51,10 +49,8 @@ void UItemComponent::CachingDataTable()
 		UE_LOG(ItemCompLog, Warning, TEXT("EquipmentDataTable Is NULL !!"));
 		return;
 	}
-
 	for (auto& Row : EquipmentDataTable->GetRowMap())
 	{
-		//FEquipmentItem* data = (FEquipmentItem*)Row.Value;
 		FEquipmentItem* data = EquipmentDataTable->FindRow<FEquipmentItem>(Row.Key, TEXT("Caching Equipment Data"), true);
 		if (data)
 			CachedEquipmentItems.Add(Row.Key, *data);
@@ -66,10 +62,8 @@ void UItemComponent::CachingDataTable()
 		UE_LOG(ItemCompLog, Warning, TEXT("WeaponDataTable Is NULL !!"));
 		return;
 	}
-
 	for (auto& Row : WeaponDataTable->GetRowMap())
 	{
-		//FWeaponItem* data = (FWeaponItem*)Row.Value;
 		FWeaponItem* data = WeaponDataTable->FindRow<FWeaponItem>(Row.Key, TEXT("Caching Weapon Data"), true);
 		if (data)
 			CachedWeaponItems.Add(Row.Key, *data);
@@ -151,6 +145,8 @@ FItemDataTableBase UItemComponent::GetDataTableBase(FItemData item)
 			data.Weight = CachedEquipmentItems.FindRef(name).Weight;
 			data.Description = CachedEquipmentItems.FindRef(name).Description;
 			data.ItemClass = CachedEquipmentItems.FindRef(name).ItemClass;
+			data.SellingValue = CachedEquipmentItems.FindRef(name).SellingValue;
+			data.PurchaseValue = CachedEquipmentItems.FindRef(name).PurchaseValue;
 			return data;
 		}
 	}
@@ -163,7 +159,9 @@ FItemDataTableBase UItemComponent::GetDataTableBase(FItemData item)
 			data.Texture = CachedWeaponItems.FindRef(name).Texture;
 			data.Weight = CachedWeaponItems.FindRef(name).Weight;
 			data.Description = CachedWeaponItems.FindRef(name).Description;
-			data.ItemClass = CachedEquipmentItems.FindRef(name).ItemClass;
+			data.ItemClass = CachedWeaponItems.FindRef(name).ItemClass;
+			data.SellingValue = CachedWeaponItems.FindRef(name).SellingValue;
+			data.PurchaseValue = CachedWeaponItems.FindRef(name).PurchaseValue;
 			return data;
 		}
 	}
@@ -178,7 +176,9 @@ FItemDataTableBase UItemComponent::GetDataTableBase(FItemData item)
 			data.Texture = CachedOtherItems.FindRef(name).Texture;
 			data.Weight = CachedOtherItems.FindRef(name).Weight;
 			data.Description = CachedOtherItems.FindRef(name).Description;
-			data.ItemClass = CachedEquipmentItems.FindRef(name).ItemClass;
+			data.ItemClass = CachedOtherItems.FindRef(name).ItemClass;
+			data.SellingValue = CachedOtherItems.FindRef(name).SellingValue;
+			data.PurchaseValue = CachedOtherItems.FindRef(name).PurchaseValue;
 			return data;
 		}
 	}

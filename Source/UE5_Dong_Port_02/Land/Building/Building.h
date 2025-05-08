@@ -12,6 +12,8 @@ class UBoxComponent;
 class USceneComponent;
 class ABaseHuman;
 class ABaseProb;
+class AShop;
+class ACooker;
 
 UCLASS()
 class UE5_DONG_PORT_02_API ABuilding : public AActor
@@ -33,6 +35,9 @@ private:
 	TObjectPtr<USceneComponent> Scene;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
 	TObjectPtr<USceneComponent> Architecture;
+
+public:
+	FVector GetRandomLocation();
 
 	/* ========== Check In And Out ==========*/
 private:

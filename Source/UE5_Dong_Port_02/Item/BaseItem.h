@@ -53,6 +53,9 @@ protected:
 	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
 	TObjectPtr<UTextRenderComponent> Text;*/
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bTempItem = false;
+
 public:
 	//UPROPERTY(VisibleAnywhere, Category = "DataTable")
 	//UDataTable* DataTable;

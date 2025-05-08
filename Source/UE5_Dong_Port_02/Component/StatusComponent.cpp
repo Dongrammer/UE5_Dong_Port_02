@@ -62,6 +62,16 @@ bool UStatusComponent::CurrentStateIs(EStateType state)
 		return false;
 }
 
+void UStatusComponent::SetCurrentEffectState(EStateEffectType type)
+{
+	CurrentEffectState = type;
+
+	if (StatusHUD)
+	{
+		StatusHUD->UpdateEffectState(type);
+	}
+}
+
 void UStatusComponent::CombineStatus()
 {
 	TotalStatus.MHP = CharacterStatus.MHP + EquipStatus.MHP;
@@ -81,6 +91,8 @@ void UStatusComponent::UpdateStatusHUD()
 
 	StatusHUD->UpdateHP(TotalStatus.MHP, TotalStatus.HP);
 	StatusHUD->UpdateLevel(Level);
+	UpExp = UpExpList[Level - 1];
+	StatusHUD->UpdateEXP(Exp, UpExp);
 }
 
 void UStatusComponent::UpdateHP(int val)
@@ -91,6 +103,21 @@ void UStatusComponent::UpdateHP(int val)
 	if (StatusHUD)
 	{
 		StatusHUD->UpdateHP(TotalStatus.MHP, TotalStatus.HP);
+	}
+
+	if (TotalStatus.HP <= 0)
+	{
+		SetCurrentState(EStateType::E_Dead);
+	}
+}
+
+void UStatusComponent::UpdateAttack(int val)
+{
+	TotalStatus.ATK += val;
+
+	if (StatusHUD)
+	{
+		StatusHUD->UpdateAttack(TotalStatus.ATK);
 	}
 }
 
@@ -104,13 +131,26 @@ void UStatusComponent::GetEXP(int val)
 	{
 		LevelUp();
 	}
+
+	// Player HUD
+	if (StatusHUD)
+	{
+		StatusHUD->UpdateEXP(Exp, UpExp);
+	}
 }
 
 void UStatusComponent::LevelUp()
 {
 	if (Level >= MaxLevel) return;
 
-	Exp -= UpExp;
+	if (Exp - UpExp < 0)
+	{
+		Exp = 0;
+	}
+	else
+	{
+		Exp -= UpExp;
+	}
 	Level++;
 
 	if (Level >= MaxLevel)
@@ -126,6 +166,7 @@ void UStatusComponent::LevelUp()
 	if (StatusHUD)
 	{
 		StatusHUD->UpdateLevel(Level);
+		StatusHUD->UpdateEXP(Exp, UpExp);
 	}
 }
 

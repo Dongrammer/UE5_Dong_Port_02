@@ -14,6 +14,8 @@ UBTTask_MoveToProb::UBTTask_MoveToProb()
 
 EBTNodeResult::Type UBTTask_MoveToProb::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	Super::ExecuteTask(OwnerComp, NodeMemory);
+
 	// Get NPC
 	TObjectPtr<AHumanNPC> npc = Cast<AHumanNPC>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!npc)
@@ -28,6 +30,7 @@ EBTNodeResult::Type UBTTask_MoveToProb::ExecuteTask(UBehaviorTreeComponent& Owne
 	// Get & Set Prob
 	ERoutineType routine = npc->GetCurrentRoutine();
 	TObjectPtr<ABaseProb> prob;
+
 	switch (routine)
 	{
 	case ERoutineType::E_GoWork:
@@ -39,7 +42,9 @@ EBTNodeResult::Type UBTTask_MoveToProb::ExecuteTask(UBehaviorTreeComponent& Owne
 			TArray<TObjectPtr<ABaseProb>> probs = npc->GetWorkProbs();
 
 			if (probs.Num() == 0)
+			{
 				return EBTNodeResult::Failed;
+			}
 
 			int32 RandNum = FMath::RandRange(0, probs.Num() - 1);
 			prob = probs[RandNum];
@@ -65,10 +70,19 @@ EBTNodeResult::Type UBTTask_MoveToProb::ExecuteTask(UBehaviorTreeComponent& Owne
 		break;
 	}
 	case ERoutineType::E_GoHome:
+	{
 		break;
+	}
 	case ERoutineType::E_Sleep:
 	{
-		TArray<TObjectPtr<ABed>> probs = npc->GetHome()->GetInsideProbs<ABed>();
+		TObjectPtr<ABuilding> home = npc->GetHome();
+		if (!home)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("BTT_MoveToProb : home Is NULL !!"));
+			return EBTNodeResult::Failed;
+		}
+
+		TArray<TObjectPtr<ABed>> probs = home->GetInsideProbs<ABed>();
 
 		if (probs.Num() == 0)
 			return EBTNodeResult::Failed;
@@ -83,14 +97,17 @@ EBTNodeResult::Type UBTTask_MoveToProb::ExecuteTask(UBehaviorTreeComponent& Owne
 		}
 		break;
 	}
+	case ERoutineType::E_DoHobby:
+	{
+		prob = Cast<ABaseProb>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()));
+	}
 	}
 
-
-
-
 	// Move To Prob And Active
+	if (!prob)	return EBTNodeResult::Failed;
+
 	FVector loc = prob->GetActiveMeshInLocation();
-	EPathFollowingRequestResult::Type t = OwnerComp.GetAIOwner()->MoveToLocation(loc, 20.0f, false);
+	EPathFollowingRequestResult::Type t = OwnerComp.GetAIOwner()->MoveToLocation(loc, 30.0f, false);
 
 	if (t == EPathFollowingRequestResult::RequestSuccessful)
 	{
@@ -111,6 +128,8 @@ EBTNodeResult::Type UBTTask_MoveToProb::ExecuteTask(UBehaviorTreeComponent& Owne
 
 void UBTTask_MoveToProb::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
+	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
 	TObjectPtr<AAIController> cont = OwnerComp.GetAIOwner();
 	TObjectPtr<AHumanNPC> npc = Cast<AHumanNPC>(cont->GetPawn());
 	if (!npc)

@@ -8,6 +8,9 @@ AAnvil::AAnvil()
 
 void AAnvil::Active(ABaseHuman* human)
 {
+	if (human->GetUsingProb()) return;
+
+	UE_LOG(LogTemp, Log, TEXT("Anvil Call"));
 	Super::Active(human);
 
 	// Check Distance for Select ActiveMesh
@@ -16,12 +19,12 @@ void AAnvil::Active(ABaseHuman* human)
 
 	if (DistanceIn >= DistanceOut)
 	{
-		human->SetActorLocation(ActiveMeshOut->GetComponentLocation());
+		human->SetActorLocation(ActiveMeshOut->GetComponentLocation() + FVector(0, 0, 100));
 		human->SetActorRotation(ActiveMeshOut->GetComponentRotation() + FRotator(0, 90, 0));
 	}
 	else
 	{
-		human->SetActorLocation(ActiveMeshIn->GetComponentLocation());
+		human->SetActorLocation(ActiveMeshIn->GetComponentLocation() + FVector(0, 0, 100));
 		human->SetActorRotation(ActiveMeshIn->GetComponentRotation() + FRotator(0, 90, 0));
 	}
 }

@@ -16,7 +16,12 @@ public:
 
 	virtual void BeginPlay() override;
 
+	EWeaponType GetWeaponType() { return WeaponType; }
+	TObjectPtr<UCapsuleComponent> GetWeaponCapsule() { return WeaponCapsule; }
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	TObjectPtr<UCapsuleComponent> WeaponCapsule;
+
+	EWeaponType WeaponType = EWeaponType::E_None;
 };

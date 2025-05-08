@@ -77,6 +77,8 @@ private:
 	// Get
 public:
 	FORCEINLINE TObjectPtr<ABaseAction> GetNowAction() { return NowAction; }
+	float GetNowActionDamageRate();
+	//FORCEINLINE EActiveCollisionType GetNowActionCollisionType();
 
 	// Notify
 public:
@@ -102,4 +104,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ABaseDash> SelectDashAction;
 
+	/* ==================== Weapon ==================== */
+public:
+	UFUNCTION()
+	void EquipWeapon();
+	UFUNCTION()
+	void UnequipWeapon();
 };

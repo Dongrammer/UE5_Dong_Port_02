@@ -27,6 +27,7 @@ public:
 
 
 private:
+	// 데이터 테이블
 	UPROPERTY(VisibleAnywhere, Category = "DataTable", meta = (AllowPrivateAccess = "true"))
 	UDataTable* OtherDataTable;
 	UPROPERTY(VisibleAnywhere, Category = "DataTable", meta = (AllowPrivateAccess = "true"))
@@ -35,6 +36,7 @@ private:
 	UDataTable* WeaponDataTable;
 
 private:
+	// 캐싱 데이터
 	void CachingDataTable();
 
 	UPROPERTY(VisibleAnywhere, Category = "CachedItems", meta = (AllowPrivateAccess = "true"))
@@ -46,6 +48,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Rarity", meta = (AllowPrivateAccess = "true"))
 	TMap<ERarity, FLinearColor> RarityColor;
+
+
 
 	FLinearColor s;
 public:

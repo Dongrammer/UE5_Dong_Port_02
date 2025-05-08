@@ -71,6 +71,7 @@ public:
 	void Equip(FItemData item);
 	void UnEquip(EEquipType type);
 	void SpawnAndAttach(EEquipType type);
+	void HandleWeapon(bool equip);
 
 	void HUDImageSetting(EEquipType type);
 };

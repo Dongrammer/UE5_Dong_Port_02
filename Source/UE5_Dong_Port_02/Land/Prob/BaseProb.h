@@ -55,6 +55,7 @@ protected:
 	EWorkType WorkType = EWorkType::E_None;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool Used = false;
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ABaseHuman> UsingHuman;
 
 	// Interaction Prob
@@ -68,6 +69,7 @@ public:
 	FName GetName() { return Name; }
 	UFUNCTION()
 	virtual bool GetUsed() { return Used; }
+	TObjectPtr<ABaseHuman> GetUsingHuman() const { return UsingHuman; } 
 	EWorkType GetWorkType() { return WorkType; }
 	bool GetCanPlayerUse() { return bCanPlayerUse; }
 
@@ -90,6 +92,7 @@ public:
 	virtual void Active(ABaseHuman* human);
 	UFUNCTION()
 	virtual void Deactive(ABaseHuman* human);
+	UFUNCTION()
 	virtual void PreActive(ABaseHuman* human);
 
 	FVector GetActiveMeshInLocation() { return ActiveMeshIn->GetComponentLocation(); } // For NPC

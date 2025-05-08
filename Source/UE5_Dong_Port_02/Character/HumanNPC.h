@@ -13,23 +13,26 @@ DECLARE_LOG_CATEGORY_EXTERN(HumanNPCLog, Log, All);
 #include "HumanNPC.generated.h"
 
 class ANPCHome_LocationVolume;
+class ABaseProb;
 
 UENUM(BlueprintType)
 enum class ERoutineType : uint8
 {
-	E_None UMETA(Hidden),
+	E_None UMETA(DisplayName = "None"),
 	E_GoWork UMETA(DisplayName = "Go Work"),
 	E_GoHome UMETA(DisplayName = "Go Home"),
+	E_DoHobby UMETA(DisplayName = "Do Hobby"),
 	E_Sleep UMETA(DisplayName = "Sleep"),
-	E_Max
+	E_Max UMETA(Hidden)
 };
 
 UENUM(BlueprintType)
 enum class EJobType : uint8
 {
-	E_None UMETA(Hidden),
+	E_None UMETA(DisplayName = "None"),
 	E_Blacksmith UMETA(DisplayName = "Blacksmith"),
 	E_Guard UMETA(DisplayName = "Guard"),
+	E_ShopKeeper UMETA(DisplayName = "ShopKeeper"),
 	E_Max UMETA(Hidden)
 };
 
@@ -40,6 +43,8 @@ enum class EHobbies : uint8
 	E_RestAtHome UMETA(DisplayName = "Rest At Home"),
 	E_Cooking UMETA(DisplayName = "Cooking"),
 	E_MeetingSomeone UMETA(DisplayName = "Meeting SomeOne"),
+	E_Drinking UMETA(DisplayName = "Drinking"),
+	E_Walk UMETA(DisplayName = "Walk"),
 	E_Max UMETA(Hidden)
 };
 
@@ -92,6 +97,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Daily|Essential", meta = (AllowprivateAccess = "true"))
 	TMap<ERoutineType, FGlobalTime> Routines; // 루틴은 " ~시 : ~분 부터 루틴을 실행"
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Daily", meta = (AllowprivateAccess = "true"))
 	ERoutineType CurrentRoutine;
 	void SortRoutines();
 
@@ -105,7 +111,7 @@ public:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Job|Essential", meta = (AllowprivateAccess = "true"))
 	TArray<EJobType> Jobs;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Job", meta = (AllowprivateAccess))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Job", meta = (AllowprivateAccess = "true"))
 	TArray<TObjectPtr<ABaseProb>> WorkProbs;
 
 public:
@@ -119,7 +125,14 @@ public:
 	/* ========== Hobbies ========== */
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hobbies|Essential", meta = (AllowprivateAccess = "true"))
-	TMap<EHobbies, uint8> Hobbies;
+	TMap<EHobbies, uint8> Hobbies; // 종류 / 확률
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hobbies", meta = (AllowprivateAccess = "true"))
+	EHobbies CurrentHobby = EHobbies::E_None;
+
+public:
+	void SetRandomHobby();
+	UFUNCTION()
+	EHobbies GetCurrentHobby() { return CurrentHobby; }
 
 	/* ========== Condition ========== */
 private:
@@ -136,7 +149,8 @@ private:
 	FTimerHandle ConditionTimerHandle;
 public:
 	bool CheckOverFatique() { return MaxFatigue <= CurrentFatigue; }
-	float GetCurrentFatigue() { return CurrentFatigue; }
+	UFUNCTION()
+	int GetCurrentFatigue() { return CurrentFatigue; }
 	UFUNCTION()
 	void InitCondition();
 	UFUNCTION()
@@ -144,5 +158,26 @@ public:
 	UFUNCTION()
 	void RecoveryFatigue(uint8 percent);
 
+	/*UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UNPCHealthBar> HealthBar;*/
 
+	/* ========== Action ========== */
+public:
+	void EndActionNotify() override;
+
+
+	/* ========== Player ========== */
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowprivateAccess = "true"))
+	int Likeability = 0;
+
+public:
+	UFUNCTION()
+	void Increasedlikeability(int n);
+	UFUNCTION()
+	void Decreasedlikeability(int n);
+
+	/* ========== Battle ========== */
+public:
+	virtual void TakeDamageFuc(AActor* damagecauser, int damage, FVector hittedlocation) override;
 };

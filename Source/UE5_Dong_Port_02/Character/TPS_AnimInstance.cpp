@@ -37,4 +37,6 @@ void UTPS_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	//      ̰   ִ     Ǵ 
 	bShouldMove = /*!FVector(0,0,0).Equals(Movement->GetCurrentAcceleration(), 0.5f) &&*/ Speed > 3.0f;
 	bCanMove = Owner->GetCanMove();
+	handleType = Owner->GetCurrentHandleType();
+	SittingType = Owner->GetCurrentSittingType();
 }

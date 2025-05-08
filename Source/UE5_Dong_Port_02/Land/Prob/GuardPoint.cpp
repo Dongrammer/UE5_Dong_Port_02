@@ -24,6 +24,11 @@ void AGuardPoint::Active(ABaseHuman* human)
 
 void AGuardPoint::PreActive(ABaseHuman* human)
 {
+	if (UsingHuman)
+	{
+		Deactive(UsingHuman);
+	}
+
 	Super::PreActive(human);
 
 	Used = true;
@@ -33,11 +38,18 @@ void AGuardPoint::PreActive(ABaseHuman* human)
 void AGuardPoint::Deactive(ABaseHuman* human)
 {
 	Super::Deactive(human);
+	UE_LOG(LogTemp, Log, TEXT("GuardPoint : Deactive Call !!"));
 
 	TObjectPtr<AHumanNPC> npc = Cast<AHumanNPC>(human);
-	if (!npc) return;
+	if (!npc)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GuardPoint : npc Castint Fail !!"));
+		return;
+	}
+
 	if (!(npc->GetCurrentRoutine() == ERoutineType::E_GoWork))
 	{
+		UE_LOG(LogTemp, Log, TEXT("GuardPoint : CurrentRoutine Not GoWork !!"));
 		PrevHuman = human;
 		PrevHuman->SetCanMove(false);
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AGuardPoint::CheckHumanNearby, 1.0f, true);
@@ -49,8 +61,8 @@ void AGuardPoint::CheckHumanNearby()
 	if (!UsingHuman) return;
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> objType;
-	TEnumAsByte<EObjectTypeQuery> WorldDynamic = UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic);
-	objType.Add(WorldDynamic);
+	TEnumAsByte<EObjectTypeQuery> TraceObjectType = UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn);
+	objType.Add(TraceObjectType);
 
 	TArray<TObjectPtr<AActor>> Ignoreactors;
 	Ignoreactors.Add(PrevHuman);
@@ -79,6 +91,7 @@ void AGuardPoint::CheckHumanNearby()
 			PrevHuman->SetCanMove(true);
 			PrevHuman = nullptr;
 			GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+			return;
 		}
 	}
 }

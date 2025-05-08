@@ -134,6 +134,11 @@ void UActionComponent::PassiveLevelUp(FActionData InAction, EActionPassiveType P
 		action->PassiveSpeedUp();
 		break;
 	}
+	case EActionPassiveType::E_DamageUp:
+	{
+		action->PassiveDamageUp();
+		break;
+	}
 	default:
 		break;
 	}
@@ -181,6 +186,22 @@ void UActionComponent::EndAction()
 {
 }
 
+//EActiveCollisionType UActionComponent::GetNowActionCollisionType()
+//{
+//	return NowAction->GetActiveCollisionType();
+//}
+
+float UActionComponent::GetNowActionDamageRate()
+{
+	if (!NowAction)
+	{
+		UE_LOG(ActionCompLog, Warning, TEXT("GetNowActionDamageRate : NowAction Is NULL !!"));
+		return 0.0f;
+	}
+
+	return NowAction->GetDamageRate();
+}
+
 void UActionComponent::OnEndActionNotify()
 {
 	if (MontageIndex >= 5) MontageIndex = 0;
@@ -191,12 +212,13 @@ void UActionComponent::OnEndActionNotify()
 		bNextAction = false;
 		return;
 	}
+	if (NowAction)
+		NowAction->EndAction();
 
 	NowAction = nullptr;
 	MontageIndex = 0;
 	Owner->InitState();
 	Owner->bUseControllerRotationYaw = true;
-
 }
 
 void UActionComponent::PressedAvoid()
@@ -244,3 +266,56 @@ void UActionComponent::SettingDashAction(EDashAction dash)
 	SelectDashAction = DashActionPtr.FindRef(dash);
 }
 
+void UActionComponent::EquipWeapon()
+{
+	EWeaponType type = CurrentWeaponType;
+	TObjectPtr<ABaseAction> EquipAction;
+
+	switch (type)
+	{
+	case EWeaponType::E_Gauntlet:
+	{
+
+		break;
+	}
+	case EWeaponType::E_OneHandSword:
+	{
+		EquipAction = SwordActionPtr.FindRef(ESwordAction::E_Equip);
+		break;
+	}
+	default:
+		break;
+	}
+
+	if (EquipAction)
+	{
+		EquipAction->DoAction();
+	}
+}
+
+void UActionComponent::UnequipWeapon()
+{
+	EWeaponType type = CurrentWeaponType;
+	TObjectPtr<ABaseAction> UnequipAction;
+
+	switch (type)
+	{
+	case EWeaponType::E_Gauntlet:
+	{
+
+		break;
+	}
+	case EWeaponType::E_OneHandSword:
+	{
+		UnequipAction = SwordActionPtr.FindRef(ESwordAction::E_Unequip);
+		break;
+	}
+	default:
+		break;
+	}
+
+	if (UnequipAction)
+	{
+		UnequipAction->DoAction();
+	}
+}

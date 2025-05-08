@@ -52,6 +52,12 @@ void ABaseItem::BeginPlay()
 		}
 	}
 
+	if (bTempItem)
+	{
+		SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		return;
+	}
 	DataTableSetting();
 }
 

@@ -18,6 +18,7 @@ enum class EWorkType : uint8
 	E_UseAnvil UMETA(DisplayName = "Use Anvil"),
 	E_Guard UMETA(DisplayName = "Guard"),
 	E_ShopKeeper UMETA(DisplayName = "ShopKeeper"),
+	E_Chef UMETA(DisplayName = "Chef"),
 	E_Max UMETA(Hidden)
 };
 
@@ -27,6 +28,7 @@ enum class ERestType : uint8
 	E_None UMETA(Hidden),
 	E_Seet UMETA(DisplayName = "Seet"),
 	E_Sleep UMETA(DisplayName = "Sleep"),
+	E_Drinking UMETA(DisplayName = "Drinking"),
 	E_Max UMETA(Hidden)
 };
 

@@ -85,8 +85,38 @@ void UStatusHUD::UpdateLevel(uint8 level)
 	
 }
 
+void UStatusHUD::UpdateEXP(int currentexp, int maxexp)
+{
+	FString s = FString::Printf(TEXT("%d / %d"), currentexp, maxexp);
+	FText t = FText::FromString(s);
+	TB_C_EXP->SetText(t);
+}
+
 void UStatusHUD::UpdateHP(int mhp, int hp)
 {
 	FText t = FText::FromString(FString::Printf(TEXT("%d / %d"), hp, mhp));
 	TB_C_HP->SetText(t);
+}
+
+void UStatusHUD::UpdateAttack(int val)
+{
+	FText t = FText::AsNumber(val);
+	TB_C_Attack->SetText(t);
+}
+
+void UStatusHUD::UpdateEffectState(EStateEffectType type)
+{
+	const UEnum* EnumPtr = StaticEnum<EStateEffectType>();
+
+	FText t = FText::GetEmpty();
+
+	if (EnumPtr)
+	{
+		t = EnumPtr->GetDisplayNameTextByValue((int)type);
+	}
+	else
+	{
+		t = FText::FromString("Invalid type");
+	}
+	TB_C_EffectState->SetText(t);
 }

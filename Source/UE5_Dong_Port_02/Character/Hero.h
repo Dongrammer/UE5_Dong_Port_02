@@ -22,10 +22,10 @@ class UMainHUD;
 class UInventoryHUD;
 class UWidget;
 class UInteractionHUD;
+class UShopHUD;
+class UDamageFloating;
 // Technique
 class UTechniqueComponent;
-// Action
-class UActionComponent;
 // Soul
 class USoulComponent;
 //
@@ -133,13 +133,18 @@ public:
 
 	UFUNCTION()
 	void StatusOn();
-
+	UFUNCTION()
+	void ShopHUDOn();
 	/* ==================== HUD ==================== */
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMainHUD> MainHUD;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD|Essential", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UMainHUD> MainHUDClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UShopHUD> ShopHUD;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD|Essential", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UShopHUD> ShopHUDClass;
 
 
 	/* ==================== Inventory ==================== */
@@ -149,6 +154,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD|Essential", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UInventoryHUD> InvenHUDClass;
 
+	void GetGold(int val) override;
+	int GetCurrentGold() { return InventoryComponent->GetCurrentGold(); }
+	void ItemUse(FItemData data) { InventoryComponent->ItemUse(data); }
+	bool CheckCanGetItem(FItemData data);
+
 private:
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
@@ -157,18 +167,6 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere)
 	UTechniqueComponent* TechniqueComponent;
-
-	/* ==================== Action ==================== */
-private:
-	UPROPERTY(VisibleAnywhere)
-	UActionComponent* ActionComponent;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool bCanActionMove = true;
-
-public:
-	UFUNCTION()
-	void DoDashMovement();
-	FORCEINLINE UActionComponent* GetActionComponent() { return ActionComponent; }
 
 	/* ==================== Interaction ==================== */
 private:
@@ -192,16 +190,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<ABaseProb> InteractionProb;
 
-	/* ==================== State ==================== */
-public:
-	UFUNCTION(BlueprintCallable)
-	bool CurrentStateAre(TArray<EStateType> states) { return StatusComponent->CurrentStateAre(states); }
-	UFUNCTION(BlueprintCallable)
-	bool CurrentStateIs(EStateType state) { return StatusComponent->CurrentStateIs(state); }
-	void SetCurrentState(EStateType state) { StatusComponent->SetCurrentState(state); }
-	FORCEINLINE EStateType GetCurrentState() { return StatusComponent->GetCurrentState(); }
-	void InitState();
-
 	/* ==================== Soul ==================== */
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -209,18 +197,31 @@ private:
 
 	/* ==================== Status ==================== */
 
+	/* ==================== Action ==================== */
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UActionComponent> ActionComponent;
+public:
+	void DoDashMovement() override;
+	FORCEINLINE UActionComponent* GetActionComponent() { return ActionComponent; }
+	int CalculationDamage(int characterATK) override;
+	void EndActionNotify() override;
 
 	/* ==================== Weapon ==================== */
 public:
 	FORCEINLINE EWeaponType GetCurrentWeaponType() { return WeaponComponent->GetCurrentWeaponType(); }
 
-	void SetCurrentWeaponType(EWeaponType type) override;
+	void SetCurrentWeapon(TObjectPtr<ABaseWeapon> weapon) override;
 
 	/* ==================== Time ==================== */
 public:
 	void OneMinuteTimePass() override;
 	UFUNCTION(BlueprintCallable)
 	void SetTimeMult(float f) { GameInstance->SetTimeMult(f); }
+
+	/* ==================== Widget ==================== */
+public:
+	virtual void HealthBarVisible() override;
 };
 
 /*

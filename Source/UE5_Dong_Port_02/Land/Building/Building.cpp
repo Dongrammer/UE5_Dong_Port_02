@@ -29,6 +29,20 @@ void ABuilding::Tick(float DeltaTime)
 
 }
 
+FVector ABuilding::GetRandomLocation()
+{
+	FVector Origin = InAndOutBox->GetComponentLocation();
+	FVector Extent = InAndOutBox->GetScaledBoxExtent();
+	FVector Min = Origin - Extent;
+	FVector Max = Origin + Extent;
+
+	float RandX = FMath::RandRange(Min.X, Max.X);
+	float RandY = FMath::RandRange(Min.Y, Max.Y);
+	float RandZ = FMath::RandRange(Min.Z, Max.Z);
+
+	return FVector(RandX, RandY, RandZ);
+}
+
 void ABuilding::ComeInCharacter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	TObjectPtr<ABaseHuman> human = Cast<ABaseHuman>(OtherActor);

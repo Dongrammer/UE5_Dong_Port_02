@@ -92,6 +92,13 @@ void UInventoryComponent::GetItems(const FItemData itemdata, const int count)
 		SetWeight(ItemComponent->GetItemWeight(itemdata));
 }
 
+bool UInventoryComponent::CheckCanGetItem(FItemData data)
+{
+	float ItemWeight = ItemComponent->GetItemWeight(data);
+
+	return CurrentWeight + ItemWeight > MaxInvenWeight ? false : true;
+}
+
 void UInventoryComponent::InitInvenHUD(TObjectPtr<UInventoryHUD> hud)
 {
 	// HUD Setting

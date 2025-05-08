@@ -1,10 +1,13 @@
 #include "Character/HumanNPC.h"
 
+
 #include "../Land/Prob/BaseProb.h"
 #include "Land/Prob/Anvil.h"
 #include "Land/Prob/GuardPoint.h"
-
-#include "Helper.h"
+#include "Land/Prob/Shop.h"
+#include "Components/WidgetComponent.h"
+#include "Character/Hero.h"
+//#include "Helper.h"
 
 DEFINE_LOG_CATEGORY(HumanNPCLog);
 
@@ -19,12 +22,17 @@ AHumanNPC::AHumanNPC()
 	PushedCapsule->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	PushedCapsule->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	PushedCapsule->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+	//HealthBar = CreateWidget<UNPCHealthBar>(this, HealthBarClass, TEXT("Health Bar"));
+	//HealthBar = Cast<UNPCHealthBar>(CreateWidget(GetWorld(), HealthBarClass, TEXT("Health Bar")));
+
 }
 
 void AHumanNPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Pushed
 	if (OverlapHuman.Num() > 0)
 	{
 		if (CheckBehavior(EBehaviorType::E_Working)) return;
@@ -36,22 +44,22 @@ void AHumanNPC::Tick(float DeltaTime)
 		float ForwardDot = FVector::DotProduct(dir, GetActorForwardVector());
 		float RightDot = FVector::DotProduct(dir, GetActorRightVector());
 
-		EHittedDirection hitdir = EHittedDirection::E_Forward;
+		EPushedDirection hitdir = EPushedDirection::E_Forward;
 		if (ForwardDot <= -0.7f)
 		{
-			hitdir = EHittedDirection::E_Forward;
+			hitdir = EPushedDirection::E_Forward;
 		}
 		else if (ForwardDot > 0.7f)
 		{
-			hitdir = EHittedDirection::E_Back;
+			hitdir = EPushedDirection::E_Back;
 		}
 		else if (RightDot <= -0.7f)
 		{
-			hitdir = EHittedDirection::E_Right;
+			hitdir = EPushedDirection::E_Right;
 		}
 		else if (RightDot > 0.7f)
 		{
-			hitdir = EHittedDirection::E_Left;
+			hitdir = EPushedDirection::E_Left;
 		}
 
 		float speed = OverlapHuman[0]->GetCurrentSpeed();
@@ -64,13 +72,15 @@ void AHumanNPC::Tick(float DeltaTime)
 			}
 			else if (speed <= 400)
 			{
-				PlayHittedAnim(hitdir, EHittedType::E_Push);
+				PlayPushedAnim(hitdir, EPushType::E_Push);
 				LaunchCharacter(dir * 800.0f, true, true);
+				Decreasedlikeability(5);
 			}
 			else
 			{
-				PlayHittedAnim(hitdir, EHittedType::E_StrongPush);
+				PlayPushedAnim(hitdir, EPushType::E_StrongPush);
 				LaunchCharacter(dir * 1200.0f, true, true);
+				Decreasedlikeability(5);
 			}
 		}
 	}
@@ -91,6 +101,9 @@ void AHumanNPC::BeginPlay()
 		return;
 	}
 	SetWorkProb();
+
+	/* ========== Set Village ========== */
+	AffiliatedVillage->AddVillageNPC(this);
 }
 
 void AHumanNPC::CreateCharacter()
@@ -191,6 +204,25 @@ void AHumanNPC::SetWorkProb()
 			}
 			break;
 		}
+		case EJobType::E_ShopKeeper:
+		{
+			TArray<TObjectPtr<AShop>> shops = AffiliatedVillage->GetProbs<AShop>();
+			for (auto shop : shops)
+			{
+				if (shop)
+				{
+					UE_LOG(LogTemp, Log, TEXT("%s"), *shop.GetFName().ToString());
+					WorkProbs.Add(shop);
+				}
+			}
+			/*TObjectPtr<AShop> shop = Cast<AShop>(Home->GetInsideProbs<AShop>()[0]);
+			if (shop)
+			{
+
+				WorkProbs.Add(shop);
+			}
+			break;*/
+		}
 		}
 	}
 }
@@ -216,6 +248,66 @@ void AHumanNPC::StartWork(EWorkType type)
 void AHumanNPC::StopWork()
 {
 	GetWorld()->GetTimerManager().ClearTimer(ConditionTimerHandle);
+}
+
+void AHumanNPC::SetRandomHobby()
+{
+	if (Hobbies.Num() == 0) return;
+	else if (Hobbies.Num() == 1)
+	{
+		TArray<TPair<EHobbies, uint8>> hobbies = Hobbies.Array();
+		CurrentHobby = hobbies[0].Key;
+	}
+	else
+	{
+		// If don't set the probability
+		bool s = false;
+		for (auto hobby : Hobbies)
+		{
+			if (hobby.Value == 0)
+				s = true;
+		}
+		if (s)
+		{
+			for (auto& hobby : Hobbies)
+				hobby.Value = 1;
+		}
+
+		// Hobbies GCD
+		TArray<TPair<EHobbies, uint8>> hobbies = Hobbies.Array();
+
+		for (int i = 1; i < hobbies.Num(); i++)
+		{
+			while (hobbies[i - 1].Value != 0)
+			{
+				int temp = hobbies[i].Value % hobbies[i - 1].Value;
+				hobbies[i].Value = hobbies[i - 1].Value;
+				hobbies[i - 1].Value = temp;
+			}
+		}
+
+		uint8 r = hobbies[hobbies.Num() - 1].Value;
+		//UE_LOG(HumanNPCLog, Log, TEXT("%s : Hobbies GCD : %d"), *this->GetFName().ToString(), r);
+		
+		// Set Array
+		TArray<EHobbies> HobbyArray;
+		uint8 TotalProbability = 0;
+		hobbies = Hobbies.Array();
+		for (int i = 0; i < hobbies.Num(); i++)
+		{
+			TotalProbability += hobbies[i].Value / r;
+			for (int j = 0; j < hobbies[i].Value / r; j++)
+			{
+				HobbyArray.Add(hobbies[i].Key);
+			}
+		}
+
+		// Set Random Hobby
+		uint8 rand = FMath::RandRange(0, TotalProbability - 1);
+
+		CurrentHobby = HobbyArray[rand];
+	}
+	//UE_LOG(HumanNPCLog, Log, TEXT("%s : Current Hobby : %d"), *this->GetFName().ToString(), static_cast<uint8>(CurrentHobby));
 }
 
 void AHumanNPC::InitCondition()
@@ -244,6 +336,46 @@ void AHumanNPC::RecoveryFatigue(uint8 percent)
 		CurrentFatigue -= val;
 	}
 
+}
+
+void AHumanNPC::EndActionNotify()
+{
+	InitState();
+}
+
+void AHumanNPC::Increasedlikeability(int n)
+{
+	Likeability += n;
+}
+
+void AHumanNPC::Decreasedlikeability(int n)
+{
+	Likeability -= n;
+}
+
+void AHumanNPC::TakeDamageFuc(AActor* damagecauser, int damage, FVector hittedlocation)
+{
+	Super::TakeDamageFuc(damagecauser, damage, hittedlocation);
+
+	// Player Likeability
+	Decreasedlikeability(30);
+
+	TObjectPtr<AHero> player = Cast<AHero>(damagecauser);
+	if (!player)
+	{
+		UE_LOG(HumanNPCLog, Warning, TEXT("TakeDamageFuc : damagecauser casting to hero fail"));
+		return;
+	}
+
+	if (AffiliatedVillage)
+	{
+		TArray<TObjectPtr<AHumanNPC>> npcs = AffiliatedVillage->GetAllVillageNPCs();
+
+		for (auto npc : npcs)
+		{
+			npc->Decreasedlikeability(10);
+		}
+	}
 }
 
 //void AHumanNPC::SortRoutines()

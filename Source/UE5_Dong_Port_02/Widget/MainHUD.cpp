@@ -6,6 +6,11 @@
 #include "Widget/Inventory/InventoryContextMenu.h"
 #include "Widget/Status/StatusHUD.h"
 
+#include "Components/SizeBox.h"
+#include "Components/TextBlock.h"
+//#include "Animation/WidgetAnimation.h"
+
+
 void UMainHUD::NativeConstruct()
 {
 }
@@ -57,4 +62,9 @@ bool UMainHUD::CheckHUDsVisibility()
 	if (!(StatusHUD->GetVisibility() == ESlateVisibility::Hidden)) b = true;
 
 	return b;
+}
+
+void UMainHUD::PlayAnimInventoryWeightOverSign()
+{
+	PlayAnimation(AN_InventoryWeightOverSign);
 }

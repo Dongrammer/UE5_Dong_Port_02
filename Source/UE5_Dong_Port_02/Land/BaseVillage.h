@@ -10,6 +10,8 @@ class ABuilding;
 class ABaseProb;
 class ABaseLight;
 class UTPS_GameInstance;
+class AInn;
+class AHumanNPC;
 
 UCLASS()
 class UE5_DONG_PORT_02_API ABaseVillage : public AActor
@@ -32,10 +34,16 @@ protected:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
 	TObjectPtr<ANavModifierVolume> VillageVolume;
 
+public:
+	FVector GetRandomLocation();
+
 	/* ========== Buildings ========== */
 protected:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
 	TArray<TObjectPtr<ABuilding>> Buildings;
+
+public:
+	TArray<TObjectPtr<AInn>> GetInns() const;
 
 	/* ========== Probs ========== */
 protected:
@@ -65,4 +73,15 @@ public:
 
 public:
 	TArray<TObjectPtr<ABaseProb>> GetAllProbs() { return Probs; }
+
+
+	/* ========== NPC ========== */
+protected:
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
+	TArray<TObjectPtr<AHumanNPC>> VillageNPCs;
+
+public:
+	void AddVillageNPC(AHumanNPC* npc);
+
+	TArray<TObjectPtr<AHumanNPC>> GetAllVillageNPCs() { return VillageNPCs; }
 };

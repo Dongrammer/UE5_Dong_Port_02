@@ -6,9 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Helper.h"
 #include "InputDataAsset.h"
-#include "../Component/InventoryComponent.h"
 #include "../Component/TechniqueComponent.h"
-#include "../Component/ActionComponent.h"
 #include "../Component/WeaponComponent.h"
 #include "../Component/SoulComponent.h"
 #include "../Component/EquipComponent.h"
@@ -20,12 +18,16 @@
 #include "Widget/Equipment/EquipmentHUD.h"
 #include "Widget/InteractionHUD.h"
 #include "Widget/Status/StatusHUD.h"
+#include "Widget/Shop/ShopHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Item/BaseItem.h"
 #include "Kismet/GameplayStatics.h" // 월드 행렬을 뷰포트 행렬로 바꾸기 위해 필요
 //#include "TPS_GameInstance.h"
 #include "../Land/Prob/BaseProb.h"
-//#include "../Land/Prob/Shop.h"
+#include "../Land/Prob/Shop.h"
+#include "Widget/Battle/DamageFloating.h"
+
+#include "NavigationSystem.h"
 
 DEFINE_LOG_CATEGORY(HeroLog);
 
@@ -104,21 +106,48 @@ void AHero::Look(const FInputActionValue& Value)
 
 void AHero::DoInteraction()
 {
+	if (UsingProb)
+	{
+		UsingProb->Deactive(this);
+		return;
+	}
+
 	//bInteraction = true;
 	if (InteractionItem)
 	{
-		GetItems(InteractionItem->itemdata, 1);
-		InteractionItem->Destroy();
+		if (CheckCanGetItem(InteractionItem->itemdata))
+		{
+			GetItems(InteractionItem->itemdata, 1);
+			InteractionItem->Destroy();
+		}
+		else
+		{
+			MainHUD->PlayAnimInventoryWeightOverSign();
+		}
 	}
 
 	if (InteractionProb)
 	{
-		//if (CheckBehavior(EBehaviorType::E_Working))
-			//InteractionProb->Deactive(this);
-		if (UsingProb)
+		TObjectPtr<AShop> shop = Cast<AShop>(InteractionProb);
+		if (shop)
+		{
+			ShopHUD->ActiveHUD(InventoryComponent->GetHaveItems(), shop->GetSellingItemData(), shop->GetValueAdjust(), shop->GetItemType());
+			ShopHUDOn();
+		}
+		else if (UsingProb)
+		{
 			UsingProb->Deactive(this);
+		}
 		else
+		{
+			if (InteractionProb->GetUsed())
+			{
+				TObjectPtr<ABaseCharacter> UsingCha = InteractionProb->GetUsingHuman();
+				UsingCha->AddActorLocalOffset(UsingCha->GetActorForwardVector() * -80);
+				InteractionProb->Deactive(InteractionProb->GetUsingHuman());
+			}
 			InteractionProb->Active(this);
+		}
 	}
 }
 
@@ -219,16 +248,19 @@ void AHero::TechniqueOn()
 void AHero::EquipWeapon()
 {
 	if (!WeaponComponent) return;
+	if (GetCurrentWeaponType() == EWeaponType::E_None) return;
 
 	if (WeaponComponent->bHolding)
 	{
 		WeaponComponent->bHolding = false;
 		bUseControllerRotationYaw = false;
+		ActionComponent->UnequipWeapon();
 	}
 	else if (!WeaponComponent->bHolding)
 	{
 		WeaponComponent->bHolding = true;
 		bUseControllerRotationYaw = true;
+		ActionComponent->EquipWeapon();
 	}
 }
 
@@ -274,6 +306,21 @@ void AHero::StatusOn()
 	{
 		MainHUD->SetVisibility(ESlateVisibility::Hidden);
 		SetMouseState(false, EInputModeType::E_GameOnly);
+	}
+}
+
+void AHero::ShopHUDOn()
+{
+	if (ShopHUD->GetVisibility() == ESlateVisibility::Visible)
+	{
+		ShopHUD->SetVisibility(ESlateVisibility::Hidden);
+		SetMouseState(false, EInputModeType::E_GameOnly);
+	}
+	else
+	{
+		ShopHUD->SetVisibility(ESlateVisibility::Visible);
+		SetMouseCenter();
+		SetMouseState(true, EInputModeType::E_GameAndUIOnly, ShopHUD);
 	}
 }
 
@@ -343,13 +390,25 @@ void AHero::BeginPlay()
 	InteractionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AHero::OnInteractionBeginOverlap);
 	InteractionCapsule->OnComponentEndOverlap.AddDynamic(this, &AHero::OnInteractionEndOverlap);
 
-	//
-	FVector Start = GetActorLocation();
-	FVector End = GetActorLocation() + FVector(100, 100, 0);
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, true, -1, 0, 10);
+	// Shop
+	if (!ShopHUDClass)
+	{
+		UE_LOG(HeroLog, Warning, TEXT("ShopHUDClass Is NULL!!"));
+		return;
+	}
+	ShopHUD = CreateWidget<UShopHUD>(PlayerController, ShopHUDClass, "Shop HUD");
+	ShopHUD->AddToViewport();
+	ShopHUD->SetVisibility(ESlateVisibility::Hidden);
+	ShopHUD->DShopHUDToggle.BindUFunction(this, "ShopHUDOn");
+	ShopHUD->SetOwnerPlayer(this);
 
-
-
+	for (int i = 0; i < 100; i++)
+	{
+		UNavigationSystemV1* navsystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+		FNavLocation navlocation;
+		navsystem->GetRandomPoint(navlocation);
+		//DrawDebugLine(GetWorld(), navlocation.Location, navlocation.Location + FVector(0, 0, 1000), FColor::Green, true, -1.0f, 0, 10.0f);
+	}
 }
 
 void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -468,6 +527,20 @@ void AHero::SetMouseCenter()
 	PlayerController->SetMouseLocation(x / 2, y / 2);
 }
 
+void AHero::GetGold(int val)
+{
+	Super::GetGold(val);
+
+	if (MainHUD->GetInvenHUD()->FGoldUpdate.IsBound())
+		MainHUD->GetInvenHUD()->FGoldUpdate.Execute(InventoryComponent->GetCurrentGold());
+}
+
+bool AHero::CheckCanGetItem(FItemData data)
+{
+	return InventoryComponent->CheckCanGetItem(data);
+}
+
+
 void AHero::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
@@ -481,6 +554,17 @@ void AHero::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other
 void AHero::DoDashMovement()
 {
 	ActionComponent->DoDashMovement();
+}
+
+int AHero::CalculationDamage(int characterATK)
+{
+	int damage = characterATK * (ActionComponent->GetNowActionDamageRate() * 0.01f);
+	return damage;
+}
+
+void AHero::EndActionNotify()
+{
+	ActionComponent->OnEndActionNotify();
 }
 
 void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -505,17 +589,18 @@ void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	if (Prob && !InteractionProb)
 	{
 		// Shop
-		/*TObjectPtr<AShop> shop = Cast<AShop>(Prob);
+		TObjectPtr<AShop> shop = Cast<AShop>(Prob);
 		if (shop)
 		{
-			InteractionProb = Prob;
+			if (shop->GetUsed())
+			{
+				InteractionProb = Prob;
 
-			InteractionHUD->ActiveWidget(EInteractionHUDType::E_Trade, InteractionProb->GetName());
-		}*/
+				InteractionHUD->ActiveWidget(EInteractionHUDType::E_Trade, InteractionProb->GetName());
+			}
+		}
 		// Prob
-		//else if (Prob->GetCanPlayerUse())
-
-		if (Prob->GetCanPlayerUse())
+		else if (Prob->GetCanPlayerUse())
 		{
 			InteractionProb = Prob;
 
@@ -559,10 +644,21 @@ void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 		}
 	}
 
-	// Prob
-	TObjectPtr<ABaseProb> Prob = Cast<ABaseProb>(OtherComp->GetOwner());
 
-	if (Prob)
+	TObjectPtr<ABaseProb> Prob = Cast<ABaseProb>(OtherComp->GetOwner());
+	// Shop
+	TObjectPtr<AShop> shop = Cast<AShop>(Prob);
+	if (shop)
+	{
+		if (InteractionProb == shop)
+		{
+			InteractionProb = nullptr;
+
+			InteractionHUD->DeactiveWidget();
+		}
+	}
+	// Prob
+	else if (Prob)
 	{
 		if (InteractionProb == Prob)
 		{
@@ -573,23 +669,19 @@ void AHero::OnInteractionEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	}
 }
 
-
-void AHero::InitState()
+void AHero::SetCurrentWeapon(TObjectPtr<ABaseWeapon> weapon)
 {
-	SetCanMove(true);
-	SetCanAttack(true);
-	SetCurrentState(EStateType::E_Idle);
-}
+	Super::SetCurrentWeapon(weapon);
 
-void AHero::SetCurrentWeaponType(EWeaponType type)
-{
-	Super::SetCurrentWeaponType(type);
-
-	TechniqueComponent->SetCurrentWeaponType(type);
-	ActionComponent->SetCurrentWeaponType(type);
+	TechniqueComponent->SetCurrentWeaponType(weapon->GetWeaponType());
+	ActionComponent->SetCurrentWeaponType(weapon->GetWeaponType());
 }
 
 void AHero::OneMinuteTimePass()
 {
 	Super::OneMinuteTimePass();
+}
+
+void AHero::HealthBarVisible()
+{
 }

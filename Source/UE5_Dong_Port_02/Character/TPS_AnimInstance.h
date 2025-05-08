@@ -11,6 +11,8 @@
 //    漱  
 class ABaseHuman;
 class UCharacterMovementComponent;
+enum class EHandleType : uint8;
+enum class ESittingType : uint8;
 
 
 UCLASS()
@@ -26,7 +28,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
 	float Direction;
 
-	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
 	float Speed;
 
 	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
@@ -47,6 +49,12 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
 	bool bCanMove;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
+	EHandleType handleType;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = "true"))
+	ESittingType SittingType;
 
 private:
 	ABaseHuman* Owner;

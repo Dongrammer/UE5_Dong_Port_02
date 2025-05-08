@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 
 #include "../Weapon/WeaponData.h"
+#include "../Action/ActionData.h"
 #include "../Item/ItemData.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(WeaponCompLog, Log, All);
@@ -13,6 +14,8 @@ DECLARE_LOG_CATEGORY_EXTERN(WeaponCompLog, Log, All);
 class ABaseWeapon;
 class ABaseEquip;
 class UItemComponent;
+class ABaseHuman;
+class UCapsuleComponent;
 
 /*
 	Player와 NPC 모두 가지고 있는 컴포넌트
@@ -29,6 +32,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	TObjectPtr<ABaseHuman> Owner;
+
 	UPROPERTY()
 	TObjectPtr<UItemComponent> ItemComponent;
 public:	
@@ -42,6 +47,14 @@ public:
 	FORCEINLINE bool GetWeaponHolding() { return bHolding; }
 
 	void SetCurrentWeapon(TObjectPtr<ABaseWeapon> weapon);
+
+	UFUNCTION()
+	void WeaponHolding();
+	UFUNCTION()
+	void WeaponUnHolding();
+	
+	TObjectPtr<UCapsuleComponent> GetWeaponCapsule();
+
 private:
 	TObjectPtr<ABaseWeapon> CurrentWeapon;
 	EWeaponType CurrentWeaponType = EWeaponType::E_Gauntlet;

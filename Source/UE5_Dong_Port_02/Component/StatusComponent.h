@@ -12,6 +12,7 @@ DECLARE_LOG_CATEGORY_EXTERN(StatusCompLog, Log, All);
 class ABaseCharacter;
 class UStatusHUD;
 
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE5_DONG_PORT_02_API UStatusComponent : public UActorComponent
 {
@@ -48,13 +49,21 @@ public:
 	bool CurrentStateAre(TArray<EStateType> states);
 	UFUNCTION()
 	bool CurrentStateIs(EStateType state);
-
+	
 	FORCEINLINE EStateType GetCurrentState() { return CurrentState; }
+
+	bool CheckDead() { return CurrentStateIs(EStateType::E_Dead); }
 
 	/* ========== EffectState ========== */
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowprivateAccess = "true"))
-	EStateEffectType CurrentEffectState = EStateEffectType::E_Normal;
+	EStateEffectType CurrentEffectState = EStateEffectType::E_None;
+
+public:
+	UFUNCTION()
+	void SetCurrentEffectState(EStateEffectType type);
+	
+	FORCEINLINE EStateEffectType GetCurrentEffectState() { return CurrentEffectState; }
 
 	/* ========== Status ========== */
 private:
@@ -81,8 +90,17 @@ public:
 	UFUNCTION()
 	void UnequipItemStatus(TMap<EEquipStatus, int> status);
 
+
+	/* ========== Status ========== */
+private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FLifeStatus LifeStatus;
+
+
 public:
 	void UpdateHP(int val);
+	void UpdateAttack(int val);
+
 	/* ========== Level ========== */
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowprivateAccess = "true"))
@@ -106,9 +124,5 @@ public:
 
 	UFUNCTION()
 	void LevelUp();
-
-
-
-
 
 };

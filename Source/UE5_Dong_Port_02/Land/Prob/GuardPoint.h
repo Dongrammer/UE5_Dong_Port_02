@@ -17,6 +17,7 @@ class UE5_DONG_PORT_02_API AGuardPoint : public ABaseProb
 protected:
 	AGuardPoint();
 
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ABaseHuman> PrevHuman;
 	FTimerHandle TimerHandle;
 

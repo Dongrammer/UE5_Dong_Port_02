@@ -11,6 +11,10 @@ class UInventoryHUD;
 class UStatusHUD;
 
 class UInventoryContextMenu;
+// Temp
+class USizeBox;
+class UTextBlock;
+//class UWidgetAnimation;
 
 UCLASS()
 class UE5_DONG_PORT_02_API UMainHUD : public UUserWidget
@@ -50,4 +54,16 @@ public:
 	void SetAllHidden();
 
 	bool CheckHUDsVisibility(); // HUD가 하나라도 열려있는가?
+
+	// Temp
+private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USizeBox> SB_InventoryWeightOverSign;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> TB_InventoryWeightOverSign;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidgetAnim), meta = (AllowprivateAccess = "true"), Transient)
+	TObjectPtr<UWidgetAnimation> AN_InventoryWeightOverSign;
+
+public:
+	void PlayAnimInventoryWeightOverSign();
 };
