@@ -1,18 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../Item/ItemData.h"
 #include "ActionData.generated.h"
 
 class ABaseAction;
-
-UENUM(BlueprintType)
-enum class EActionType : uint8
-{
-	E_None UMETA(Hidden),
-	E_Gauntlet UMETA(DisplayName = "Gauntlet Action"),
-	E_OneHandSword UMETA(DisplayName = "OneHandSword Action"),
-	E_Max UMETA(Hidden)
-};
 
 UENUM(BlueprintType)
 enum class EActionPassiveType : uint8
@@ -30,7 +22,7 @@ struct FActionData
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	EActionType ActionType = EActionType::E_None;
+	EWeaponType WeaponType = EWeaponType::E_None;
 
 	UPROPERTY(EditAnywhere, BlueprintreadOnly)
 	uint8 ActionNumber = 0;
@@ -59,9 +51,13 @@ enum class EGauntletAction : uint8
 	E_Left_01 UMETA(DisplayName = "Left 01"),
 	E_Left_02 UMETA(DisplayName = "Left 02"),
 	E_Right_01 UMETA(DisplayName = "Right 01"),
-	E_Kick_01 UMETA(DisplayName = "Kick 01"),
-	E_Kick_02 UMETA(DisplayName = "Kick 02"),
-	E_Kick_03 UMETA(DisplayName = "Kick 03"),
+	E_Right_02 UMETA(DisplayName = "Right 02"),
+	E_LeftRight_01 UMETA(DisplayName = "LeftRight 01"),
+	E_RKick_01 UMETA(DisplayName = "RKick 01"),
+	E_RKick_02 UMETA(DisplayName = "RKick 02"),
+	E_RKick_03 UMETA(DisplayName = "RKick 03"),
+	E_LKick_01 UMETA(DisplayName = "LKick 01"),
+	E_LKick_02 UMETA(DisplayName = "LKick 02"),
 	E_Max
 };
 

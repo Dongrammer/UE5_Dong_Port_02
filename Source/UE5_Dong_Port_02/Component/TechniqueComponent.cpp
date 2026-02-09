@@ -5,9 +5,13 @@
 
 #include "Technique/TechniqueHUDDataAsset.h"
 #include "Widget/Technique/TechniqueHUD.h"
+#include "Action/ActionData.h"
 
 #include "Widget/Technique/TechniqueNode.h"
+#include "Technique/TechniqueNodeActive.h"
+#include "Technique/TechniqueNodePassive.h"
 #include "Widget/Technique/TechniqueSelectNodeSpace.h"
+
 
 #include "Components/Button.h"
 
@@ -25,7 +29,7 @@ UTechniqueComponent::UTechniqueComponent()
 	FActionData TempData;
 	FActionDataArray TempArray;
 	TempData.ActionNumber = 0;
-	TempData.ActionType = EActionType::E_None;
+	TempData.WeaponType = EWeaponType::E_None;
 	TempArray.ActionDatas.Init(TempData, 5);
 	for (int i = static_cast<uint8>(EWeaponType::E_None) + 1; i < static_cast<uint8>(EWeaponType::E_Max); i++)
 	{
@@ -41,7 +45,7 @@ void UTechniqueComponent::ToggleHUD()
 		EWeaponType type = static_cast<EWeaponType>(i);
 		if (!HUDs.FindRef(type)) return;
 	}
-
+	
 	for (int i = static_cast<uint8>(EWeaponType::E_None) + 1; i < static_cast<uint8>(EWeaponType::E_Max); i++)
 	{
 		EWeaponType type = static_cast<EWeaponType>(i);
@@ -75,44 +79,62 @@ bool UTechniqueComponent::GetHUDVisible()
 
 void UTechniqueComponent::NodeHUDNodeClick(UTechniqueNode* node)
 {
-	if (CurrentTP - node->RequiredTP < 0) return;
+	if (!node || !node->TechNode) return;
 
+	UTechniqueNodeBase* Tech = node->TechNode;
+
+	if (CurrentTP - Tech->RequireTP < 0) return;
 	if (SelectedNode != node)
 	{
 		NodeSelected(node);
 		return;
 	}
-
-	// Active Node First Learn
-	if (node->GetActive() == true && node->GetNodeLevel() == 0)
+	// Finding RuntimeNodes
+	bool bnew = true;
+	if (!RuntimeNodes.Contains(Tech))
 	{
-		AvailableAction.Add(node->GetAction());
-		node->ActiveNode();
-
-		node->AddNodeLevel();
-		CurrentHUD->SelectHUD->AddNode(node);
-	}
-	else if (node->GetNodeLevel() >= node->GetMaxNodeLevel()) return;
-
-	// Passive Node
-	if (node->GetActive() == false)
-	{
-		if (node->GetNodeLevel() == 0) node->ActiveNode();
-
-		node->AddNodeLevel();
-		Player->GetActionComponent()->PassiveLevelUp(node->ActionData, node->GetPassiveType());
+		RuntimeNodes.Add(Tech, FRuntimeTechNodeData{});
 	}
 
-	// Set TP
-	CurrentTP -= node->RequiredTP;
-	for (int i = static_cast<uint8>(EWeaponType::E_None) + 1; i < static_cast<uint8>(EWeaponType::E_Max); i++)
+	if (RuntimeNodes.Contains(Tech))
 	{
-		EWeaponType type = static_cast<EWeaponType>(i);
-		HUDs.FindRef(type)->SettingTP(CurrentTP, MaxTP);
+		FRuntimeTechNodeData& RNodeData = RuntimeNodes[Tech];
+		if (Tech->MaxNodeLevel <= RNodeData.CurNodeLevel) return;
+		if (RNodeData.CurNodeLevel == 0) node->ActiveNode();
+
+		// Active
+		if (auto* active = Cast<UTechniqueNodeActive>(Tech))
+		{
+			if (RNodeData.CurNodeLevel == 0) // Active Node First Learn
+			{
+				AvailableAction.Add(active->GetAction());
+				CurrentHUD->SelectHUD->AddNode(active);
+			}
+		}
+		// Passive
+		if (auto* passive = Cast<UTechniqueNodePassive>(Tech))
+		{
+			Player->GetActionComponent()->PassiveLevelUp(passive->TargetAction, passive->PassiveType);
+		}
+		// Level Up
+		RNodeData.CurNodeLevel++;
+		node->NodeRefresh(RNodeData.CurNodeLevel);
+		if (const auto& dependents = NodeDependents.Find(Tech))
+		{
+			for (auto& req : *dependents)
+			{
+				CheckRequirements(req);
+			}
+		}
+
+		// Set TP
+		CurrentTP -= Tech->RequireTP;
+		for (int i = static_cast<uint8>(EWeaponType::E_None) + 1; i < static_cast<uint8>(EWeaponType::E_Max); i++)
+		{
+			EWeaponType type = static_cast<EWeaponType>(i);
+			HUDs.FindRef(type)->SettingTP(CurrentTP, MaxTP);
+		}
 	}
-
-	// Require Node Check
-
 }
 
 void UTechniqueComponent::BeginPlay()
@@ -153,11 +175,21 @@ void UTechniqueComponent::BeginPlay()
 		HUD->Bt_PrevHUD->OnClicked.Add(PrevHUDPressed);
 
 		// Node Connect
-		for (TObjectPtr<UTechniqueNode> Node : HUD->NodeHUD->Nodes)
+		for (UTechniqueNode* Node : HUD->NodeHUD->Nodes)
 		{
-			Node->NodeLevelSetting();
-			Node->ConnectRequireNode();
-			Node->DNodeSelect.AddUFunction(this, "NodeHUDNodeClick");
+			Node->NodeInit();
+			Node->DNodeSelect.AddUObject(this, &UTechniqueComponent::NodeHUDNodeClick);
+
+			if (!Node->TechNode) continue;
+			NodeWidgetMap.Add(Node->TechNode, Node);
+
+			for (auto& req : Node->TechNode->Requirements.RequireNode)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("!!"));
+				NodeDependents.FindOrAdd(req.Key).Add(Node->TechNode);
+			}
+			CheckRequirements(Node->TechNode);
+
 		}
 
 		// Select NodeSpace Connect
@@ -264,12 +296,42 @@ void UTechniqueComponent::NodeSelected(UTechniqueNode* node)
 	SelectedNode->bNodeSelected = true;
 	SelectedNode->SelectedIMVisible(true);
 
+	UTechniqueNodeBase* tn = node->GetTechNode();
 	FNodeInfoData data;
-	data.NodeDescription = SelectedNode->NodeDescription;
-	data.NodeName = SelectedNode->NodeName;
-	data.RequireTP = SelectedNode->RequiredTP;
+	data.NodeDescription = FText::FromName(tn->NodeDescription);
+	data.NodeName = FText::FromName(tn->NodeName);
+	data.RequireTP = tn->RequireTP;
 
 	CurrentHUD->InfoHUD->InfoSetting(data);
+}
+
+void UTechniqueComponent::CheckRequirements(UTechniqueNodeBase* CheckNode)
+{
+	const FRequirements& Req = CheckNode->Requirements;
+	bool bUnlock = true;
+
+	// CharacterLevel
+	if (Player->GetCharacterLevel() < Req.RequireCharacterLevel) bUnlock = false;
+
+	// Prievious Node
+	for (auto& ReqNode : Req.RequireNode)
+	{
+		const UTechniqueNodeBase* RequireNode = ReqNode.Key;
+		const uint8 RequireNodeLevel = ReqNode.Value;
+
+		const FRuntimeTechNodeData* Runtime = RuntimeNodes.Find(RequireNode);
+
+		if (!Runtime || Runtime->CurNodeLevel < RequireNodeLevel)
+		{
+			bUnlock = false;
+			break;
+		}
+	}
+
+	if (!bUnlock) return;
+
+	if (UTechniqueNode* widget = NodeWidgetMap.FindRef(CheckNode))
+		widget->Unlock();
 }
 
 void UTechniqueComponent::SelectDashAction(EDashAction dash)
@@ -286,28 +348,7 @@ void UTechniqueComponent::SelectDashAction(EDashAction dash)
 
 void UTechniqueComponent::SelectHUDNodeClick(FActionData action, uint8 spaceNum)
 {
-	SelectedAction.Find(static_cast<EWeaponType>(static_cast<uint8>(action.ActionType)))->ActionDatas[spaceNum] = action;
-	//SelectedAction.FindRef(static_cast<EWeaponType>(static_cast<uint8>(action.ActionType))).ActionDatas[spaceNum].ActionType = action.ActionType;
-	//SelectedAction.FindRef(static_cast<EWeaponType>(static_cast<uint8>(action.ActionType))).ActionDatas[spaceNum].ActionNumber = action.ActionNumber;
-	//SelectedAction.Find(EWeaponType::E_Gauntlet).ActionDatas[spaceNum] = action;
-	//SelectedAction.Find(EWeaponType::E_Gauntlet)->ActionDatas[spaceNum] = action;
-
-	//UE_LOG(LogTemp, Log, TEXT("ActionType : %d, Action Num : %d, spaceNum : %d"), static_cast<uint8>(action.ActionType), static_cast<uint8>(action.ActionNumber), spaceNum);
-
-	//UEnum* EnumPtr1 = StaticEnum<EActionType>();
-	//FString EnumString1 = EnumPtr1->GetNameStringByIndex(static_cast<uint8>(action.ActionType));
-	//UE_LOG(LogTemp, Log, TEXT("%s"), *EnumString1);
-
-	//UEnum* EnumPtr2 = StaticEnum<EWeaponType>();
-	//FString EnumString2 = EnumPtr2->GetNameStringByIndex(static_cast<uint8>(static_cast<EWeaponType>(static_cast<uint8>(action.ActionType))));
-	//UE_LOG(LogTemp, Log, TEXT("%s"), *EnumString2);
-
-	//SelectedAction[spaceNum] = action;
-	/*UE_LOG(LogTemp, Log, TEXT("TechniqueComp :  - %d"), action.ActionNumber);
-	for (int i = 0; i < 5; i++)
-	{
-		UE_LOG(LogTemp, Log, TEXT("TechniqueComp : SelectedAction[%d] - %d"), i, SelectedAction.FindRef(EWeaponType::E_Gauntlet).ActionDatas[i].ActionNumber);
-	}*/
-	Player->GetActionComponent()->SettingActions(SelectedAction.FindRef(static_cast<EWeaponType>(static_cast<uint8>(action.ActionType))).ActionDatas);
+	SelectedAction.Find(action.WeaponType)->ActionDatas[spaceNum] = action;
+	Player->GetActionComponent()->SettingActions(SelectedAction.FindRef(action.WeaponType).ActionDatas);
 }
 

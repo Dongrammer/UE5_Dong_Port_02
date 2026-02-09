@@ -24,6 +24,8 @@ class UWidget;
 class UInteractionHUD;
 class UShopHUD;
 class UDamageFloating;
+// Action
+class UNiagaraSystem;
 // Technique
 class UTechniqueComponent;
 // Soul
@@ -98,6 +100,8 @@ protected:
 	void MappingInputAsset(UEnhancedInputComponent* Comp);
 
 public:
+	UFUNCTION()
+	void SetRotationToCamera();
 	void SetMouseState(bool visibility, EInputModeType inputmode, UWidget* widget = nullptr); // Setting Mouse Visibility, InputMode
 	void SetMouseCenter();
 	FORCEINLINE EInputDirection GetInputDirection() { return inputDirection; }
@@ -201,11 +205,16 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UActionComponent> ActionComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Essential", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UNiagaraSystem> AfterImageEffect;
+	
 public:
 	void DoDashMovement() override;
 	FORCEINLINE UActionComponent* GetActionComponent() { return ActionComponent; }
 	int CalculationDamage(int characterATK) override;
 	void EndActionNotify() override;
+	UFUNCTION()
+	void CreateAfterEffect();
 
 	/* ==================== Weapon ==================== */
 public:

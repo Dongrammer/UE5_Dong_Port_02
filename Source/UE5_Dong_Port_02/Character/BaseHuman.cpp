@@ -419,6 +419,7 @@ void ABaseHuman::TakeDamageFuc(AActor* damagecauser, int damage, FVector hittedl
 
 int ABaseHuman::CalculationDamage(int characterATK)
 {
+	
 	return characterATK;
 }
 

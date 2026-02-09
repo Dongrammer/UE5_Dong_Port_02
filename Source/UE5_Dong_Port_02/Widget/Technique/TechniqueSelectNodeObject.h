@@ -7,7 +7,6 @@
 
 #include "TechniqueSelectNodeObject.generated.h"
 
-struct FActionData;
 class UImage;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FSelectNode, FActionData, UImage*);
@@ -22,7 +21,7 @@ public:
 	FActionData action;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UImage> image;
+	TObjectPtr<UTexture2D> Icon;
 
 	FSelectNode DSelectNode;
 

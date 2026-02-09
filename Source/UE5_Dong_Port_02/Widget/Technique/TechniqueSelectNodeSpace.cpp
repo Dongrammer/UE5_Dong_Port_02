@@ -7,7 +7,8 @@
 #include "Components/Image.h"
 
 #include "Widget/Technique/TechniqueSelectNodeObject.h"
-#include "Widget/Technique/TechniqueNode.h"
+#include "Technique/TechniqueNodeActive.h"
+#include "Action/BaseAction.h"
 
 void UTechniqueSelectNodeSpace::NativeConstruct()
 {
@@ -23,7 +24,7 @@ void UTechniqueSelectNodeSpace::NativeOnMouseLeave(const FPointerEvent& InMouseE
 	ActionList->SetVisibility(ESlateVisibility::Hidden);
 }
 
-void UTechniqueSelectNodeSpace::AddNode(UTechniqueNode* node)
+void UTechniqueSelectNodeSpace::AddNode(UTechniqueNodeActive* node)
 {
 	if (!node)
 	{
@@ -31,22 +32,22 @@ void UTechniqueSelectNodeSpace::AddNode(UTechniqueNode* node)
 		return;
 	}
 
-	if (node->GetAction().ActionType == EActionType::E_None)
+	if (node->GetAction().WeaponType == EWeaponType::E_None)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TechniqueNodeSpace : Added Node Action Is NULL !!"));
 		return;
 	}
-
+	/*
 	// Set FName
 	FName NodeFName;
-	switch (node->GetAction().ActionType)
+	switch (node->GetAction()->GetWeaponType())
 	{
-	case EActionType::E_Gauntlet:
+	case EWeaponType::E_Gauntlet:
 	{
-		NodeFName = FName(*FString::Printf(TEXT("Gauntlet Action - %d"), node->GetAction().ActionNumber));
+		NodeFName = FName(*FString::Printf(TEXT("Gauntlet Action - %d"), node->GetAction()->));
 		break;
 	}
-	case EActionType::E_OneHandSword:
+	case EWeaponType::E_OneHandSword:
 	{
 		NodeFName = FName(*FString::Printf(TEXT("Sword Action - %d"), node->GetAction().ActionNumber));
 		break;
@@ -57,11 +58,11 @@ void UTechniqueSelectNodeSpace::AddNode(UTechniqueNode* node)
 		break;
 	}
 	}
-
-	TObjectPtr<UTechniqueSelectNodeObject> NodeObject = NewObject<UTechniqueSelectNodeObject>(this, UTechniqueSelectNodeObject::StaticClass(), NodeFName);
+	*/
+	TObjectPtr<UTechniqueSelectNodeObject> NodeObject = NewObject<UTechniqueSelectNodeObject>(this, UTechniqueSelectNodeObject::StaticClass());
 	
 	NodeObject->action = node->GetAction();
-	NodeObject->image = node->GetImage();
+	NodeObject->Icon = node->Icon;
 	NodeObject->DSelectNode.AddUFunction(this, "SelectNodeDelegate");
 
 	ActionList->AddItem(NodeObject);

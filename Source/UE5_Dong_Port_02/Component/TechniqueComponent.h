@@ -13,6 +13,7 @@ DECLARE_LOG_CATEGORY_EXTERN(TechniqueComponentLog, Log, All);
 class AHero;
 class UTechniqueHUDDataAsset;
 class UTechniqueHUD;
+class UTechniqueNodeBase;
 
 USTRUCT(BlueprintType)
 struct FActionDataArray
@@ -22,6 +23,18 @@ struct FActionDataArray
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FActionData> ActionDatas;
+};
+
+USTRUCT(BlueprintType)
+struct FRuntimeTechNodeData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	uint8 CurNodeLevel = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bUnlock = true;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -77,6 +90,18 @@ private:
 private:
 	TObjectPtr<UTechniqueNode> SelectedNode;
 	void NodeSelected(UTechniqueNode* node);
+
+	// Node
+private:
+	TMap<TObjectPtr<UTechniqueNodeBase>, FRuntimeTechNodeData> RuntimeNodes;
+	TMap<TObjectPtr<UTechniqueNodeBase>, TArray<TObjectPtr<UTechniqueNodeBase>>> NodeDependents; // A,B -> B의 선행조건이 A
+	TMap<TObjectPtr<UTechniqueNodeBase>, TObjectPtr<UTechniqueNode>> NodeWidgetMap;
+public:
+	//UFUNCTION()
+	//void NodeLevelUp(UTechniqueNode* node);
+	UFUNCTION()
+	void CheckRequirements(UTechniqueNodeBase* CheckNode);
+
 
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Technique|Action", meta = (AllowPrivateAccess = "true"))

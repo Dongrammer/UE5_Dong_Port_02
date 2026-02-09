@@ -39,6 +39,8 @@ void ABaseAction::DoAction()
 		UE_LOG(ActionLog, Warning, TEXT("Action [%s] : AnimAsset Is NULL !!"), GetFName());
 		return;
 	}
+	// Adjust Rotation
+	ActionOwner->SetRotationToCamera();
 
 	float AnimSpeed = PlayRate + ActionOwner->GetPlayRate() - 1.0f;
 	ActionOwner->PlayAnimMontage(AnimAsset, AnimSpeed);

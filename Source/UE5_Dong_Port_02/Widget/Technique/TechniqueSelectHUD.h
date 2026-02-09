@@ -10,6 +10,7 @@ class UOverlay;
 class UImage;
 class UHorizontalBox;
 class UTechniqueSelectNodeSpace;
+class UTechniqueNodeActive;
 
 UCLASS()
 class UE5_DONG_PORT_02_API UTechniqueSelectHUD : public UUserWidget
@@ -50,5 +51,5 @@ public:
 public:
 	virtual void NativeConstruct() override;
 	UFUNCTION()
-	void AddNode(UTechniqueNode* node);
+	void AddNode(UTechniqueNodeActive* node);
 };

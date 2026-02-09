@@ -25,14 +25,12 @@ void UTechniqueSelectNodeSpaceEntry::NativeOnListItemObjectSet(UObject* ListItem
 		return;
 	}
 
-	if (node->image)
+	if (node->Icon)
 	{
-		FSlateBrush brush = node->image->GetBrush();
-		IM_Base->SetBrush(brush);
+		IM_Base->SetBrushFromTexture(node->Icon);
 	}
 
 	action = node->action;
-
 }
 
 void UTechniqueSelectNodeSpaceEntry::MainButtonClicked()

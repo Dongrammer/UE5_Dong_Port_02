@@ -9,11 +9,25 @@
 #include "Action/ActionData.h"
 #include "Widget/Technique/TechniqueNode.h"
 #include "Action/ActionDataAsset.h"
+#include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
 #include "Helper.h"
 
 void UTechniqueNodeHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	Nodes.Empty();
+
+	TArray<UWidget*> AllWidgets;
+	WidgetTree->GetAllWidgets(AllWidgets);
+
+	for (UWidget* widget : AllWidgets)
+	{
+		if (UTechniqueNode* Node = Cast<UTechniqueNode>(widget))
+		{
+			Nodes.Add(Node);
+		}
+	}
 }
 
 void UTechniqueNodeHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

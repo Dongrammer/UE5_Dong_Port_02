@@ -8,6 +8,7 @@
 #include "Components/ListView.h"
 
 #include "Widget/Technique/TechniqueSelectNodeSpace.h"
+#include "Technique/TechniqueNodeActive.h"
 
 
 void UTechniqueSelectHUD::NativeConstruct()
@@ -26,7 +27,7 @@ void UTechniqueSelectHUD::NativeConstruct()
 	NodeSpaces.Add(NodeSpace_05);
 }
 
-void UTechniqueSelectHUD::AddNode(UTechniqueNode* node)
+void UTechniqueSelectHUD::AddNode(UTechniqueNodeActive* node)
 {
 	for (TObjectPtr<UTechniqueSelectNodeSpace> NodeSpace : NodeSpaces)
 	{

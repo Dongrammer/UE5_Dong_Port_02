@@ -54,16 +54,16 @@ void UActionComponent::SettingActions(TArray<FActionData> actions)
 {
 	for (int i = 0; i < actions.Num(); i++)
 	{
-		switch (actions[i].ActionType)
+		switch (actions[i].WeaponType)
 		{
-		case EActionType::E_Gauntlet:
+		case EWeaponType::E_Gauntlet:
 		{
-			SelectActions.Find(static_cast<EWeaponType>(static_cast<uint8>(actions[i].ActionType)))->Actions[i] = GauntletActionPtr.FindRef(static_cast<EGauntletAction>(actions[i].ActionNumber));
+			SelectActions.Find(static_cast<EWeaponType>(static_cast<uint8>(actions[i].WeaponType)))->Actions[i] = GauntletActionPtr.FindRef(static_cast<EGauntletAction>(actions[i].ActionNumber));
 			break;
 		}
-		case EActionType::E_OneHandSword:
+		case EWeaponType::E_OneHandSword:
 		{
-			SelectActions.Find(static_cast<EWeaponType>(static_cast<uint8>(actions[i].ActionType)))->Actions[i] = SwordActionPtr.FindRef(static_cast<ESwordAction>(actions[i].ActionNumber));
+			SelectActions.Find(static_cast<EWeaponType>(static_cast<uint8>(actions[i].WeaponType)))->Actions[i] = SwordActionPtr.FindRef(static_cast<ESwordAction>(actions[i].ActionNumber));
 			break;
 		}
 		default:
@@ -107,15 +107,19 @@ void UActionComponent::CreateActions()
 void UActionComponent::PassiveLevelUp(FActionData InAction, EActionPassiveType Ptype)
 {
 	TObjectPtr<ABaseAction> action;
-
-	switch (InAction.ActionType)
+	if (InAction.ActionNumber == 0)
 	{
-	case EActionType::E_Gauntlet:
+		UE_LOG(ActionCompLog, Warning, TEXT("ActionNumber is NULL !!"));
+		return;
+	}
+	switch (InAction.WeaponType)
+	{
+	case EWeaponType::E_Gauntlet:
 	{
 		action = GauntletActionPtr.FindRef(static_cast<EGauntletAction>(InAction.ActionNumber));
 		break;
 	}
-	case EActionType::E_OneHandSword:
+	case EWeaponType::E_OneHandSword:
 	{
 		action = SwordActionPtr.FindRef(static_cast<ESwordAction>(InAction.ActionNumber));
 		break;
@@ -227,6 +231,12 @@ void UActionComponent::PressedAvoid()
 	{
 		UE_LOG(ActionCompLog, Warning, TEXT("SelectDashAction Is NULL !!"));
 		return;
+	}
+
+	if (Owner->GetCurrentState() == EStateType::E_Attack)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CreateAfterEffect Call"));
+		Owner->CreateAfterEffect();
 	}
 
 	Owner->SetCurrentState(EStateType::E_Avoid);

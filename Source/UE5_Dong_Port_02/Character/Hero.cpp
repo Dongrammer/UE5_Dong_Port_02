@@ -26,7 +26,8 @@
 #include "../Land/Prob/BaseProb.h"
 #include "../Land/Prob/Shop.h"
 #include "Widget/Battle/DamageFloating.h"
-
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "NavigationSystem.h"
 
 DEFINE_LOG_CATEGORY(HeroLog);
@@ -52,6 +53,7 @@ AHero::AHero()
 	InteractionCapsule->SetRelativeLocation(FVector(410, 0, -25));
 	InteractionCapsule->SetRelativeRotation(FRotator(0, -90, 0));
 	InteractionCapsule->SetRelativeScale3D(FVector(1.5, 1.5, 2));
+
 }
 
 void AHero::Tick(float DeltaSecond)
@@ -190,11 +192,10 @@ void AHero::EndSubAction()
 
 void AHero::PressedAvoid()
 {
-	if (!bCanMove) return;
-
 	TArray<EStateType> state;
 	state.Add(EStateType::E_Idle);
 	state.Add(EStateType::E_Attack);
+	if (!CurrentStateAre(state)) return;
 
 	if (GetWeaponHolding() && CurrentStateAre(state))
 	{
@@ -409,6 +410,13 @@ void AHero::BeginPlay()
 		navsystem->GetRandomPoint(navlocation);
 		//DrawDebugLine(GetWorld(), navlocation.Location, navlocation.Location + FVector(0, 0, 1000), FColor::Green, true, -1.0f, 0, 10.0f);
 	}
+
+	// AfterImage
+	if (!AfterImageEffect)
+	{
+		UE_LOG(HeroLog, Warning, TEXT("AfterImage Is NULL !!"));
+		return;
+	}
 }
 
 void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -472,6 +480,12 @@ void AHero::MappingInputAsset(UEnhancedInputComponent* Comp)
 
 	// Statys
 	Comp->BindAction(InputAsset->StatusOn, ETriggerEvent::Started, this, &AHero::StatusOn);
+}
+
+void AHero::SetRotationToCamera()
+{
+	FRotator CRotation(0.f, GetControlRotation().Yaw, 0.f);
+	SetActorRotation(CRotation);
 }
 
 void AHero::SetMouseState(bool visibility, EInputModeType inputmode, UWidget* widget)
@@ -565,6 +579,13 @@ int AHero::CalculationDamage(int characterATK)
 void AHero::EndActionNotify()
 {
 	ActionComponent->OnEndActionNotify();
+}
+
+void AHero::CreateAfterEffect()
+{
+	if (!AfterImageEffect) return;
+
+	UNiagaraFunctionLibrary::SpawnSystemAttached(AfterImageEffect, GetMesh(), NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 }
 
 void AHero::OnInteractionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

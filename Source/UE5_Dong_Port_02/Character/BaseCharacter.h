@@ -150,4 +150,6 @@ public:
 	void GetEXP(int val);
 	UFUNCTION(BlueprintCallable)
 	void LevelUp();
+
+	FORCEINLINE int GetCharacterLevel() { return StatusComponent->GetTotalStatus().Level; }
 };

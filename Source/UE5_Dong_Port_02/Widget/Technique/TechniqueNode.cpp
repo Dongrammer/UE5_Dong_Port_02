@@ -1,38 +1,69 @@
 #include "Widget/Technique/TechniqueNode.h"
 
 #include "Components/SizeBox.h"
+#include "Components/VerticalBox.h"
 #include "Components/Overlay.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Technique/TechniqueNodeBase.h"
 
-void UTechniqueNode::ConnectRequireNode()
+#include "Character/Hero.h"
+
+UTechniqueNodeBase* UTechniqueNode::GetTechNode()
 {
-	if (!RequireNode)
-	{
-		Unlock();
-		return;
-	}
-	RequireNode->DNodeSelect.AddUFunction(this, "CheckRequireNode");
-	/* 
-		Technique Component의 Node의 AddNodeLevel보다 일찍 실행되는 상태. 델리게이트가 뒤쪽부터 실행돼서 그런듯? 
-		CheckRequireNode()의 조건을 바꾸거나, TechniqueComponent에서 델리게이트의 순서를 바꾸거나 해야함.
-		후자의 방식은 왜인지 델리게이트의 순서가 바뀌지 않으니, 전자로 처리.
-	*/
+	if (TechNode) return TechNode;
+
+	return nullptr;
 }
 
-void UTechniqueNode::CheckRequireNode()
+void UTechniqueNode::NodeInit()
 {
-	if (!RequireNode) return;
-
-	if (RequireNode->NodeLevel >= RequireNodeLevel - 1 && RequireNode->bNodeSelected)
+	hero = Cast<AHero>(GetOwningPlayerPawn());
+	if (!hero)
 	{
-		Unlock();
+		UE_LOG(LogTemp, Warning, TEXT("TechniqueNode : Hero Is NULL !!"));
 	}
+
+	if (!TechNode) return;
+
+	NodeRefresh(0);
+
+	// NodeSetting
+	Tx_NodeName->SetText(FText::FromName(TechNode->NodeName));
 }
+
+void UTechniqueNode::NodeRefresh(uint8 curLevel)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Refresh Node: %s"), *GetName());
+	NodeLevelSetting(curLevel);
+	/*if (DConnectRequireNode.IsBound())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NodeRefresh IsBound : %d"), curLevel);
+		DConnectRequireNode.Broadcast(this);
+	}*/
+}
+//
+//void UTechniqueNode::CheckRequirements()
+//{
+//	FRequirements req = TechNode->Requirements;
+//	
+//	if (req.RequireNode == nullptr)
+//	{
+//		Unlock();
+//		return;
+//	}
+//
+//	if (req.RequireCharacterLevel > hero->GetCharacterLevel()) return;
+//	if (req.RequireNodeLevel > req.RequireNode->CurNodeLevel) return;
+//
+//	Unlock();
+//}
 
 void UTechniqueNode::Unlock()
 {
+	if (bUnlock) return;
+
 	bUnlock = true;
 	IM_Lock->SetVisibility(ESlateVisibility::Hidden);
 }
@@ -55,6 +86,18 @@ void UTechniqueNode::NativeConstruct()
 	IM_Selected->SetVisibility(ESlateVisibility::Hidden);
 }
 
+void UTechniqueNode::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+	if (TechNode)
+	{
+		const TObjectPtr<UTechniqueNodeBase> Node = TechNode.Get();
+		Tx_NodeName->SetText(FText::FromName(Node->NodeName));
+		Im_Base->SetBrushFromTexture(Node->Icon);
+	}
+}
+
 void UTechniqueNode::Bt_Main_Clicked()
 {
 	if (bUnlock == false) return;
@@ -75,16 +118,22 @@ void UTechniqueNode::ActiveNode()
 
 	Im_Base->SetColorAndOpacity(color);
 }
+//
+//void UTechniqueNode::AddNodeLevel()
+//{
+//	if (!TechNode) return;
+//
+//	NodeRefresh();
+//}
 
-void UTechniqueNode::AddNodeLevel()
+void UTechniqueNode::NodeLevelSetting(uint8 curLevel)
 {
-	NodeLevel++;
-	NodeLevelSetting();
-}
+	if (!TechNode) return;
 
-void UTechniqueNode::NodeLevelSetting()
-{
-	Tx_Level->SetText(FText::FromString(FString::Printf(TEXT("( %d / %d )"), NodeLevel, MaxNodeLevel)));
+	uint8 CurNodeLevel = curLevel;
+	uint8 MaxNodeLevel = TechNode->MaxNodeLevel;
+
+	Tx_Level->SetText(FText::FromString(FString::Printf(TEXT("( %d / %d )"), CurNodeLevel, MaxNodeLevel)));
 }
 
 void UTechniqueNode::SelectedIMVisible(bool visible)

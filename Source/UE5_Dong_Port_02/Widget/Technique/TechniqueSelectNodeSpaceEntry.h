@@ -11,6 +11,7 @@
 class USizeBox;
 class UImage;
 class UButton;
+class ABaseAction;
 class UTechniqueSelectNodeObject;
 
 UCLASS()

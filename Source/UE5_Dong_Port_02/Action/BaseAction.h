@@ -44,7 +44,7 @@ public:
 	/* ========== Action Information ========== */
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"), Category = "Essential")
-	EWeaponType ActionType;
+	EWeaponType WeaponType;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"), Category = "Essential")
 	TSubclassOf<ABaseAction> ActionClass;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"), Category = "Essential")
@@ -53,8 +53,6 @@ private:
 	TObjectPtr<UTexture2D> ActionImage;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Essential")
 	bool bCanMove = true;
-	//UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"), Category = "Essential")
-	//EActiveCollisionType ActiveCollisionType = EActiveCollisionType::E_None;
 	/* ========== Action Status ========== */
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Status")
@@ -62,7 +60,6 @@ private:
 	
 public:
 	FORCEINLINE float GetDamageRate() { return DamageRate; }
-	//FORCEINLINE EActiveCollisionType GetActiveCollisionType() { return ActiveCollisionType; }
 
 	/* ========== Action Elements ========== */
 public:
@@ -77,7 +74,7 @@ public:
 	FVector EndLocation;
 
 public:
-	FORCEINLINE EWeaponType GetActionType() { return ActionType; }
+	FORCEINLINE EWeaponType GetWeaponType() { return WeaponType; }
 	FORCEINLINE bool GetCanMove() { return bCanMove; }
 
 	/* ========== Passive ========== */

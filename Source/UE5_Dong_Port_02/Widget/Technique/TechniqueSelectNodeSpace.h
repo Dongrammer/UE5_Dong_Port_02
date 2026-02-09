@@ -13,7 +13,7 @@ class UListView;
 class UImage;
 class UButton;
 
-class UTechniqueNode;
+class UTechniqueNodeActive;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FSelectAction, FActionData, uint8);
 
@@ -43,7 +43,7 @@ public:
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 
 	UFUNCTION()
-	void AddNode(UTechniqueNode* node);
+	void AddNode(UTechniqueNodeActive* node);
 
 	UFUNCTION()
 	void MainButtonClicked();

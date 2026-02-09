@@ -91,6 +91,7 @@ void UEquipComponent::InitEquipmentHUD(TObjectPtr<UEquipmentHUD> hud)
 
 void UEquipComponent::Equip(FItemData item)
 {
+	//if (!ItemComponent) return;
 	EEquipType EquipType = ItemComponent->GetEquipType(item);
 	
 	if (EquipParts.FindRef(EquipType).ItemType != EItemType::E_None)
